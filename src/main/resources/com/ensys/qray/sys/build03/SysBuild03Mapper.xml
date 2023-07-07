@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ensys.qray.sys.build03.SysBuild03Mapper">
+
+    <select id="selectM" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*SysBuild03Mapper.selectM*/
+		SELECT A.CUSTOMER_CD            AS "CUSTOMER_CD" 
+			 , A.CUSTOMER_NM            AS "CUSTOMER_NM"
+			 , A.LICENSE_KEY            AS "LICENSE_KEY"
+			 , A.COMPANY_NO             AS "COMPANY_NO"
+			 , A.CUSTOMER_MANAGER       AS "CUSTOMER_MANAGER"
+			 , A.HP_NO                  AS "HP_NO"
+			 , A.TEL_NO                 AS "TEL_NO"
+			 , A.POST_NO                AS "POST_NO"
+			 , A.CUSTOMER_ADDRESS1      AS "CUSTOMER_ADDRESS1"
+			 , A.CUSTOMER_ADDRESS2      AS "CUSTOMER_ADDRESS2"
+			 , A.CUSTOMER_EMAIL         AS "CUSTOMER_EMAIL"
+			 , A.PROGRESS_YN            AS "PROGRESS_YN"
+			 , A.ISSUE                  AS "ISSUE" 
+		FROM   ES_CUSTOMER_M A
+		WHERE  1=1
+		<if test = " S_PROGRESS_YN != null and S_PROGRESS_YN != '' ">
+		AND    PROGRESS_YN = #{S_PROGRESS_YN}
+		</if>
+        <if test = "!S_CUSTOMER_LIST.get(0).equals('') and S_CUSTOMER_LIST.size() > 0">
+        AND    A.CUSTOMER_CD IN
+	        <foreach collection="S_CUSTOMER_LIST" item="item"  open="(" close=")" separator=",">
+	            #{item}
+	        </foreach>
+		</if>
+    </select>
+
+	<delete id="deleted" parameterType="hashmap" statementType="CALLABLE">
+		/*SysBuild03Mapper.deleted*/
+		DELETE FROM ES_CUSTOMER_M
+    	WHERE CUSTOMER_CD  = #{CUSTOMER_CD}
+    </delete>
+    
+    <update id="updated" parameterType="hashmap" statementType="CALLABLE">
+		/*SysBuild03Mapper.updated*/
+    	UPDATE  ES_CUSTOMER_M
+    	SET
+			   CUSTOMER_NM            = #{CUSTOMER_NM}
+			 , LICENSE_KEY            = #{LICENSE_KEY}
+			 , COMPANY_NO             = #{COMPANY_NO}
+			 , CUSTOMER_MANAGER       = #{CUSTOMER_MANAGER}
+			 , HP_NO                  = #{HP_NO}
+			 , TEL_NO                 = #{TEL_NO}
+			 , POST_NO                = #{POST_NO}
+			 , CUSTOMER_ADDRESS1      = #{CUSTOMER_ADDRESS1}
+			 , CUSTOMER_ADDRESS2      = #{CUSTOMER_ADDRESS2}
+			 , CUSTOMER_EMAIL         = #{CUSTOMER_EMAIL}
+			 , PROGRESS_YN            = #{PROGRESS_YN}
+			 , ISSUE                  = #{ISSUE}
+		WHERE  CUSTOMER_CD  = #{CUSTOMER_CD}
+    </update>
+    <insert id="created" parameterType="hashmap" statementType="CALLABLE">
+		/*SysBuild03Mapper.created*/
+    	INSERT INTO ES_CUSTOMER_M 
+    	(
+    	  CUSTOMER_CD
+		, CUSTOMER_NM
+		, LICENSE_KEY
+		, COMPANY_NO
+		, CUSTOMER_MANAGER
+		, HP_NO
+		, TEL_NO
+		, POST_NO
+		, CUSTOMER_ADDRESS1
+		, CUSTOMER_ADDRESS2
+		, CUSTOMER_EMAIL
+		, PROGRESS_YN
+		, ISSUE
+    	)
+    	VALUES 
+    	(
+    	  #{CUSTOMER_CD}
+        , #{CUSTOMER_NM}
+        , #{LICENSE_KEY}
+        , #{COMPANY_NO}
+        , #{CUSTOMER_MANAGER}
+        , #{HP_NO}
+        , #{TEL_NO}
+        , #{POST_NO}
+        , #{CUSTOMER_ADDRESS1}
+        , #{CUSTOMER_ADDRESS2}
+        , #{CUSTOMER_EMAIL}
+        , #{PROGRESS_YN}
+        , #{ISSUE}
+    	)
+    </insert>
+</mapper>

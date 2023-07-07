@@ -1,0 +1,33 @@
+package com.ensys.qray.common;
+
+import com.chequer.axboot.core.api.response.ApiResponse;
+import com.chequer.axboot.core.controllers.BaseController;
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+
+@Controller
+@RequiredArgsConstructor
+public class ErrorRaiseController extends BaseController {
+
+    private final JdbcTemplate jdbcTemplate;
+
+    @RequestMapping(value = "/raiseError", method = RequestMethod.GET, produces = APPLICATION_JSON)
+    public ApiResponse raiseError(@RequestParam(required = false) String raise) throws Exception {
+
+        if (StringUtils.isNotEmpty(raise)) {
+            throw new Exception("API Error!!");
+        }
+        return ok();
+    }
+
+    @RequestMapping(value = "/slowQuery", method = RequestMethod.GET, produces = APPLICATION_JSON)
+    public ApiResponse slowQuery() {
+        jdbcTemplate.execute("SELECT SLEEP(5);");
+        return ok();
+    }
+}

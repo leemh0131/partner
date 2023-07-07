@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ensys.qray.sys.information011.SysInformation11Mapper">
+
+	<select id="select" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation11Mapper.select*/
+    </select>
+
+</mapper>

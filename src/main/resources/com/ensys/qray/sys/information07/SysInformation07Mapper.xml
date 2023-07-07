@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ensys.qray.sys.information07.SysInformation07Mapper">
+
+<insert id="insertClientIp" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation07Mapper.insertClientIp*/
+	    insert into es_client_ip_log
+	    (
+	    	user_id,
+	    	ip_address,
+	    	add_date
+	    )values(
+	    	#{USER_ID},
+	    	#{IP_ADDRESS_ACCESS},
+	    	now()
+	    )
+    </insert>
+    
+  	<select id="LoginAcessIpCheck" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation07Mapper.LoginAcessIpCheck*/
+        select COALESCE(ip_address_access, '') AS "IP_ADDRESS_ACCESS"
+        from es_ip_access
+        where ip_address_access = #{IP_ADDRESS_ACCESS}
+        and   user_id           = #{USER_ID}
+        order by access_date desc
+    </select>
+
+    <select id="LoginAccessLog" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation07Mapper.LoginAccessLog*/
+    	<![CDATA[
+        select user_id AS "USER_ID",
+        	   ip_address AS "IP_ADDRESS",
+        	   to_char(add_date,'YYYYMMDDHHMISS') AS "ADD_DATE"
+        from es_client_ip_log
+        where to_char(add_date,'YYYYMMDD')::date
+				>= #{START_DT}::date
+				and to_char(add_date,'YYYYMMDD')::date
+				<= #{END_DT}::date
+        order by add_date desc
+    	]]>
+    </select>
+
+    <select id="IpBlockingLog" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation07Mapper.IpBlockingLog*/
+        select user_id AS "USER_ID", 
+        	   ip_address_access AS "IP_ADDRESS_ACCESS",
+        	   to_char(access_date,'YYYYMMDDHHMISS') AS "ACCESS_DATE"
+        from es_ip_access
+        order by access_date desc
+    </select>
+    
+     <insert id="insert" parameterType="hashmap" statementType="CALLABLE">
+		 /*SysInformation07Mapper.insert*/
+        insert into es_ip_access
+	    (
+	    	user_id,
+	    	ip_address_access,
+	    	access_date
+	    )values(
+	    	#{USER_ID},
+	    	#{IP_ADDRESS_ACCESS},
+	    	now()
+	    )
+    </insert>
+
+    <delete id="delete" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation07Mapper.delete*/
+        delete from es_ip_access   
+		where ip_address_access = #{IP_ADDRESS_ACCESS}		 
+    </delete>
+</mapper>

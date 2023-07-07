@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ensys.qray.user.UserMapper">
+
+	<select id="getTelNo" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*UserMapper.getTelNo*/
+		SELECT  B.TEL_NO   	AS "TEL_NO"
+			 ,  A.AUTHORIZE_KEY AS "AUTHORIZE_KEY"
+		FROM   ES_USER A
+		LEFT JOIN   ES_EMP  B
+		ON     A.COMPANY_CD = B.COMPANY_CD
+		AND    A.EMP_NO     = B.EMP_NO
+		WHERE  A.COMPANY_CD = #{COMPANY_CD}
+		AND    A.USER_ID    = #{USER_ID}
+		AND    A.USE_YN    = 'Y'
+	</select>
+
+	<select id="getPwChangeDt" resultType="string" parameterType="hashmap" statementType="CALLABLE">
+		/*UserMapper.getPwChangeDt*/
+		SELECT  A.PW_CHANGE_DT AS "PW_CHANGE_DT"
+		FROM   ES_USER A
+		WHERE  A.COMPANY_CD 	= #{COMPANY_CD}
+		AND    A.USER_ID    	= #{USER_ID}
+		  AND    A.USE_YN    = 'Y'
+	</select>
+
+	<select id="getAuthorizeKey" resultType="user" parameterType="user" statementType="CALLABLE">
+		/*UserMapper.getAuthorizeKey*/
+		SELECT  A.COMPANY_CD   	AS "companyCd"
+             ,  A.PASS_WORD    	AS "passWord"
+			 ,	A.USER_ID      	AS "userId"
+			 ,	A.USER_NM      	AS "userNm"
+			 ,  A.CRYPTO_YN     AS "cryptoYn"
+			 ,  A.AUTHORIZE_KEY AS "authorizeKey"
+		FROM   ES_USER A
+		WHERE  A.COMPANY_CD 	= #{companyCd}
+		AND    A.USER_ID    	= #{userId}
+	 	AND    A.USE_YN    = 'Y'
+		AND    A.AUTHORIZE_KEY = '0'
+	</select>
+	
+    <select id="findByIdUserAndCdCompanyAndCdGroup" resultType="user" parameterType="user" statementType="CALLABLE">
+		/*UserMapper.findByIdUserAndCdCompanyAndCdGroup*/
+        SELECT  A.COMPANY_CD   	AS "companyCd"
+			 ,  K.COMPANY_NM	AS "companyNm"
+			 ,  A.PASS_WORD    	AS "passWord"
+			 ,	B.GROUP_CD     	AS "groupCd"
+			 ,	A.USER_ID      	AS "userId"
+			 ,	A.USER_NM      	AS "userNm"
+/*			 ,	D.EMP_NO        AS "empNo"
+			 ,	D.KOR_NM        AS "empNm"
+			 ,  E.CC_CD			AS "ccCd"
+			 ,  H.CC_NM			AS "ccNm"
+			 ,	E.DEPT_CD       AS "deptCd"
+			 ,	E.DEPT_NM       AS "deptNm"
+			 ,  D.DUTY_RANK_CD  AS "dutyRankCd"
+			 ,  F.SYSDEF_NM     AS "dutyRankNm"
+			 ,  D.E_MAIL        AS "e_mail"
+			 ,  D.E_MAIL_SUB	AS "e_mail_sub" */
+			 ,  A.CRYPTO_YN     AS "cryptoYn"
+			 /*,  E.BIZAREA_CD    AS "bizareaCd"
+			 ,  G.BIZAREA_NM    AS "bizareaNm"
+			 ,  I.PC_CD 		AS "pcCd"
+			 ,  I.PC_NM 		AS "pcNm"
+			 ,  J.PROJECT_NO 	AS "projectNo"
+			 ,  J.PROJECT_NM 	AS "projectNm"*/
+			 ,  A.AUTHORIZE_KEY AS "authorizeKey"
+		FROM   ES_USER A
+		JOIN   ES_GROUP_M B
+		ON     A.COMPANY_CD = B.COMPANY_CD
+		JOIN   ES_GROUP_D C
+		ON     B.COMPANY_CD = C.COMPANY_CD
+		AND    B.GROUP_CD   = C.GROUP_CD
+		AND    A.USER_ID    = C.USER_ID
+/*		LEFT JOIN   ES_EMP  D
+		ON     A.COMPANY_CD = D.COMPANY_CD
+		AND    A.EMP_NO     = D.EMP_NO
+		LEFT JOIN   ES_DEPT E
+		ON     A.COMPANY_CD = E.COMPANY_CD
+		AND    D.DEPT_CD    = E.DEPT_CD
+		LEFT JOIN   ES_CODEDTL F
+		ON     D.COMPANY_CD   = F.COMPANY_CD
+		AND    D.DUTY_RANK_CD = F.SYSDEF_CD
+		AND    F.FIELD_CD     = 'ES_Q0015'
+		LEFT JOIN	ES_BIZAREA G
+		ON     E.COMPANY_CD   = G.COMPANY_CD
+		AND    E.BIZAREA_CD   = G.BIZAREA_CD
+		LEFT JOIN	ES_CC H
+		ON     E.COMPANY_CD   = H.COMPANY_CD
+		AND    E.CC_CD        = H.CC_CD
+		LEFT JOIN ES_PC I
+		ON 	   G.COMPANY_CD = I.COMPANY_CD
+		AND    G.PC_CD = I.PC_CD
+		LEFT JOIN ES_PROJECT J
+		ON 	   D.COMPANY_CD = J.COMPANY_CD
+		AND    D.PJT_CD = J.PROJECT_NO*/
+		LEFT JOIN ES_COMPANY K
+		ON 	   A.COMPANY_CD = K.COMPANY_CD
+		WHERE  A.COMPANY_CD = #{companyCd}
+		AND    A.USE_YN    = 'Y'
+		AND    B.GROUP_CD   = #{groupCd}
+		AND    A.USER_ID    = #{userId}
+    </select>
+
+    <select id="findId" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*UserMapper.findId*/
+		SELECT    A.USER_ID AS "USER_ID"
+			 	, A.USER_NM AS "USER_NM"
+				, A.USER_EMAIL AS "USER_EMAIL"
+		FROM  ES_USER A
+		INNER JOIN ES_GROUP_D B
+		ON  A.COMPANY_CD = B.COMPANY_CD
+		AND A.USER_ID = B.USER_ID
+		WHERE 1=1
+		  AND A.COMPANY_CD = #{COMPANY_CD}
+		  AND B.GROUP_CD = 'WEB01'
+		  AND A.USER_NM = #{NAME}
+		  AND A.USER_EMAIL = #{EMAIL}
+		  AND USE_YN = 'Y'
+    </select>
+
+    <select id="findPw" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		SELECT     A.USER_ID AS "USER_ID"
+				 , A.USER_NM AS "USER_NM"
+				 , A.USER_EMAIL AS "USER_EMAIL"
+		FROM  ES_USER A
+		INNER JOIN ES_GROUP_D B
+		ON  A.COMPANY_CD = B.COMPANY_CD
+ 		AND A.USER_ID = B.USER_ID
+		WHERE 1=1
+		  AND A.COMPANY_CD = #{COMPANY_CD}
+		  AND B.GROUP_CD = 'WEB01'
+		  AND A.USER_NM = #{NAME}
+		  AND A.USER_ID = #{USER_ID}
+		  AND USE_YN = 'Y'
+    </select>
+
+    <select id="getYnPwClear" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*UserMapper.getYnPwClear*/
+        SELECT '' AS "DC_RMK"
+        FROM   ES_USER
+	    WHERE  COMPANY_CD = #{COMPANY_CD}
+	    AND    USER_ID    = #{USER_ID}
+    </select>
+
+    <update id="passwordModify" parameterType="hashmap" statementType="CALLABLE">
+		/*UserMapper.passwordModify*/
+        UPDATE ES_USER
+	    SET    PASS_WORD    = #{PASSWORD}
+			 , PW_CHANGE_DT  = TO_CHAR(NOW(), 'YYYYMMDD')
+	    WHERE  COMPANY_CD   = #{COMPANY_CD}
+	    AND    USER_ID      = #{USER_ID}
+    </update>
+
+	<select id="selectUserList" resultType="hashmap" parameterType="String">
+		/*UserMapper.selectUserList*/
+		SELECT 	A.COMPANY_CD
+		,		D.COMPANY_NM
+		,		A.USER_ID
+		,		A.USER_NM
+		,		A.EMP_NO
+		,		A.PASS_WORD
+		,		B.GROUP_CD
+		,		B.GROUP_NM
+		FROM ES_USER A
+		INNER JOIN  ES_GROUP_M B
+        ON    A.COMPANY_CD = B.COMPANY_CD
+        INNER JOIN  ES_GROUP_D C
+        ON    A.COMPANY_CD = C.COMPANY_CD
+        AND   B.GROUP_CD   = C.GROUP_CD
+        AND   A.USER_ID    = C.USER_ID
+		INNER JOIN  ES_COMPANY D
+		ON    A.COMPANY_CD = D.COMPANY_CD
+		WHERE A.USER_ID = #{user_id}
+		  AND A.USE_YN = 'Y'
+	</select>
+
+	<insert id="joinUser" parameterType="hashmap" statementType="CALLABLE">
+		/*UserMapper.joinUser*/
+		INSERT INTO ES_USER
+		(
+			  COMPANY_CD
+			, USER_ID
+			, USER_NM
+			, PASS_WORD
+			, EMP_NO
+			, USER_GB
+			, USER_TP
+			, USE_YN
+			, CRYPTO_YN
+			, INSERT_ID
+			, INSERT_DTS
+			, UPDATE_ID
+			, UPDATE_DTS
+
+			, PW_CHANGE_DT
+			, MAIL_AUTH
+			, USER_EMAIL
+			, TEL_NO
+		) VALUES (
+			  #{COMPANY_CD}
+			, #{USER_ID}
+			, #{USER_NM}
+			, #{PASS_WORD}
+			, #{EMP_NO}
+			, #{USER_GB}
+			, #{USER_TP}
+			, #{USE_YN}
+			, #{CRYPTO_YN}
+			, #{LOGIN_ID}
+			, #{INSERT_DTS}
+			, #{LOGIN_ID}
+			, #{UPDATE_DTS}
+
+
+			, TO_CHAR(NOW(), 'YYYYMMDD')
+			, #{MAIL_AUTH}
+			, #{USER_EMAIL}
+			, #{TEL_NO}
+		)
+	</insert>
+</mapper>

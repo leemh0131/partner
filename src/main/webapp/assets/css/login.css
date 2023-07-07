@@ -1,0 +1,31 @@
+/* login */
+.login{
+    /*로그인 배경화면*/
+width:100%;height:100vh;max-width:100%;max-height:100%;background-color:#0a0a0a;
+-webkit-background-size: cover;
+-moz-background-size: cover;
+-o-background-size: cover;
+background-size: cover;
+}
+.login .trans { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(233,233,233,0.5); }
+.login-warp{position:relative;left:50%;top:50%;width:592px;transform:translate(-50% ,-50%)}
+.login-locataion{font-size:13px;color:#666;line-height:19px;}
+.login-locataion b{font-size:24px;font-weight:bold;line-height:36px;color:#333;padding-right:8px;}
+.login-form{width: 592px;height: 510px;position:relative;border-radius: 5px;background:rgba(255,255,255,0.9);box-sizing: border-box;padding:53px 86px 14px;margin-top:6px;}
+.login-form .logo{text-align:center;}
+.login-form .title{text-align:center;color:#5e71b8;margin-top:5px;font-size:14px;}
+.form-depth1{text-align:right;font-size:0;padding-top:40px;}
+.form-depth1 label{display:inline-block;padding-left:45px;}
+.form-depth1 label span{padding-right:10px;vertical-align:top;}
+.form-depth1 label span img{width:16px;}
+.form-depth1 label input{width:40px;height:18px;line-height:18px;font-size:12px;color:#666;border:0;background:none;vertical-align:middle;}
+.form-depth2 p{padding-top:11px;}
+.form-depth2 p input[type=text]{width:100%;height:48px;padding:15px 20px;border:1px solid #ddd;font-size:12px;box-sizing: border-box;;}
+.form-depth2 p input[type=password]{width:100%;height:48px;padding:15px 20px;border:1px solid #ddd;font-size:12px;box-sizing: border-box;;}
+.form-depth2 .check-wrap{margin-top:12px;}
+.form-depth2 .btn-wrap{margin-top:23px;}
+.form-depth2 .find{margin-top:20px;font-size:0;text-align:center;}
+.form-depth2 .find a{display:inline-block;position:relative;font-size:12px;color:#666;padding-left:50px;height:18px;line-height:18px;}
+.form-depth2 .find a:first-child{padding-left:0;}
+.form-depth2 .find a:last-child::after{content:'';display:block;position: absolute;top:50%;left:24px;transform: translateY(-50%);width:1px;height:14px;background:#ddd;}
+.login-form .copyright{position:absolute;bottom:14px;left:0;width:100%;text-align:center;font-size:11px;color:#b4b4b4;}

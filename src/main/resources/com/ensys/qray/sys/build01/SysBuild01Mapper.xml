@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ensys.qray.sys.build01.SysBuild01Mapper">
+
+	<select id="select" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*SysBuild01Mapper.select*/
+		SELECT A.MENU_ID       AS "MENU_ID"
+			 , A.MENU_NM       AS "MENU_NM"
+			 , A.MENU_LEVEL    AS "MENU_LEVEL"
+			 , A.PARENT_ID     AS "PARENT_ID"
+			 , A.MENU_PATH     AS "MENU_PATH"
+			 , A.REQUIRED_YN   AS "REQUIRED_YN"
+			 , A.SORT          AS "SORT"
+			 , A.INSERT_ID     AS "INSERT_ID"
+			 , A.INSERT_DTS    AS "INSERT_DTS"
+			 , A.UPDATE_ID     AS "UPDATE_ID"
+			 , A.UPDATE_DTS    AS "UPDATE_DTS"
+		FROM   ES_ADMIN_MENU    A
+		LEFT JOIN ES_ADMIN_MENU B
+		ON   A.PARENT_ID  = B.MENU_ID
+		ORDER BY A.MENU_LEVEL,A.SORT
+    </select>
+
+	<select id="created" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*SysBuild01Mapper.created*/
+		INSERT INTO ES_ADMIN_MENU
+		(
+		  MENU_ID    
+		, MENU_NM   
+		, MENU_LEVEL 
+		, PARENT_ID  
+		, MENU_PATH  
+		, REQUIRED_YN
+		, SORT       
+		, INSERT_ID   
+		, INSERT_DTS        
+		, UPDATE_ID   
+		, UPDATE_DTS        
+		)
+		VALUES(
+			  #{MENU_ID}
+			, #{MENU_NM}
+			, #{MENU_LEVEL}
+			, #{PARENT_ID}
+			, #{MENU_PATH}
+			, #{REQUIRED_YN}
+			, #{SORT}
+			, #{LOGIN_ID}
+			, #{DAY}
+			, #{LOGIN_ID}
+			, #{DAY}
+			)
+    </select>
+    
+    <delete id="deleted" parameterType="hashmap" statementType="CALLABLE">
+		/*SysBuild01Mapper.deleted*/
+    	DELETE FROM ES_ADMIN_MENU
+    	WHERE  MENU_ID    = #{MENU_ID}
+		AND    MENU_LEVEL = #{MENU_LEVEL}
+		AND    PARENT_ID  = #{PARENT_ID}
+    </delete>
+    
+    <update id="updated" parameterType="hashmap" statementType="CALLABLE">
+		/*SysBuild01Mapper.updated*/
+    	UPDATE ES_ADMIN_MENU
+    	SET    MENU_NM    = #{MENU_NM}
+    	     , SORT       = #{SORT}
+    	     , MENU_PATH  = #{MENU_PATH}
+    	WHERE  MENU_ID    = #{MENU_ID}
+		AND    MENU_LEVEL = #{MENU_LEVEL}
+		AND    PARENT_ID  = #{PARENT_ID}
+    </update>
+</mapper>

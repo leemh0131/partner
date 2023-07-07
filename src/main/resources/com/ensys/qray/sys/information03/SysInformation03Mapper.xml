@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ensys.qray.sys.information03.SysInformation03Mapper">
+
+    <select id="search" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation03Mapper.search*/
+		SELECT 	  A.COMPANY_CD		AS "COMPANY_CD"
+			 , A.USER_ID   		AS "USER_ID"
+			 , A.USER_NM   		AS "USER_NM"
+			 , A.PASS_WORD 		AS "PASS_WORD"
+			 , A.EMP_NO    		AS "EMP_NO"
+			 , A.USER_GB   		AS "USER_GB"
+			 , A.USER_TP   		AS "USER_TP"
+			 , A.USE_YN    		AS "USE_YN"
+			 , A.CRYPTO_YN 		AS "CRYPTO_YN"
+			 , A.INSERT_ID 		AS "INSERT_ID"
+			 , A.INSERT_DTS		AS "INSERT_DTS"
+			 , A.UPDATE_ID 		AS "UPDATE_ID"
+			 , A.UPDATE_DTS		AS "UPDATE_DTS"
+		FROM ES_USER A
+		WHERE A.COMPANY_CD = #{COMPANY_CD}
+		  AND A.USER_NM LIKE '%'|| #{USER_NM} ||'%'
+		  AND (A.USE_YN = #{USE_YN} OR #{USE_YN} = '' OR #{USE_YN} IS NULL)
+		  AND (A.USER_TP = #{USER_TP} OR #{USER_TP} = '' OR #{USER_TP} IS NULL)
+		ORDER BY A.INSERT_DTS DESC
+    </select>
+    
+    <insert id="insert" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation03Mapper.insert*/
+    	INSERT INTO ES_USER
+    	(
+    		  COMPANY_CD
+			, USER_ID   
+			, USER_NM   
+			, PASS_WORD 
+			, EMP_NO    
+			, USER_GB   
+			, USER_TP   
+			, USE_YN    
+			, CRYPTO_YN 
+			, INSERT_ID 
+			, INSERT_DTS
+			, UPDATE_ID 
+			, UPDATE_DTS
+    	)
+    	VALUES
+    	(
+    		  #{COMPANY_CD}
+			, #{USER_ID}
+			, #{USER_NM}
+			, #{PASS_WORD}
+			, #{EMP_NO}
+			, #{USER_GB}
+			, #{USER_TP}
+			, #{USE_YN}
+			, #{CRYPTO_YN}
+			, #{LOGIN_ID}
+			, #{INSERT_DTS}
+			, #{LOGIN_ID}
+			, #{UPDATE_DTS}
+    	)
+    </insert>
+
+    <update id="update" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation03Mapper.update*/
+    	UPDATE ES_USER
+    	SET   USER_NM		= #{USER_NM}
+			, PASS_WORD		= #{PASS_WORD}
+			, EMP_NO    	= #{EMP_NO}
+			, USER_GB   	= #{USER_GB}
+			, USER_TP   	= #{USER_TP}
+			, USE_YN    	= #{USE_YN}
+			, CRYPTO_YN 	= #{CRYPTO_YN}
+			, UPDATE_ID 	= #{LOGIN_ID}
+			, UPDATE_DTS	= #{UPDATE_DTS}
+		WHERE COMPANY_CD = #{COMPANY_CD}
+		AND   USER_ID    = #{USER_ID}
+    </update>
+
+    <delete id="delete" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation03Mapper.delete*/
+    	DELETE FROM ES_USER
+		WHERE COMPANY_CD = #{COMPANY_CD}
+		AND   USER_ID    = #{USER_ID}
+    </delete>
+    
+    <select id="verifyHash" resultType="String" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation03Mapper.verifyHash*/
+    	SELECT PASS_WORD AS "PASS_WORD"
+    	FROM ES_USER
+    	WHERE COMPANY_CD = #{COMPANY_CD}
+    	AND   USER_ID    = #{USER_ID}
+    </select>
+</mapper>

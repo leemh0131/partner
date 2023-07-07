@@ -1,0 +1,248 @@
+/* box__info-simple-login */
+
+
+.login .social-links-box {
+    position: relative;
+    margin-top: 39px;
+    padding-top: 15px;
+    border-top: 1px solid #d5d5d5
+}
+
+.login .social-links-box .text__title {
+    position: absolute;
+    background: #fff;
+    top: -8px;
+    width: 80px;
+    left: 50%;
+    margin-left: -40px;
+    font-size: 13px;
+    color: #777;
+    text-align: center
+}
+
+.login .social-links-box {
+    position: relative;
+    margin-top: 40px;
+    padding-top: 12px;
+    border-top: 1px solid #d5d5d5
+}
+
+.tooltip-box {
+    position: absolute;
+    padding-top:0px !important;
+    left: 50%;
+    top: -20px;
+    -webkit-transform: translateX(-50%);
+    transform: translateX(-50%);
+    display: inline-block;
+    height: 40px
+}
+
+.tooltip-box .text {
+    display: inline-block;
+    height: 34px;
+    box-sizing: border-box;
+    padding: 11px 14px 0;
+    white-space: nowrap;
+    font-size: 12px;
+    line-height: 1;
+    font-weight: bold;
+    color: #067dfd;
+    background: #fff;
+    border-radius: 17px;
+    border: 1px solid #067dfd;
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1)
+}
+
+.tooltip-box:after, .tooltip-box:before {
+    top: 33px;
+    left: 50%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none
+}
+
+.tooltip-box:after {
+    border-color: rgba(255, 255, 255, 0);
+    border-top-color: #ffffff;
+    border-width: 5px;
+    margin-left: -5px
+}
+
+.tooltip-box:before {
+    border-color: rgba(6, 125, 253, 0);
+    border-top-color: #067dfd;
+    border-width: 7px;
+    margin-left: -7px
+}
+
+.tooltip-box .button__close {
+    display: inline-block;
+    width: 33px;
+    height: 33px;
+    background: none;
+    position: absolute;
+    top: 0;
+    right: 3px
+}
+
+.tooltip-box .button__close:before {
+    width: 9px;
+    height: 9px;
+    background-position: -240px -122px
+}
+
+
+/* ****************************************************************** */
+/* login
+/* ****************************************************************** */
+
+/* ****************************************************************** */
+/* kakao
+/* ****************************************************************** */
+.login .kakao_login,
+.login .kakao-login-before:before,
+.login .kakao-login-after:after {
+    overflow: hidden;
+    display: inline-block;
+    font-size: 0;
+    background: url(/assets/images/common/kakaotalk_logo.png) no-repeat 50% 50%;
+}
+
+.login .kakao-login-before:before,
+.login .kakao-login-after:after {
+    content: ''
+}
+
+.login .kakao-login-link {
+    position: relative;
+    display: block;
+    margin: 12px 0;
+    width: 100%;
+    height: 50px;
+    border-radius: 2px;
+    color: #fff;
+    font-weight: 400;
+    font-size: 16px;
+    text-align: center;
+    line-height: 50px;
+    box-sizing: border-box
+}
+
+.login .kakao-login-button,
+.login .kakao-login-link {
+    background-color: #feeb35;
+    color: #3c1e1e
+}
+
+
+.login .kakao-login-link-active {
+    background-color: #e4d32f
+}
+
+
+.login .kakao-login-button::before,
+.login .kakao-login-link::before {
+    position: absolute;
+    left: 30px;
+    top: 13px;
+    width: 24px;
+    height: 24px
+}
+
+/* ****************************************************************** */
+/* naver
+/* ****************************************************************** */
+.login .naver_login,
+.login .naver-login-before:before,
+.login .naver-login-after:after {
+    overflow: hidden;
+    display: inline-block;
+    font-size: 0;
+    background: url(/assets/images/common/naver_logo.png) no-repeat 50% 50%;
+    background-size: 35px auto;
+}
+
+.login .naver-login-before:before,
+.login .naver-login-after:after {
+    content: ''
+}
+
+.login .naver-login-link {
+    position: relative;
+    display: block;
+    margin: 12px 0;
+    width: 100%;
+    height: 50px;
+    border-radius: 2px;
+    color: #fff;
+    font-weight: 400;
+    font-size: 16px;
+    text-align: center;
+    line-height: 50px;
+    box-sizing: border-box
+}
+
+.login .naver-login-button,
+.login .naver-login-link {
+    background-color: #03c75a;
+    color: #fff
+}
+
+
+.login .naver-login-link-active {
+    background-color: #e4d32f
+}
+
+
+.login .naver-login-button::before,
+.login .naver-login-link::before {
+    position: absolute;
+    left: 30px;
+    top: 13px;
+    width: 24px;
+    height: 24px
+}
+
+
+/* ****************************************************************** */
+/* google
+/* ****************************************************************** */
+
+.login .google-login-link {
+    display: inline-block;
+    background: white;
+    color: #444;
+    width: 100%;
+    border-radius: 5px;
+    border: thin solid #888;
+    box-shadow: 1px 1px 1px grey;
+    white-space: nowrap;
+}
+
+.login .google-login-link:hover {
+    cursor: pointer;
+}
+
+.login .google-login-link span.icon {
+    background: url(/assets/images/common/google_logo.png) transparent 5px 50% no-repeat;
+    display: inline-block;
+    vertical-align: middle;
+    width: 42px;
+    height: 42px;
+    background-size: 24px;
+    margin-left: 24px;
+}
+
+.login .google-login-link span.buttonText {
+    display: inline-block;
+    vertical-align: middle;
+    padding-left: 42px;
+    padding-right: 42px;
+    font-size: 14px;
+    font-weight: bold; /* Use the Roboto font that is loaded in the <head> */
+    font-family: 'Roboto', sans-serif;
+}

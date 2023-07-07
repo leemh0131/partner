@@ -1,0 +1,534 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ensys.qray.common.commonMapper">
+
+	<!-- 버전 실적 default 값 가져오기 -->
+	<select id="getDefaultVersion" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		SELECT  T2.VERSION_CD || '|' || T2.PLAN_ACT_SP AS "VERSION_CD"
+			 ,  T2.PLAN_ACT_SP 	                       AS "PLAN_ACT_SP"
+			 ,  T2.VERSION_NM                          AS "VERSION_NM"
+			 ,  T2.START_YM                            AS "START_YM"
+			 ,  T2.END_YM                              AS "END_YM"
+		FROM (
+				 SELECT COMPANY_CD, MIN(VERSION_CD) AS VERSION_CD
+				 FROM ES_MAC_VERSION
+				 WHERE COMPANY_CD  = #{COMPANY_CD}
+				   AND   PLAN_ACT_SP = #{PLAN_ACT_SP}
+				 GROUP BY COMPANY_CD
+			 ) T
+				 JOIN ES_MAC_VERSION T2
+					  ON  T.COMPANY_CD = T2.COMPANY_CD
+						  AND T.VERSION_CD = T2.VERSION_CD
+	</select>
+
+	<select id="getSystem" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*commonMapper.getSystem*/
+		SELECT A.COMPANY_CD	AS "COMPANY_CD"
+			 , A.FIELD_CD	AS "FIELD_CD"
+			 , A.SYSDEF_CD	AS "SYSDEF_CD"
+			 , B.SYSDEF_NM	AS "SYSDEF_NM"
+		FROM ES_SYSTEM A
+		JOIN ES_CODEDTL B
+		ON  A.COMPANY_CD = B.COMPANY_CD
+		AND A.FIELD_CD   = B.FIELD_CD
+		AND A.SYSDEF_CD  = B.SYSDEF_CD
+		WHERE  A.COMPANY_CD = #{COMPANY_CD}
+		  AND    A.FIELD_CD   = #{FIELD_CD}
+	</select>
+
+	<select id="getColumnInformation" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*commonMapper.getColumnInformation*/
+		SELECT COLUMN_NAME "COLUMN_NAME"
+			 , DATA_TYPE AS "DATA_TYPE"
+			 , MIN(CHARACTER_MAXIMUM_LENGTH) AS "MAX_LENGTH"
+		FROM INFORMATION_SCHEMA.COLUMNS
+		WHERE TABLE_CATALOG = #{DB_NAME}
+		  AND TABLE_SCHEMA = 'public'
+		  AND DATA_TYPE = 'character varying'
+		GROUP BY COLUMN_NAME, DATA_TYPE
+	</select>
+	
+  	<select id="groupAdd" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*commonMapper.groupAdd*/
+        SELECT COALESCE(RIGHT('000',1)||MAX(SUBSTRING(GROUP_CD,4,2)::INT+1)::VARCHAR,2::VARCHAR) AS "WEBSEQ"
+		FROM ES_GROUP_M  
+		WHERE COMPANY_CD = #{COMPANY_CD}
+    </select>
+
+    <!-- <select id="HELP_CHECK_SEARCH" resultType="hashmap" parameterType="hashmap">
+        {
+            CALL UP_CZ_Q_HELP_CHECK_SEARCH
+            (
+                #{CD_COMPANY},
+                #{ID_ACTION},
+                #{USERDEF1},
+                #{USERDEF2},
+                #{USERDEF3},
+                #{USERDEF4},
+                #{USERDEF5},
+                #{USERDEF6},
+                #{USERDEF7},
+                #{USERDEF8},
+                #{USERDEF9},
+                #{USERDEF10},
+                #{USERDEF11},
+                #{USERDEF12},
+                #{USERDEF13},
+                #{USERDEF14},
+                #{USERDEF15},
+                #{USERDEF16},
+                #{USERDEF17},
+                #{USERDEF18},
+                #{USERDEF19},
+                #{USERDEF20}
+            )
+        }
+    </select> -->
+    <select id="HELP_CHECK_SEARCH" resultType="hashmap" parameterType="hashmap">
+        SELECT NULL
+    </select>
+    
+    <select id="getCommonCode" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*commonMapper.getCommonCode*/
+    	SELECT  B.SYSDEF_CD AS "SYSDEF_CD"
+    	      , B.SYSDEF_NM AS "SYSDEF_NM"
+			  , B.FLAG1_CD	AS "FLAG1_CD"
+			  , B.FLAG2_CD	AS "FLAG2_CD"
+			  , B.FLAG3_CD	AS "FLAG3_CD"
+			  , B.FLAG4_CD  AS "FLAG4_CD"
+		FROM   ES_CODE A
+		JOIN   ES_CODEDTL B
+		ON     A.COMPANY_CD = B.COMPANY_CD
+		AND    A.FIELD_CD   = B.FIELD_CD
+		WHERE  1 = 1
+		AND    A.COMPANY_CD = #{COMPANY_CD}
+		AND    A.FIELD_CD   = #{FIELD_CD}
+		AND    B.USE_YN     = 'Y'
+		ORDER BY B.SYSDEF_CD
+    </select>
+
+	<select id="MenuTree" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*commonMapper.MenuTree*/
+		<choose>
+			<when test=' AUTHORIZE_KEY != null and AUTHORIZE_KEY == "0" '>
+				SELECT MENU_ID    AS "MENU_ID"
+				     , MENU_NM    AS "MENU_NM"
+				     , MENU_LEVEL AS "MENU_LEVEL"
+				     , PARENT_ID  AS "PARENT_ID"
+				     , MENU_PATH  AS "MENU_PATH"
+				     , SORT       AS "SORT"
+				FROM ES_ADMIN_MENU
+				ORDER BY MENU_LEVEL, SORT
+			</when>
+			<otherwise>
+				SELECT 	A.COMPANY_CD	AS "COMPANY_CD"
+					,	A.MENU_ID		AS "MENU_ID"
+					,	B.MENU_NM       AS "MENU_NM"
+					,	B.MENU_LEVEL    AS "MENU_LEVEL"
+					,	B.PARENT_ID     AS "PARENT_ID"
+					,	CASE WHEN C.MENU_ID IS NOT NULL THEN '/jsp/ensys/template/pivot.jsp' ELSE B.MENU_PATH END     AS "MENU_PATH"
+					,	B.SORT          AS "SORT"
+				FROM (
+						
+						SELECT 	COMPANY_CD
+							,	MENU_ID
+						FROM ES_AUTH_D
+						WHERE COMPANY_CD = #{COMPANY_CD}
+						AND   AUTH_TYPE  = '1'
+						AND   AUTH_CODE  = #{USER_ID}
+						AND   GROUP_CD   = #{GROUP_CD}
+						
+						UNION ALL 
+						
+						SELECT 	COMPANY_CD
+							,	MENU_ID
+						FROM ES_AUTH_D
+						WHERE COMPANY_CD = #{COMPANY_CD}
+						AND   AUTH_TYPE  = '3'
+						AND   AUTH_CODE  = #{GROUP_CD}
+						AND   NOT EXISTS 	(
+												SELECT 	COMPANY_CD
+													,	MENU_ID
+												FROM ES_AUTH_D
+												WHERE COMPANY_CD = #{COMPANY_CD}
+												AND   AUTH_TYPE  = '1'
+												AND   AUTH_CODE  = #{USER_ID}
+												AND   GROUP_CD   = #{GROUP_CD}
+											)
+				) A
+				JOIN ES_MENU_M B
+				ON  A.COMPANY_CD = B.COMPANY_CD
+				AND A.MENU_ID    = B.MENU_ID
+				AND B.USE_YN     = 'Y'
+				LEFT JOIN ES_PIVOT_M C
+				ON  A.COMPANY_CD = C.COMPANY_CD
+				AND A.MENU_ID    = C.MENU_ID
+				AND C.USE_YN     = 'Y'
+				WHERE A.COMPANY_CD = #{COMPANY_CD}
+				ORDER BY B.MENU_LEVEL, B.SORT
+			</otherwise>
+		</choose>
+    </select>
+    
+    <select id="Alarm" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*commonMapper.Alarm*/
+    	WITH V_AUTHOR AS /*결재수임, 위임을 받았는지 체크*/
+		(
+			SELECT MANDATOR_CD /*위임자*/
+			     , NOMINEE_CD  /*수임자*/
+			FROM ES_AUTHORLINE 
+			WHERE COMPANY_CD = #{COMPANY_CD}
+			AND  TO_CHAR(NOW(), 'YYYYMMDD') BETWEEN ENTRUST_ST_DT AND ENTRUST_ED_DT 
+			AND  USE_YN = 'Y'
+		),
+		V_WAIT_TBL AS
+		(
+			SELECT A.COMPANY_CD      AS "COMPANY_CD"
+			     , A.DRAFT_NO        AS "DRAFT_NO"
+				 , A.DRAFT_TP        AS "DRAFT_TP"
+				 , A.DRAFT_DT        AS "DRAFT_DT"
+				 , A.DRAFT_TITLE     AS "DRAFT_TITLE"
+				 , A.DRAFT_ST        AS "DRAFT_ST"
+				 , A.DRAFT_DEPT_CD   AS "DRAFT_DEPT_CD"
+				 , A.DRAFT_DEPT_NM   AS "DRAFT_DEPT_NM"
+				 , A.DRAFT_EMP_NO    AS "DRAFT_EMP_NO"
+				 , A.DRAFT_EMP_NM    AS "DRAFT_EMP_NM"
+				 , A.REMAR_RETURN    AS "REMAR_RETURN"
+				 , B.APPROVE_CD      AS "APPROVE_CD"
+				 , B.APPROVE_ORDER   AS "APPROVE_ORDER"
+				 , 'WAIT'			 AS "FLAG"
+			FROM ES_DRAFT_M     A
+			JOIN ES_DRAFT_AGREE B
+			ON  A.COMPANY_CD = B.COMPANY_CD
+			AND A.DRAFT_NO   = B.DRAFT_NO
+			WHERE A.COMPANY_CD = #{COMPANY_CD}
+			AND   A.DRAFT_ST   = '02' /*결재상태: 진행*/
+			AND   B.APPROVE_ORDER = (SELECT MIN(APPROVE_ORDER)
+									 FROM ES_DRAFT_AGREE
+									 WHERE COMPANY_CD = B.COMPANY_CD
+									 AND   DRAFT_NO   = B.DRAFT_NO
+									 AND   (APPROVE_ST = '1' OR APPROVE_ST IS NULL OR APPROVE_ST = '')
+									)
+			AND   0 = (SELECT COUNT(*) FROM V_AUTHOR WHERE  MANDATOR_CD = #{LOGIN_EMP_NO})
+			AND   (
+				   		B.APPROVE_EMP_NO = #{LOGIN_EMP_NO}
+				   OR	CASE WHEN (SELECT COUNT(*) FROM V_AUTHOR WHERE  NOMINEE_CD = #{LOGIN_EMP_NO}) > 0  THEN  B.APPROVE_EMP_NO  IN (
+				   																														SELECT MANDATOR_CD /*위임자*/
+																															   	  		FROM V_AUTHOR
+							 																								   	  		WHERE  NOMINEE_CD = #{LOGIN_EMP_NO}
+							 																								   	  	  ) END
+				  )
+		),
+		V_REJECT_TBL AS
+		(
+			SELECT 	A.COMPANY_CD        AS "COMPANY_CD"   
+				, 	A.DRAFT_NO          AS "DRAFT_NO"     
+				,	A.DRAFT_TP          AS "DRAFT_TP"     
+				,	A.DRAFT_DT          AS "DRAFT_DT"     
+				,	A.DRAFT_TITLE       AS "DRAFT_TITLE"  
+				,	A.DRAFT_ST          AS "DRAFT_ST"     
+				,	A.DRAFT_DEPT_CD     AS "DRAFT_DEPT_CD"
+				,	A.DRAFT_DEPT_NM     AS "DRAFT_DEPT_NM"
+				,	A.DRAFT_EMP_NO      AS "DRAFT_EMP_NO" 
+				,	A.DRAFT_EMP_NM      AS "DRAFT_EMP_NM" 
+				,   A.REMAR_RETURN		AS "REMAR_RETURN"
+				,	NULL		        AS "APPROVE_CD"
+				,	0			    	AS "APPROVE_ORDER"
+				,	'REJECT'			AS "FLAG"
+			FROM ES_DRAFT_M A
+			JOIN ES_DRAFT_D B
+			ON  A.COMPANY_CD = B.COMPANY_CD
+			AND A.DRAFT_NO   = B.DRAFT_NO
+			JOIN ES_DOCU    C
+			ON  A.COMPANY_CD = C.COMPANY_CD
+			AND B.DOCU_NO    = C.DOCU_NO
+			WHERE A.COMPANY_CD   = #{COMPANY_CD}
+			AND   A.DRAFT_EMP_NO = #{LOGIN_EMP_NO}
+			AND   A.DRAFT_ST     = '03'
+			GROUP BY A.COMPANY_CD, A.DRAFT_NO, A.DRAFT_TP,	A.DRAFT_DT,	A.DRAFT_TITLE,	A.DRAFT_ST,	A.DRAFT_DEPT_CD, A.DRAFT_DEPT_NM, A.DRAFT_EMP_NO, A.DRAFT_EMP_NM, A.REMAR_RETURN
+		)
+		SELECT *
+		FROM V_REJECT_TBL
+		
+		UNION ALL
+		
+		SELECT *
+		FROM V_WAIT_TBL
+		/*NOT_LOG_SQL*/
+    </select>
+    
+    <select id="AlarmCount" resultType="int" parameterType="hashmap" statementType="CALLABLE">
+		/*commonMapper.AlarmCount*/
+    	WITH V_AUTHOR AS /*결재수임, 위임을 받았는지 체크*/
+		(
+			SELECT MANDATOR_CD /*위임자*/
+			     , NOMINEE_CD  /*수임자*/
+			FROM ES_AUTHORLINE 
+			WHERE COMPANY_CD = #{COMPANY_CD}
+			AND  TO_CHAR(NOW(), 'YYYYMMDD') BETWEEN ENTRUST_ST_DT AND ENTRUST_ED_DT 
+			AND  USE_YN = 'Y'
+		),
+		V_WAIT_TBL AS
+		(
+			SELECT A.COMPANY_CD      AS "COMPANY_CD"
+			     , A.DRAFT_NO        AS "DRAFT_NO"
+				 , A.DRAFT_TP        AS "DRAFT_TP"
+				 , A.DRAFT_DT        AS "DRAFT_DT"
+				 , A.DRAFT_TITLE     AS "DRAFT_TITLE"
+				 , A.DRAFT_ST        AS "DRAFT_ST"
+				 , A.DRAFT_DEPT_CD   AS "DRAFT_DEPT_CD"
+				 , A.DRAFT_DEPT_NM   AS "DRAFT_DEPT_NM"
+				 , A.DRAFT_EMP_NO    AS "DRAFT_EMP_NO"
+				 , A.DRAFT_EMP_NM    AS "DRAFT_EMP_NM"
+				 , B.APPROVE_CD      AS "APPROVE_CD"
+				 , B.APPROVE_ORDER   AS "APPROVE_ORDER"
+				 , 'WAIT'			 AS "FLAG"
+			FROM ES_DRAFT_M     A
+			JOIN ES_DRAFT_AGREE B
+			ON  A.COMPANY_CD = B.COMPANY_CD
+			AND A.DRAFT_NO   = B.DRAFT_NO
+			WHERE A.COMPANY_CD = #{COMPANY_CD}
+			AND   A.DRAFT_ST   = '02' /*결재상태: 진행*/
+			AND   B.APPROVE_ORDER = (SELECT MIN(APPROVE_ORDER)
+									 FROM ES_DRAFT_AGREE
+									 WHERE COMPANY_CD = B.COMPANY_CD
+									 AND   DRAFT_NO   = B.DRAFT_NO
+									 AND   (APPROVE_ST = '1' OR APPROVE_ST IS NULL OR APPROVE_ST = '')
+									)
+			AND   0 = (SELECT COUNT(*) FROM V_AUTHOR WHERE  MANDATOR_CD = #{LOGIN_EMP_NO})
+			AND   (
+				   		B.APPROVE_EMP_NO = #{LOGIN_EMP_NO}
+				   OR	CASE WHEN (SELECT COUNT(*) FROM V_AUTHOR WHERE  NOMINEE_CD = #{LOGIN_EMP_NO}) > 0  THEN  B.APPROVE_EMP_NO  IN (
+				   																														SELECT MANDATOR_CD /*위임자*/
+																																   	  	FROM V_AUTHOR
+								 																								   	  	WHERE  NOMINEE_CD = #{LOGIN_EMP_NO}
+								 																								   	  ) END
+				  )
+		),
+		V_REJECT_TBL AS
+		(
+			SELECT 	A.COMPANY_CD        AS "COMPANY_CD"   
+				, 	A.DRAFT_NO          AS "DRAFT_NO"     
+				,	A.DRAFT_TP          AS "DRAFT_TP"     
+				,	A.DRAFT_DT          AS "DRAFT_DT"     
+				,	A.DRAFT_TITLE       AS "DRAFT_TITLE"  
+				,	A.DRAFT_ST          AS "DRAFT_ST"     
+				,	A.DRAFT_DEPT_CD     AS "DRAFT_DEPT_CD"
+				,	A.DRAFT_DEPT_NM     AS "DRAFT_DEPT_NM"
+				,	A.DRAFT_EMP_NO      AS "DRAFT_EMP_NO" 
+				,	A.DRAFT_EMP_NM      AS "DRAFT_EMP_NM" 
+				,   A.REMAR_RETURN		AS "REMAR_RETURN"
+				,	'REJECT'			AS "FLAG"
+			FROM ES_DRAFT_M A
+			JOIN ES_DRAFT_D B
+			ON  A.COMPANY_CD = B.COMPANY_CD
+			AND A.DRAFT_NO   = B.DRAFT_NO
+			JOIN ES_DOCU    C
+			ON  A.COMPANY_CD = C.COMPANY_CD
+			AND B.DOCU_NO    = C.DOCU_NO
+			WHERE A.COMPANY_CD   = #{COMPANY_CD}
+			AND   A.DRAFT_EMP_NO = #{LOGIN_EMP_NO}
+			AND   A.DRAFT_ST     = '03'
+			GROUP BY A.COMPANY_CD, A.DRAFT_NO, A.DRAFT_TP,	A.DRAFT_DT,	A.DRAFT_TITLE,	A.DRAFT_ST,	A.DRAFT_DEPT_CD, A.DRAFT_DEPT_NM, A.DRAFT_EMP_NO, A.DRAFT_EMP_NM, A.REMAR_RETURN
+		)
+		SELECT (SELECT COUNT(*) FROM V_REJECT_TBL) + (SELECT COUNT(*) FROM V_WAIT_TBL) AS "COUNT"
+    </select>
+    
+    <delete id="dynamicQueryDelete" parameterType="hashmap" statementType="CALLABLE">
+		/*commonMapper.dynamicQueryDelete*/
+    	DELETE FROM ${TABLE_NAME}
+    	WHERE COMPANY_CD = #{COMPANY_CD}
+	</delete>
+	
+	<insert id="dynamicQueryInsert" parameterType="hashmap" statementType="CALLABLE">
+		/*commonMapper.dynamicQueryInsert*/
+    	<if test = " COLUMNS.size() > 0 and !COLUMNS.get(0).equals('') ">
+    		<if test="TABLE_NAME != null and TABLE_NAME != ''">
+				INSERT INTO ${TABLE_NAME}
+					<foreach collection="COLUMNS" item="item"  open="(" close=")" separator=",">
+						${item.COLUMN}
+					</foreach>
+				VALUES
+				<foreach collection="COLUMNS" item="item"  open="(" close=")" separator=",">
+					#{item.DATA}
+				</foreach>
+			</if>
+		</if>
+	</insert>
+
+	<select id="DynamicPivot" resultType="com.ensys.qray.utils.UpperMap" parameterType="hashmap" statementType="CALLABLE">
+		/*commonMapper.DynamicPivot*/
+		<![CDATA[
+			${Query}
+		]]>
+	</select>
+
+	<select id="ColunmsChk" resultType="int" parameterType="hashmap" statementType="CALLABLE">
+		/*commonMapper.ColunmsChk*/
+		SELECT COUNT(COLUMN_NAME)
+		FROM INFORMATION_SCHEMA.COLUMNS
+		WHERE TABLE_NAME  = #{TABLENAME}
+		  AND COLUMN_NAME IN
+		<foreach collection="Column" item="item"  open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+	</select>
+
+	<select id="excelPkQray" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*commonMapper.excelPkQray*/
+		SELECT CC.COLUMN_NAME AS COLUMN_NAME
+		FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS       TC
+		   ,INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE CC
+		WHERE TC.TABLE_NAME      = #{TABLENAME}
+		  AND TC.CONSTRAINT_TYPE = 'PRIMARY KEY'
+		  AND TC.TABLE_CATALOG   = CC.TABLE_CATALOG
+		  AND TC.TABLE_SCHEMA    = CC.TABLE_SCHEMA
+		  AND TC.TABLE_NAME      = CC.TABLE_NAME
+		  AND TC.CONSTRAINT_NAME = CC.CONSTRAINT_NAME
+	</select>
+
+	<insert id="excelInsertQray" parameterType="hashmap" statementType="CALLABLE">
+		/*commonMapper.excelInsertQray*/
+		INSERT INTO ${TABLENAME}
+		(
+		<foreach collection="tableData" item="item" separator=",">
+			${item.TableColumn}
+		</foreach>
+		, COMPANY_CD
+		, INSERT_DTS
+		, INSERT_ID
+		, UPDATE_DTS
+		, UPDATE_ID
+		)
+		VALUES
+		(
+		<foreach collection="tableData" item="item" separator=",">
+			#{item.TableValue}
+		</foreach>
+		, #{COMPANY_CD}
+		, #{INSERT_DTS}
+		, #{INSERT_ID}
+		, #{UPDATE_DTS}
+		, #{UPDATE_ID}
+		)
+		ON CONFLICT
+		<foreach collection="PK" item="item" open="(" close=") DO" separator=",">
+			${item.column_name}
+		</foreach>
+		UPDATE SET
+		<foreach collection="tableData" item="item" separator=",">
+			${item.TableColumn} = #{item.TableValue}
+		</foreach>
+			, UPDATE_ID			= #{UPDATE_ID}
+			, UPDATE_DTS		= #{UPDATE_DTS}
+	</insert>
+
+	<!-- 원가집계단위의 관리코드를 시작년월 max로 조회  -->
+	<!-- mybatis sql의 경우 다른 사용하는 select절에서 파라미터를 property로 전달 받으려면 ${} 사용 -->
+	<sql id="selectMaxMngCd">
+		SELECT A.COMPANY_CD
+		, A.COST_TOT_UNIT_COL
+		, A.UNIT_TP
+		, A.MNG_CD
+		, A.MNG_NM
+		, A.START_YM
+		, A.CC_CD
+		, A.HQ_CC_CD
+		, A.FUND_SP
+		, A.FI_ACCT
+		FROM ES_MAC_UNIT_MNG A
+		JOIN (
+		SELECT COMPANY_CD
+		, COST_TOT_UNIT_COL
+		, MNG_CD
+		, MAX(START_YM) AS START_YM
+		FROM ES_MAC_UNIT_MNG
+		WHERE 1=1
+		<choose>
+			<when test='STD_YM != null and STD_YM != "" and STD_YM != n'>
+				AND START_YM  <![CDATA[<=]]> #{STD_YM}
+			</when>
+			<otherwise>
+				AND START_YM  <![CDATA[<=]]> TO_CHAR( NOW(), 'YYYYMM'  )
+			</otherwise>
+		</choose>
+		GROUP BY COMPANY_CD , COST_TOT_UNIT_COL , MNG_CD
+		) B
+		ON A.COMPANY_CD = B.COMPANY_CD
+		AND A.COST_TOT_UNIT_COL = B.COST_TOT_UNIT_COL
+		AND A.MNG_CD  = B.MNG_CD
+		AND A.START_YM = B.START_YM
+		WHERE A.COMPANY_CD = #{COMPANY_CD}
+		<choose>
+			<when test='STD_YM != null and STD_YM != "" and STD_YM != n'>
+				AND A.START_YM  <![CDATA[<=]]> #{STD_YM}
+			</when>
+			<otherwise>
+				AND A.START_YM  <![CDATA[<=]]> TO_CHAR( NOW(), 'YYYYMM'  )
+			</otherwise>
+		</choose>
+		<if test='MNG_CD != null and MNG_CD != "" and MNG_CD != n'>
+			AND  A.MNG_CD = #{MNG_CD}
+		</if>
+	</sql>
+
+	<!-- 원가집계단위유형별 관리코드정보 조회(배부실행/매출안분의 센더/리시버 원가집계단위명 조회목적) -->
+	<sql id= "selectCostTotUnit">
+		SELECT
+		ML.COMPANY_CD
+		, ML.MNG_CD
+		, ML.MNG_NM
+		, ML.START_YM
+		, ML.MNG_TP
+		, CU.COST_TOT_UNIT_COL
+		FROM(
+		SELECT
+		COMPANY_CD
+		, CC_CD AS MNG_CD
+		, CC_NM AS MNG_NM
+		, ${STD_YM} AS START_YM
+		, 'CC'	AS MNG_TP
+		FROM ES_CC
+		WHERE COMPANY_CD = #{COMPANY_CD}
+		UNION ALL
+		SELECT
+		COMPANY_CD
+		, MNG_CD
+		, MNG_NM
+		, START_YM
+		, UNIT_TP AS MNG_TP
+		FROM(
+		SELECT
+		COMPANY_CD
+		, MNG_CD
+		, MNG_NM
+		, START_YM
+		, UNIT_TP
+		FROM
+		ES_MAC_UNIT_MNG
+		WHERE (START_YM = #{STD_YM} OR START_YM <![CDATA[<=]]> TO_CHAR(NOW(), 'YYYYMM'))
+		ORDER BY MNG_CD, START_YM DESC
+		) AS A
+		UNION ALL
+		SELECT
+		COMPANY_CD
+		, SYSDEF_CD	AS MNG_CD
+		, SYSDEF_NM	AS MNG_NM
+		, ${STD_YM} AS START_YM
+		, 'CH'	AS MNG_TP
+		FROM ES_CODEDTL
+		WHERE COMPANY_CD = #{COMPANY_CD}
+		AND FIELD_CD = 'ES_Q0106'
+		AND USE_YN = 'Y'
+		) AS ML
+		LEFT JOIN ES_MAC_COST_TOT_UNIT CU
+		ON ML.COMPANY_CD = CU.COMPANY_CD
+		AND ML.MNG_TP = CU.UNIT_TP
+		WHERE (CU.UNIT_TP IS NOT NULL AND CU.UNIT_TP != '')
+		<if test='ORG_CD_YN != null and ORG_CD_YN != "" and ORG_CD_YN != n'>
+			AND  CU.ORG_CD_YN = #{ORG_CD_YN}
+		</if>
+	</sql>
+</mapper>

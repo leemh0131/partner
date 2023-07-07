@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ensys.qray.sys.build02.SysBuild02Mapper">
+
+    <select id="addLicense" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*SysBuild02Mapper.addLicense*/
+    	SELECT MENU_ID     AS "MENU_ID"
+    	     , MENU_NM     AS "MENU_NM"
+    	     , MENU_LEVEL  AS "MENU_LEVEL"
+    	     , PARENT_ID   AS "PARENT_ID"
+    	     , MENU_PATH   AS "MENU_PATH"
+    	     , REQUIRED_YN AS "REQUIRED_YN"
+    	     , SORT        AS "SORT"
+    	     , (SELECT MAX(MENU_LEVEL) FROM ES_ADMIN_MENU) AS "MAX_LEVEL"
+    	FROM	ES_ADMIN_MENU
+    	ORDER BY MENU_LEVEL, SORT
+    </select>
+    
+    <select id="select" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*SysBuild02Mapper.select*/
+    	SELECT CUSTOMER_CD   AS "CUSTOMER_CD"
+    	     , CUSTOMER_NM   AS "CUSTOMER_NM"
+    	     , LICENSE_KEY   AS "LICENSE_KEY"
+    	     , COMPANY_NO    AS "COMPANY_NO"
+		FROM ES_CUSTOMER_M
+		WHERE (
+				CUSTOMER_NM LIKE '%' || #{KEYWORD} || '%' 
+			 OR LICENSE_KEY LIKE '%' || #{KEYWORD} || '%' 
+			 OR #{KEYWORD} IS NULL 
+			 OR #{KEYWORD} = ''
+			)
+    </select>
+    
+    <select id="selectDtl" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*SysBuild02Mapper.selectDtl*/
+    	SELECT A.LICENSE_KEY   AS "LICENSE_KEY"
+    	     , A.MENU_ID       AS "MENU_ID"
+    	     , A.MENU_NM       AS "MENU_NM"
+    	     , A.MENU_LEVEL    AS "MENU_LEVEL"
+    	     , A.PARENT_ID     AS "PARENT_ID"
+    	     , A.MENU_PATH     AS "MENU_PATH"
+    	     , A.SORT          AS "SORT"
+    	     , A.USE_YN        AS "USE_YN"
+    	     , A.INSERT_ID     AS "INSERT_ID"
+    	     , A.INSERT_DTS    AS "INSERT_DTS"
+    	     , A.UPDATE_ID     AS "UPDATE_ID"
+    	     , A.UPDATE_DTS    AS "UPDATE_DTS"
+    	     , B.CUSTOMER_CD   AS "CUSTOMER_CD"
+    	     , B.CUSTOMER_NM   AS "CUSTOMER_NM"
+    	FROM ES_LICENSE_MENU A
+    	JOIN ES_CUSTOMER_M   B
+    	ON  A.LICENSE_KEY = B.LICENSE_KEY
+    	WHERE A.LICENSE_KEY = #{LICENSE_KEY}
+    	AND   B.CUSTOMER_CD = #{CUSTOMER_CD}
+    	ORDER BY MENU_LEVEL, SORT
+    </select>
+    
+    <update id="insert" parameterType="hashmap" statementType="CALLABLE">
+		/*SysBuild02Mapper.insert*/
+    	INSERT INTO ES_LICENSE_MENU
+    	(
+    		  LICENSE_KEY
+    		, MENU_ID
+    		, MENU_NM
+    		, MENU_LEVEL
+    		, PARENT_ID
+    		, MENU_PATH
+    		, USE_YN
+    		, SORT
+    		, INSERT_ID
+    		, INSERT_DTS
+    		, UPDATE_ID
+    		, UPDATE_DTS
+    	)
+    	VALUES
+    	(
+    		  #{LICENSE_KEY}
+    		, #{MENU_ID}
+    		, #{MENU_NM}
+    		, #{MENU_LEVEL}
+    		, #{PARENT_ID}
+    		, #{MENU_PATH}
+    		, #{USE_YN}
+    		, #{SORT}
+    		, #{INSERT_ID}
+    		, #{INSERT_DTS}
+    		, #{UPDATE_ID}
+    		, #{UPDATE_DTS}
+    	)
+    </update>
+    
+    <update id="update" parameterType="hashmap" statementType="CALLABLE">
+		/*SysBuild02Mapper.update*/
+    	UPDATE ES_LICENSE_MENU
+    	SET   USE_YN     = #{USE_YN}
+    	    , SORT       = #{SORT}
+    		, UPDATE_ID  = #{UPDATE_ID}
+    		, UPDATE_DTS = #{UPDATE_DTS}
+    	WHERE LICENSE_KEY = #{LICENSE_KEY}
+    	AND   MENU_ID     = #{MENU_ID}
+    </update>
+    	
+    <delete id="delete" parameterType="hashmap" statementType="CALLABLE">
+		/*SysBuild02Mapper.delete*/
+    	DELETE FROM ES_LICENSE_MENU
+    	WHERE LICENSE_KEY = #{LICENSE_KEY}
+    	AND   MENU_ID     = #{MENU_ID}
+    </delete>
+    
+    <update id="updateCustomer" parameterType="hashmap" statementType="CALLABLE">
+		/*SysBuild02Mapper.updateCustomer*/
+    	UPDATE ES_CUSTOMER_M
+    	SET LICENSE_KEY = #{LICENSE_KEY}
+    	  , UPDATE_ID   = #{UPDATE_ID}
+    	  , UPDATE_DTS  = #{UPDATE_DTS}
+    	WHERE CUSTOMER_CD = #{CUSTOMER_CD}
+    </update>
+</mapper>

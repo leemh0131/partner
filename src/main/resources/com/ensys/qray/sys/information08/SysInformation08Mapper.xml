@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ensys.qray.sys.information08.SysInformation08Mapper">
+
+    <select id="search" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation08Mapper.search*/
+    	SELECT 	A.COMPANY_CD AS "COMPANY_CD"
+			,   A.MODULE_CD  AS "MODULE_CD"
+			,   A.CLASS_CD   AS "CLASS_CD"
+			,   A.CLASS_NM   AS "CLASS_NM"
+			,   A.CTRL_CD    AS "CTRL_CD"
+			,   A.CLASS_LEN  AS "CLASS_LEN"
+			,   A.INSERT_ID  AS "INSERT_ID"
+			,   A.INSERT_DTS AS "INSERT_DTS"
+			,   A.UPDATE_ID  AS "UPDATE_ID"
+			,   A.UPDATE_DTS AS "UPDATE_DTS"
+		FROM ES_DOCUCTRL A
+		LEFT JOIN ES_CODEDTL B
+		ON  A.COMPANY_CD = B.COMPANY_CD
+		AND A.MODULE_CD  = B.SYSDEF_CD
+		AND B.FIELD_CD = 'ES_Q0004'
+		WHERE A.COMPANY_CD = #{COMPANY_CD}
+		AND   (A.MODULE_CD  = #{MODULE_CD} OR #{MODULE_CD} IS NULL OR #{MODULE_CD} = '')
+		AND   (
+				A.CLASS_CD LIKE '%' || #{KEYWORD} || '%' OR 
+				A.CLASS_NM LIKE '%' || #{KEYWORD} || '%' OR
+				#{KEYWORD} = '' OR #{KEYWORD} IS NULL
+			  )
+    </select>
+    
+    <update id="upsertNo" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation08Mapper.upsertNo*/
+    	WITH UPSERT  AS 
+		(
+			UPDATE ES_DOCUNO
+			SET CLASS_NO    = CAST(CAST(COALESCE(CLASS_NO,'0') AS NUMERIC) + 1 AS CHARACTER VARYING)
+			WHERE COMPANY_CD  = #{COMPANY_CD}
+			AND   MODULE_CD   = #{MODULE_CD}
+			AND   CLASS_CD    = #{CLASS_CD}
+			AND   CLASS_YM    = #{strDate} RETURNING *
+		)
+		INSERT INTO ES_DOCUNO
+		(
+		   COMPANY_CD
+		 , MODULE_CD
+		 , CLASS_CD
+		 , CTRL_CD
+		 , CLASS_YM
+		 , CLASS_LEN
+		 , CLASS_NO
+		)
+		SELECT #{COMPANY_CD}
+			 , #{MODULE_CD}
+			 , #{CLASS_CD}
+			 , CTRL_CD
+			 , #{strDate}
+			 , CLASS_LEN
+			 , '1'
+		FROM ES_DOCUCTRL
+		WHERE COMPANY_CD  = #{COMPANY_CD}
+		AND   MODULE_CD   = #{MODULE_CD}
+		AND   CLASS_CD    = #{CLASS_CD}
+		AND   NOT EXISTS ( SELECT * FROM UPSERT )
+    	
+    </update>
+    
+    <select id="getNo" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation08Mapper.getNo*/
+    	SELECT A.CTRL_CD || #{strDate} || LPAD(
+    										  CAST(CAST(COALESCE(MAX(B.CLASS_NO),'0') AS NUMERIC) AS CHARACTER VARYING)
+											, CAST(A.CLASS_LEN AS INTEGER)
+											, '0'
+		    								) AS "NO"
+		FROM ES_DOCUCTRL    A
+		LEFT JOIN ES_DOCUNO B
+		ON  A.COMPANY_CD = B.COMPANY_CD
+		AND A.MODULE_CD  = B.MODULE_CD
+		AND A.CLASS_CD   = B.CLASS_CD
+		WHERE A.COMPANY_CD = #{COMPANY_CD}
+		AND   A.MODULE_CD  = #{MODULE_CD}
+		AND   A.CLASS_CD   = #{CLASS_CD}
+		AND   B.CLASS_YM   = #{strDate}
+		GROUP BY A.CTRL_CD, A.CLASS_LEN
+    </select>
+    
+    <insert id="insert" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation08Mapper.insert*/
+    	INSERT INTO ES_DOCUCTRL
+    	(
+	    	  COMPANY_CD
+			, MODULE_CD
+			, CLASS_CD
+			, CLASS_NM
+			, CTRL_CD
+			, CLASS_LEN
+			, INSERT_ID
+			, INSERT_DTS
+			, UPDATE_ID
+			, UPDATE_DTS
+    	)
+    	VALUES
+    	(
+    		  #{COMPANY_CD}
+			, #{MODULE_CD}
+			, #{CLASS_CD}
+			, #{CLASS_NM}
+			, #{CTRL_CD}
+			, #{CLASS_LEN}
+			, #{USER_ID}
+			, #{INSERT_DTS}
+			, #{USER_ID}
+			, #{UPDATE_DTS}
+    	)
+    </insert>
+
+    <update id="update" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation08Mapper.update*/
+    	UPDATE ES_DOCUCTRL
+    	SET CLASS_NM    = #{CLASS_NM},
+			CTRL_CD     = #{CTRL_CD},
+			CLASS_LEN   = #{CLASS_LEN},
+			UPDATE_ID 	= #{USER_ID},
+			UPDATE_DTS 	= #{UPDATE_DTS}
+		WHERE COMPANY_CD = #{COMPANY_CD}
+		AND   MODULE_CD  = #{MODULE_CD}
+		AND   CLASS_CD   = #{CLASS_CD}
+    </update>
+
+    <delete id="delete" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation08Mapper.delete*/
+    	DELETE FROM ES_DOCUCTRL
+    	WHERE COMPANY_CD = #{COMPANY_CD}
+		AND   MODULE_CD  = #{MODULE_CD}
+		AND   CLASS_CD   = #{CLASS_CD}
+    </delete>
+</mapper>

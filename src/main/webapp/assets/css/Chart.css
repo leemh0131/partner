@@ -1,0 +1,80 @@
+/*
+ * DOM element rendering detection
+ * https://davidwalsh.name/detect-node-insertion
+ */
+@keyframes chartjs-render-animation {
+	from { opacity: 0.99; }
+	to { opacity: 1; }
+}
+
+.chartjs-render-monitor {
+	animation: chartjs-render-animation 0.001s;
+}
+
+/*
+ * DOM element resizing detection
+ * https://github.com/marcj/css-element-queries
+ */
+.chartjs-size-monitor,
+.chartjs-size-monitor-expand,
+.chartjs-size-monitor-shrink {
+	position: absolute;
+	direction: ltr;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	overflow: hidden;
+	pointer-events: none;
+	visibility: hidden;
+	z-index: -1;
+}
+
+.chartjs-size-monitor-expand > div {
+	position: absolute;
+	width: 1000000px;
+	height: 1000000px;
+	left: 0;
+	top: 0;
+}
+
+.chartjs-size-monitor-shrink > div {
+	position: absolute;
+	width: 200%;
+	height: 200%;
+	left: 0;
+	top: 0;
+}
+.color-monite01 {color: #7092E9 !important;}
+.color-monite02 {color: #5CA1E4 !important;}
+.color-monite03 {color: #50BCE0 !important;}
+.color-monite04 {color: #FFB82C !important;}
+
+.monite{display:inline-flex;justify-content:space-between;align-items:center;box-sizing: border-box;height:115px;padding:26px 20px 20px 40px;border-radius:5px;vertical-align:top;}
+.monite img{transform:scale(1,1);transition:all 500ms;}
+.monite:hover img{transform:scale(1.2,1.2)}
+.monite-01{background: transparent linear-gradient(117deg, #7092E9 0%, #7392ED 100%) 0% 0% no-repeat padding-box;margin-left:0;}
+.monite-02{background: transparent linear-gradient(117deg, #5CA1E4 0%, #60A2DF 100%) 0% 0% no-repeat padding-box;}
+.monite-03{background: transparent linear-gradient(117deg, #50BCE0 0%, #50BDE6 100%) 0% 0% no-repeat padding-box;}
+.monite-04{background: transparent linear-gradient(119deg, #e99b26 0%, #e99b26 100%) 0% 0% no-repeat padding-box;}
+
+.line-title{position:relative;font-size:14px;font-weight:600;color:#666;line-height:19px;padding-left:16px;margin-bottom:10px;}
+.line-title::after{content:'';display:block;width:6px;height:6px;position:absolute;top:50%;left:0;margin-top:-3px;background:#666;}
+
+.card-type-02{display:inline-block;width:calc(50% - 5px);margin-left:10px;}
+.vert-top .card-type-02{vertical-align:top;}
+.card-type-02:first-child{margin-left:0;}
+
+.chart{border:1px solid #ddd;box-sizing: border-box;}
+.chart-01{margin-left:0;}
+.chart .card-head{height:40px;line-height:40px;border-bottom:1px solid #ddd;}
+.chart .card-head .title{float:left;font-size:13px;color:#666;padding-left:19px;}
+.chart .card-content{height:220px;text-align:center;padding:20px 0 20px 0;}
+.chart .card-conten::after{content:'';display:block;clear:both;}
+.chart .card-head .chaart-type{float:right;margin-right:24px;}
+.chart .card-head .chaart-type button{display:inline-block;position:relative;font-size:12px;color:#b2b2b2;margin-left:12px;padding-left:14px;}
+.chart .card-head .chaart-type button::after{content:'';display:block;width:10px;height:10px;position:absolute;top:50%;left:0;border-radius:5px;transform:translateY(-50%);}
+.chart .card-head .chaart-type .type-01::after{background:#865FC0;}
+.chart .card-head .chaart-type .type-02::after{background:#51B1E8;}
+.chart .card-head .chaart-type .type-03::after{background:#e99b26;}
+

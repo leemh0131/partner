@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ensys.qray.sys.information10.SysInformation10Mapper">
+
+    <select id="select" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation10Mapper.select*/
+		SELECT G.USER_ID AS "USER_ID"
+			 , U.USER_NM AS "USER_NM"
+			 , G.OPTION  AS "OPTION"
+		FROM ES_DEPT_CONNECT_USER G
+		JOIN ES_USER              U 
+		ON  G.COMPANY_CD = U.COMPANY_CD
+		AND G.USER_ID    = U.USER_ID
+		WHERE 1=1
+		AND G.COMPANY_CD = #{COMPANY_CD}
+		AND G.PERMISSIONS = #{PERMISSION}
+		<if test = "L_USER_ID != null and L_USER_ID.size() > 0 and !L_USER_ID.get(0).equals('')">
+		AND    G.USER_ID IN
+	        <foreach collection="L_USER_ID" item="item"  open="(" close=")" separator=",">
+	            #{item}
+	        </foreach>
+		</if>
+		GROUP BY G.USER_ID, U.USER_NM, G.OPTION
+		ORDER BY G.USER_ID
+    </select>
+
+    <select id="selectDtl" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation10Mapper.selectDtl*/
+        SELECT G.DEPT_CD AS "DEPT_CD"
+				, D.DEPT_NM AS "DEPT_NM"
+				, G.USER_ID AS "USER_ID"
+				, D.DEPT_PARENT AS "DEPT_PARENT"
+				, D.DEPT_LEVEL  AS "DEPT_LEVEL"
+		FROM ES_DEPT_CONNECT_USER G
+		JOIN ES_DEPT D
+		ON  G.COMPANY_CD = D.COMPANY_CD
+			AND G.DEPT_CD = D.DEPT_CD
+		WHERE 1=1
+			AND G.COMPANY_CD = #{COMPANY_CD}
+			AND G.USER_ID = #{USER_ID}
+		  	AND G.PERMISSIONS = #{PERMISSION}
+		ORDER BY G.DEPT_CD
+    </select>
+
+	<select id="selectDtlChild" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation10Mapper.selectDtlChild*/
+		SELECT A.DEPT_CD	 AS "DEPT_CD"
+		      ,A.DEPT_NM	 AS "DEPT_NM"
+			  ,A.DEPT_PARENT AS "DEPT_PARENT"
+		FROM   ES_DEPT A
+		WHERE  A.COMPANY_CD  =  #{COMPANY_CD}
+		AND    A.DEPT_PARENT =  #{DEPT_PARENT}
+	</select>
+
+    <insert id="insert" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation10Mapper.insert*/
+        INSERT INTO ES_DEPT_CONNECT_USER
+		(
+ 			COMPANY_CD
+			,DEPT_CD
+			,USER_ID
+			,PERMISSIONS
+			,OPTION
+		)
+		VALUES
+		(
+ 			#{COMPANY_CD}
+			,#{DEPT_CD}
+			,#{USER_ID}
+			,#{PERMISSION}
+			,#{OPTION}
+		)
+    </insert>
+
+	<update id="update" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation10Mapper.update*/
+		UPDATE  ES_DEPT_CONNECT_USER
+		   SET  OPTION 	  = #{OPTION}
+	     WHERE  1=1
+		   AND  COMPANY_CD=   #{COMPANY_CD}
+		   AND  PERMISSIONS = #{PERMISSION}
+		   AND  USER_ID   =   #{USER_ID}
+	</update>
+
+    <delete id="delete" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation10Mapper.delete*/
+		DELETE FROM ES_DEPT_CONNECT_USER 
+		WHERE  1=1
+				AND COMPANY_CD = #{COMPANY_CD}
+				AND DEPT_CD    = #{DEPT_CD} 
+				AND USER_ID    = #{USER_ID}
+		  		AND PERMISSIONS = #{PERMISSION}
+    </delete>
+
+    <delete id="deleteUser" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation10Mapper.deleteUser*/
+  		DELETE FROM ES_DEPT_CONNECT_USER 
+		WHERE 1=1
+				AND   COMPANY_CD = #{COMPANY_CD}
+				AND   USER_ID = #{USER_ID}
+		  		AND   PERMISSIONS = #{PERMISSION}
+    </delete>
+</mapper>

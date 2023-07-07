@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ensys.qray.sys.information05.SysInformation05Mapper">
+
+    <select id="groupList" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation05Mapper.groupList*/
+		SELECT GROUP_CD AS "GROUP_CD"
+				, GROUP_NM AS "GROUP_NM"
+		FROM   ES_GROUP_M 
+		WHERE 1=1 
+				AND COMPANY_CD = #{COMPANY_CD}
+				AND	GROUP_CD   != 'WEB00'
+		ORDER BY GROUP_CD
+    </select>
+    
+    <select id="groupUserList" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation05Mapper.groupUserList*/
+		SELECT
+		      G.GROUP_CD AS "GROUP_CD"
+			 ,G.USER_ID AS "USER_ID"
+			 ,U.USER_NM AS "USER_NM"
+		FROM  ES_GROUP_D AS G
+	    JOIN  ES_USER AS U
+		ON  G.USER_ID = U.USER_ID
+		WHERE 1=1
+		AND G.COMPANY_CD = #{COMPANY_CD}
+		AND GROUP_CD     = #{GROUP_CD}
+	</select>
+
+    <insert id="groupMinsert" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation05Mapper.groupMinsert*/
+		WITH EM AS(
+                 INSERT INTO ES_GROUP_M
+                 (COMPANY_CD, 
+                  GROUP_CD, 
+                  GROUP_NM)
+                 VALUES (
+                 #{COMPANY_CD}, 
+                 #{GROUP_CD}, 
+                 #{GROUP_NM}
+                 ) 
+      	), AM AS (
+                 INSERT INTO ES_AUTH_M
+                 (COMPANY_CD,
+                  AUTH_TYPE,
+                  AUTH_CODE,
+                  AUTH_NAME)
+				 VALUES (
+				 #{COMPANY_CD},
+				 '3',
+				 #{GROUP_CD},
+				 #{GROUP_NM}
+				 )
+	 	 )
+	     SELECT * FROM ES_GROUP_M
+    </insert>
+    
+    <update id="groupMupdate" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation05Mapper.groupMupdate*/
+		WITH EM AS(
+				    UPDATE ES_GROUP_M
+					SET GROUP_NM = #{GROUP_NM}
+					WHERE  1=1
+							AND COMPANY_CD = #{COMPANY_CD}
+							AND GROUP_CD   = #{GROUP_CD}
+		), AM AS (
+					UPDATE  ES_AUTH_M
+					SET AUTH_NAME = #{GROUP_NM}
+					WHERE   1=1
+					AND COMPANY_CD = #{COMPANY_CD}
+					AND AUTH_CODE  = #{GROUP_CD}
+					AND AUTH_TYPE  = '3'
+		)
+		SELECT * FROM ES_GROUP_M
+    </update>
+
+    <delete id="groupMdelete" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation05Mapper.groupMdelete*/
+		WITH GM AS (
+					DELETE FROM ES_GROUP_M
+					WHERE  1=1
+							AND COMPANY_CD = #{COMPANY_CD}
+							AND GROUP_CD   = #{GROUP_CD}
+		), GD AS (
+					DELETE FROM ES_GROUP_D
+					WHERE  1=1
+							AND COMPANY_CD = #{COMPANY_CD}
+							AND GROUP_CD = #{GROUP_CD}
+		), AM AS (
+					DELETE FROM ES_AUTH_M
+					WHERE 1=1
+							AND COMPANY_CD = #{COMPANY_CD}
+							AND AUTH_CODE  = #{GROUP_CD}
+		), AD AS (
+					DELETE FROM ES_AUTH_D
+					WHERE 1=1
+							AND COMPANY_CD = #{COMPANY_CD}
+							AND (AUTH_CODE  = #{GROUP_CD} OR GROUP_CD = #{GROUP_CD})
+		)
+		SELECT * FROM ES_GROUP_M
+    </delete>
+ 
+    <insert id="groupDinsert" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation05Mapper.groupDinsert*/
+   		INSERT INTO ES_GROUP_D
+		( 
+  			 COMPANY_CD
+			,GROUP_CD
+			,USER_ID
+		)
+		VALUES
+		( 
+  			#{COMPANY_CD}
+			,#{GROUP_CD}
+			,#{USER_ID}
+		)
+    </insert>
+
+    <delete id="groupDdelete" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation05Mapper.groupDdelete*/
+		WITH AD AS(
+			DELETE FROM ES_AUTH_D
+		    WHERE 1=1
+			    AND GROUP_CD = #{GROUP_CD}
+				AND AUTH_CODE = #{GROUP_CD}
+				AND AUTH_TYPE = '1'
+		), ED AS(
+			DELETE FROM ES_GROUP_D AS ED
+			WHERE 1=1
+				AND COMPANY_CD = #{COMPANY_CD}
+				AND GROUP_CD = #{GROUP_CD}
+				AND USER_ID = #{USER_ID}
+		)
+		SELECT * FROM ES_AUTH_D
+    </delete>
+</mapper>

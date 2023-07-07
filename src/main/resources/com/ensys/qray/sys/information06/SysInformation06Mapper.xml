@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ensys.qray.sys.information06.SysInformation06Mapper">
+
+	<select id="selectMst" resultType="hashmap"  statementType="CALLABLE">
+		/*SysInformation06Mapper.selectMst*/
+		SELECT GROUP_CD AS "GROUP_CD"
+			,  GROUP_NM AS "GROUP_NM"
+		FROM  ES_GROUP_M
+		WHERE 1=1
+		AND COMPANY_CD = #{COMPANY_CD}
+    </select>
+
+	<select id="select" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation06Mapper.select*/
+        SELECT ED.GROUP_CD AS "GROUP_CD"
+			,  EM.GROUP_NM AS "GROUP_NM"
+			,  EU.USER_NM  AS "USER_NM"
+			,  EU.USER_ID  AS "USER_ID"
+		FROM ES_GROUP_M EM
+		JOIN ES_GROUP_D ED
+		ON  EM.GROUP_CD   = ED.GROUP_CD
+		AND EM.COMPANY_CD = ED.COMPANY_CD
+		JOIN ES_USER    EU
+		ON  ED.USER_ID    = EU.USER_ID
+		AND ED.COMPANY_CD = EU.COMPANY_CD
+		WHERE  1=1
+		AND EM.COMPANY_CD = #{COMPANY_CD}
+		AND (COALESCE(#{GROUP_CD},'') = '' OR EM.GROUP_CD = #{GROUP_CD})
+    </select>
+
+	<select id="chkAuthD" resultType="int" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation06Mapper.chkAuthD*/
+		SELECT COUNT(*) AS "COUNT" 
+		FROM ES_AUTH_D  
+		WHERE 1=1 
+		AND   COMPANY_CD = #{COMPANY_CD}
+		AND   AUTH_CODE  = #{USER_ID}
+		AND   AUTH_TYPE  = '1'
+		AND   GROUP_CD   = #{GROUP_CD}
+	</select>
+
+	<select id="selectDtl" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation06Mapper.selectDtl*/
+				 /*1) 그룹메뉴관리 데이터유무 체크*/
+				    /*1-1) 유: 2) 해당 아이디가 사용자메뉴관리에 데이터가 하나라도 있는지 체크*/
+									/*2-1) 유: 3) 해당메뉴가 데이터가 존재한다면 ( 사용여부'Y'로 체크한 경우)*/
+													/*3-1) 사용여부'Y': 'Y'*/
+													/*3-2) 사용여부'N': 'N'*/
+									/*2-2) 무: 그룹메뉴관리에는 데이터가 존재하기때문에 'Y'*/
+					  /*1-2) 무: 사용여부 N, 오픈여부 N*/
+
+		SELECT A.MENU_ID     AS "MENU_ID"
+			,  A.MENU_NM     AS "MENU_NM"
+			,  A.PARENT_ID   AS "PARENT_ID"
+			,  A.MENU_PATH   AS "MENU_PATH"
+			,  #{USER_ID}    AS "AUTH_CODE"
+			,  '1'           AS "AUTH_TYPE"
+			,  CASE WHEN COALESCE(C.MENU_ID,'') != '' THEN  CASE WHEN  (
+																		SELECT COUNT(*)
+																		FROM ES_AUTH_D AUTH
+																		WHERE AUTH.COMPANY_CD = A.COMPANY_CD
+																		AND   AUTH.AUTH_CODE  = #{USER_ID}
+																		AND   AUTH.GROUP_CD   = #{GROUP_CD}
+																		AND   AUTH.AUTH_TYPE  = '1'
+															) > 0 		  THEN CASE WHEN COALESCE(B.MENU_ID,'') = '' THEN 'N'
+																													 ELSE 'Y' END
+																		  ELSE 'Y' END
+													  ELSE 'N' END AS "USE_YN" /*사용여부*/
+			,  CASE WHEN COALESCE(C.MENU_ID,'') = ''  THEN 'N'  ELSE 'Y'  END AS "DIS_YN" /*해당 메뉴에 체크박스 오픈여부*/
+			,  #{GROUP_CD}   AS "GROUP_CD"
+		FROM ES_MENU_M A
+		LEFT JOIN ES_AUTH_D B /*사용자메뉴관리*/
+		ON  A.COMPANY_CD = B.COMPANY_CD
+		AND A.MENU_ID    = B.MENU_ID
+		AND B.AUTH_CODE  = #{USER_ID}
+		AND B.GROUP_CD   = #{GROUP_CD}
+		AND B.AUTH_TYPE  = '1'
+		LEFT JOIN  ES_AUTH_D C /*그룹메뉴관리*/
+		ON  A.COMPANY_CD = C.COMPANY_CD
+		AND A.MENU_ID    = C.MENU_ID
+		AND C.AUTH_CODE  = #{GROUP_CD}
+		AND C.GROUP_CD   = #{GROUP_CD}
+		AND C.AUTH_TYPE  = '3'
+		WHERE 1=1
+		AND A.COMPANY_CD = #{COMPANY_CD}
+		ORDER BY A.MENU_LEVEL, A.SORT
+	</select>
+
+	<insert id="authDinsert" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation06Mapper.authDinsert*/
+		<if test='USE_YN  == "Y"'>
+			INSERT INTO ES_AUTH_D
+			(
+			COMPANY_CD
+			,AUTH_TYPE
+			,AUTH_CODE
+			,PARENT_ID
+			,MENU_ID
+			,GROUP_CD
+			)VALUES
+			(
+			#{COMPANY_CD}
+			,#{AUTH_TYPE}
+			,#{AUTH_CODE}
+			,#{PARENT_ID}
+			,#{MENU_ID}
+			,#{GROUP_CD}
+			)
+		</if>
+	</insert>
+
+	<delete id="authDdelete" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation06Mapper.authDdelete*/
+        DELETE FROM ES_AUTH_D
+		WHERE  1=1
+				AND COMPANY_CD = #{COMPANY_CD}
+				AND AUTH_TYPE = #{AUTH_TYPE}
+				AND AUTH_CODE = #{AUTH_CODE}
+				AND GROUP_CD  = #{GROUP_CD}
+    </delete>
+</mapper>

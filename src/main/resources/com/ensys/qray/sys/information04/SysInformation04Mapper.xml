@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ensys.qray.sys.information04.SysInformation04Mapper">
+
+    <select id="authMselect" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation04Mapper.authMselect*/
+        SELECT    AUTH_TYPE  AS "AUTH_TYPE"
+				, AUTH_CODE  AS "AUTH_CODE"
+				, AUTH_NAME  AS "AUTH_NAME"
+		FROM   ES_AUTH_M
+		WHERE  1=1
+		AND    COMPANY_CD = #{COMPANY_CD}
+		AND    AUTH_TYPE  = #{AUTH_TYPE}
+		ORDER BY 1,2,3
+    </select>
+    
+    <select id="authDselect" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation04Mapper.authDselect*/
+	    SELECT CASE WHEN B.MENU_ID IS NULL OR B.MENU_ID = '' THEN 'N' 
+					ELSE 'Y' 
+			   END           AS "USE_YN"
+		     , A.COMPANY_CD  AS "COMPANY_CD"
+		     , A.MENU_ID     AS "MENU_ID"
+		     , A.MENU_NM     AS "MENU_NM"
+		     , A.MENU_LEVEL  AS "MENU_LEVEL"
+		     , A.PARENT_ID   AS "PARENT_ID"
+		     , A.MENU_PATH   AS "MENU_PATH"
+		     , A.SORT        AS "SORT"
+		     , #{AUTH_CODE}  AS "AUTH_CODE"
+			 , #{AUTH_TYPE}  AS "AUTH_TYPE"
+		FROM ES_MENU_M  A
+		LEFT JOIN ES_AUTH_D B
+		ON  A.COMPANY_CD = B.COMPANY_CD
+		AND A.MENU_ID    = B.MENU_ID
+		AND   B.AUTH_CODE  = #{AUTH_CODE}
+		AND   B.AUTH_TYPE  = #{AUTH_TYPE}
+		WHERE A.COMPANY_CD = #{COMPANY_CD}
+		ORDER BY MENU_LEVEL, SORT
+    </select>
+
+    <insert id="authDinsert" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation04Mapper.authDinsert*/
+        INSERT INTO ES_AUTH_D
+		(
+			 COMPANY_CD
+			,AUTH_TYPE
+			,AUTH_CODE
+			,PARENT_ID
+			,MENU_ID
+			,GROUP_CD
+		)
+		VALUES
+		(
+			#{COMPANY_CD}
+			,#{AUTH_TYPE}
+			,#{AUTH_CODE}
+			,#{PARENT_ID}
+			,#{MENU_ID}
+			,#{AUTH_CODE}   
+		)
+    </insert>
+
+    <delete id="authDdelete" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation04Mapper.authDdelete*/
+        DELETE FROM ES_AUTH_D
+		WHERE  1=1
+		AND COMPANY_CD = #{COMPANY_CD}
+		AND AUTH_TYPE  = #{AUTH_TYPE}
+		AND AUTH_CODE  = #{AUTH_CODE}
+    </delete>
+	
+	<delete id="authMdelete" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation04Mapper.authMdelete*/
+		WITH EM AS {
+			DELETE FROM ES_AUTH_M
+			WHERE  1=1
+			AND AUTH_TYPE = #{AUTH_TYPE}
+			AND AUTH_CODE = #{AUTH_CODE}
+		}, 
+		ED AS {
+			DELETE FROM ES_AUTH_D
+			WHERE  1=1
+			AND AUTH_TYPE  = #{AUTH_TYPE}
+			AND AUTH_CODE  = #{AUTH_CODE}
+		}
+		SELECT * FROM ES_AUTH_M
+    </delete>
+	
+	 <insert id="authMinsert" parameterType="hashmap" statementType="CALLABLE">
+		 /*SysInformation04Mapper.authMinsert*/
+		 INSERT INTO  CZ_Q_AUTH_M
+		(
+		 COMPANY_CD
+		,AUTH_TYPE
+		,AUTH_CODE
+		,AUTH_NAME
+		)
+		VALUES
+		(
+		 #{COMPANY_CD}
+		,#{AUTH_TYPE}
+		,#{AUTH_CODE}
+		,#{AUTH_NAME}
+		)
+    </insert>
+</mapper>

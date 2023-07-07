@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ensys.qray.sys.information01.SysInformation01Mapper">
+
+	<select id="search" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation01Mapper.search*/
+    	SELECT 	  A.COMPANY_CD 	AS "COMPANY_CD"
+				, A.COMPANY_NM 	AS "COMPANY_NM"
+				, A.COMPANY_EN 	AS "COMPANY_EN"
+				, A.COMPANY_NO	AS "COMPANY_NO"
+				, A.CEO_NM     	AS "CEO_NM"
+				, A.TEL_NO		AS "TEL_NO"
+				, A.POST_NO		AS "POST_NO"
+				, A.ADS_H		AS "ADS_H"
+				, A.ADS_D		AS "ADS_D"
+				, A.COMPANY_TP  AS "COMPANY_TP"
+				, A.JOB_CLS		AS "JOB_CLS"
+				, A.JOB_TP		AS "JOB_TP"
+				, A.INSERT_ID	AS "INSERT_ID"
+				, A.INSERT_DTS	AS "INSERT_DTS"
+				, A.UPDATE_ID	AS "UPDATE_ID"
+				, A.UPDATE_DTS	AS "UPDATE_DTS"
+				, A.SIGNPRI_KEY AS "SIGNPRI_KEY"
+				, A.SIGNCERT_DER AS "SIGNCERT_DER"
+				/*, CONVERT_FROM(DECRYPT(DECODE(A.SIGNPRI_PWD,'HEX'),'ENC_KEY','AES'),'UTF8') AS "SIGNPRI_PWD"*/
+				, A.SIGNPRI_PWD AS "SIGNPRI_PWD"
+		FROM ES_COMPANY A
+		LEFT JOIN ES_SIGN B
+		ON A.COMPANY_CD = B.COMPANY_CD
+		WHERE A.COMPANY_CD = #{COMPANY_CD}
+		AND A.COMPANY_NM LIKE '%'|| #{COMPANY_NM} ||'%'
+    </select>
+
+	<select id="searchDeposit" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation01Mapper.searchDeposit*/
+    	SELECT 	  A.COMPANY_CD	AS "COMPANY_CD"
+				, A.DEPOSIT_NO	AS "DEPOSIT_NO"
+				, A.DEPOSIT_NM	AS "DEPOSIT_NM"
+				, A.BANK_CD		AS "BANK_CD"
+				, A.BANK_NM		AS "BANK_NM"
+				, A.USE_YN		AS "USE_YN"
+				, A.MAIN_YN		AS "MAIN_YN"
+				, A.INSERT_ID	AS "INSERT_ID"
+				, A.INSERT_DTS	AS "INSERT_DTS"
+				, A.UPDATE_ID	AS "UPDATE_ID"
+				, A.UPDATE_DTS	AS "UPDATE_DTS"
+		FROM ES_COMPANY_DEPOSIT A
+		WHERE A.COMPANY_CD = #{COMPANY_CD}
+    </select>
+
+	<select id="searchLicense" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation01Mapper.searchLicense*/
+    	SELECT COMPANY_CD   AS "COMPANY_CD"
+    	     , MENU_ID      AS "MENU_ID"
+    	     , MENU_NM      AS "MENU_NM"
+    	     , MENU_LEVEL   AS "MENU_LEVEL"
+    	     , PARENT_ID    AS "PARENT_ID"
+    	     , MENU_PATH    AS "MENU_PATH"
+    	     , USE_YN       AS "USE_YN"
+    	     , SORT         AS "SORT"
+    	FROM ES_MENU_M
+    	WHERE COMPANY_CD = #{COMPANY_CD}
+    	ORDER BY MENU_LEVEL, SORT
+    </select>
+
+	<select id="registerKey" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation01Mapper.registerKey*/
+    	SELECT MENU_ID      AS "MENU_ID"
+    	     , MENU_NM      AS "MENU_NM"
+    	     , MENU_LEVEL   AS "MENU_LEVEL"
+    	     , PARENT_ID    AS "PARENT_ID"
+    	     , MENU_PATH    AS "MENU_PATH"
+    	     , USE_YN       AS "USE_YN"
+    	     , SORT         AS "SORT"
+    	FROM ES_LICENSE_MENU
+    	WHERE LICENSE_KEY = #{LICENSE_KEY}
+    	AND   USE_YN      = 'Y'
+    	ORDER BY MENU_LEVEL, SORT
+    </select>
+
+	<delete id="deleteMenuM" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation01Mapper.deleteMenuM*/
+    	DELETE FROM ES_MENU_M
+    	WHERE COMPANY_CD = #{COMPANY_CD}
+    </delete>
+
+	<insert id="insertMenuM" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation01Mapper.insertMenuM*/
+    	INSERT INTO ES_MENU_M
+    	(
+    	  COMPANY_CD
+    	, MENU_ID   
+    	, MENU_NM   
+    	, MENU_LEVEL
+    	, PARENT_ID 
+    	, MENU_PATH 
+    	, USE_YN    
+    	, SORT    
+    	, INSERT_ID
+    	, INSERT_DTS
+    	, UPDATE_ID
+    	, UPDATE_DTS  
+    	)
+    	VALUES
+    	(
+    	  #{COMPANY_CD}
+    	, #{MENU_ID}
+    	, #{MENU_NM}
+    	, #{MENU_LEVEL}
+    	, #{PARENT_ID}
+    	, #{MENU_PATH}
+    	, #{USE_YN}
+    	, #{SORT}
+    	, #{USER_ID}
+    	, #{INSERT_DTS}
+    	, #{USER_ID}
+    	, #{UPDATE_DTS}
+    	)
+    </insert>
+
+	<insert id="insert" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation01Mapper.insert*/
+    	INSERT INTO ES_COMPANY
+    	(
+	    	COMPANY_CD,
+			COMPANY_NM,
+			COMPANY_EN,
+			COMPANY_NO,
+			CEO_NM,
+			TEL_NO,
+			POST_NO,
+			ADS_H,
+			ADS_D,
+			COMPANY_TP,
+			JOB_CLS,
+			JOB_TP,
+			INSERT_ID,
+			INSERT_DTS,
+			UPDATE_ID,
+			UPDATE_DTS,
+			SIGNPRI_KEY,
+			SIGNCERT_DER,
+			SIGNPRI_PWD
+    	)
+    	VALUES
+    	(
+    		#{COMPANY_CD},
+			#{COMPANY_NM},
+			#{COMPANY_EN},
+			#{COMPANY_NO},
+			#{CEO_NM},
+			#{TEL_NO},
+			#{POST_NO},
+			#{ADS_H},
+			#{ADS_D},
+			#{COMPANY_TP},
+			#{JOB_CLS},
+			#{JOB_TP},
+			#{USER_ID},
+			#{INSERT_DTS},
+			#{USER_ID},
+			#{UPDATE_DTS},
+			#{SIGNPRI_KEY},
+			#{SIGNCERT_DER},
+			ENCODE(ENCRYPT(CONVERT_TO(#{SIGNPRI_PWD},'UTF8'),'ENC_KEY','AES'),'HEX')
+    	)
+    </insert>
+
+	<update id="update" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation01Mapper.update*/
+    	UPDATE ES_COMPANY
+    	SET COMPANY_NM 	= #{COMPANY_NM},
+			COMPANY_EN 	= #{COMPANY_EN},
+			COMPANY_NO 	= #{COMPANY_NO},
+			CEO_NM 		= #{CEO_NM},
+			TEL_NO 		= #{TEL_NO},
+			POST_NO 	= #{POST_NO},
+			ADS_H 		= #{ADS_H},
+			ADS_D 		= #{ADS_D},
+			COMPANY_TP  = #{COMPANY_TP},
+			JOB_CLS 	= #{JOB_CLS},
+			JOB_TP 		= #{JOB_TP},
+			UPDATE_ID 	= #{USER_ID},
+			UPDATE_DTS 	= #{UPDATE_DTS},
+			SIGNPRI_KEY = #{SIGNPRI_KEY},
+			SIGNCERT_DER = #{SIGNCERT_DER},
+			SIGNPRI_PWD = ENCODE(ENCRYPT(CONVERT_TO(#{SIGNPRI_PWD},'UTF8'),'ENC_KEY','AES'),'HEX')
+		WHERE COMPANY_CD = #{COMPANY_CD}
+    </update>
+
+	<delete id="delete" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation01Mapper.delete*/
+    	DELETE FROM ES_COMPANY
+    	WHERE COMPANY_CD = #{COMPANY_CD}
+    </delete>
+
+	<insert id="insertDeposit" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation01Mapper.insertDeposit*/
+    	INSERT INTO ES_COMPANY_DEPOSIT
+    	(
+	    	COMPANY_CD,
+			DEPOSIT_NO,
+			DEPOSIT_NM,
+			BANK_CD,
+			BANK_NM,   
+			USE_YN,  
+			MAIN_YN,   
+			INSERT_ID, 
+			INSERT_DTS,
+			UPDATE_ID,
+			UPDATE_DTS
+    	)
+    	VALUES
+    	(
+    		#{COMPANY_CD},
+			#{DEPOSIT_NO},
+			#{DEPOSIT_NM},
+			#{BANK_CD},
+			#{BANK_NM},
+			#{USE_YN},
+			#{MAIN_YN},
+			#{USER_ID},
+			#{INSERT_DTS},
+			#{USER_ID},
+			#{UPDATE_DTS}
+    	)
+    </insert>
+
+	<update id="updateDeposit" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation01Mapper.updateDeposit*/
+    	UPDATE ES_COMPANY_DEPOSIT
+    	SET DEPOSIT_NM  = #{DEPOSIT_NM},
+			BANK_CD		= #{BANK_CD},
+			BANK_NM		= #{BANK_NM},
+			USE_YN		= #{USE_YN},
+			MAIN_YN		= #{MAIN_YN},
+			UPDATE_ID 	= #{USER_ID},
+			UPDATE_DTS 	= #{UPDATE_DTS}
+		WHERE COMPANY_CD = #{COMPANY_CD}
+		AND   DEPOSIT_NO = #{DEPOSIT_NO}
+    </update>
+
+	<delete id="deleteDepositAll" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation01Mapper.deleteDepositAll*/
+		DELETE FROM ES_COMPANY_DEPOSIT
+		WHERE COMPANY_CD = #{COMPANY_CD}
+	</delete>
+
+	<delete id="deleteDeposit" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation01Mapper.deleteDeposit*/
+    	DELETE FROM ES_COMPANY_DEPOSIT
+		WHERE COMPANY_CD = #{COMPANY_CD}
+		AND   DEPOSIT_NO = #{DEPOSIT_NO}
+    </delete>
+
+	<insert id="signInsert" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation01Mapper.signInsert*/
+    	INSERT INTO ES_SIGN VALUES(#{COMPANY_CD} , #{SIGN_BYTE} , ENCODE(ENCRYPT(CONVERT_TO(#{SIGNPRI_PWD},'UTF8'),'ENC_KEY','AES'),'HEX') ,#{FILE_EXT})
+    </insert>
+
+	<delete id="signDelete" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation01Mapper.signDelete*/
+    	DELETE FROM ES_SIGN
+		WHERE COMPANY_CD = #{COMPANY_CD}
+		AND   FILE_EXT = #{FILE_EXT}
+    </delete>
+</mapper>

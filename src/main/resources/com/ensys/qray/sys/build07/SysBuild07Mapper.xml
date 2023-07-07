@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ensys.qray.sys.build07.SysBuild07Mapper">
+
+    <!--로그인필터에서 호출-->
+    <select id="selectEsCodeDtl" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+        /*SysBuild07Mapper.selectEsCodeDtl*/
+        SELECT
+               SYSDEF_CD AS "SYSDEF_CD"
+        FROM   ES_CODEDTL
+        WHERE  COMPANY_CD = #{COMPANY_CD}
+        AND    FIELD_CD   = #{FIELD_CD}
+        AND    FLAG1_CD   = 'default'
+    </select>
+
+    <select id="selectEsSystem" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+        /*SysBuild07Mapper.selectEsSystem*/
+        SELECT SYSDEF_CD AS "SYSDEF_CD"
+        FROM   ES_SYSTEM
+        WHERE  COMPANY_CD = #{COMPANY_CD}
+        AND    FIELD_CD   = #{FIELD_CD}
+    </select>
+
+    <!--초기환경설정화면에서 호출-->
+    <!--회사 정보 조회-->
+    <select id="companyList" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+        /*SysBuild07Mapper.companyList*/
+        SELECT
+              COMPANY_CD	AS "COMPANY_CD"
+            , COMPANY_NM	AS "COMPANY_NM"
+            , COMPANY_EN	AS "COMPANY_EN"
+            , COMPANY_NO	AS "COMPANY_NO"
+            , CEO_NM		AS "CEO_NM"
+            , TEL_NO		AS "TEL_NO"
+            , ADS_H			AS "ADS_H"
+            , ADS_D			AS "ADS_D"
+            , JOB_CLS		AS "JOB_CLS"
+            , JOB_TP		AS "JOB_TP"
+        FROM ES_COMPANY
+        ORDER BY INSERT_DTS DESC, COMPANY_CD
+    </select>
+
+    <!--공통코드 리스트 조회-->
+    <select id="commonCodeList" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+        /*SysBuild07Mapper.commonCodeList*/
+        SELECT
+              FIELD_CD		AS "FIELD_CD"
+            , FIELD_NM		AS "FIELD_NM"
+            , SYSCODE_FG1	AS "SYSCODE_FG1"
+        FROM ES_CODE
+        WHERE COMPANY_CD = 'MASTER'
+          AND FIELD_CD LIKE 'ES_Q' || '%'
+        ORDER BY FIELD_CD
+    </select>
+
+    <!--자동채번 리스트 조회-->
+    <select id="autoNumberList" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+        /*SysBuild07Mapper.autoNumberList*/
+        SELECT
+              C.SYSDEF_CD	AS "SYSDEF_CD"
+            , C.SYSDEF_NM	AS "SYSDEF_NM"
+            , D.CLASS_CD	AS "CLASS_CD"
+            , D.CLASS_NM	AS "CLASS_NM"
+            , D.CTRL_CD		AS "CTRL_CD"
+            , D.CLASS_LEN	AS "CLASS_LEN"
+        FROM ES_DOCUCTRL D
+        LEFT JOIN ES_CODEDTL C
+            ON D.COMPANY_CD = C.COMPANY_CD
+            AND D.MODULE_CD = C.SYSDEF_CD
+        WHERE D.COMPANY_CD = 'MASTER'
+        AND C.FIELD_CD = 'ES_Q0004'
+        ORDER BY SYSDEF_CD
+    </select>
+
+    <!--공통코드 및 공통코드 상세정보 등록-->
+    <insert id="commonCodeInsert" parameterType="hashmap" statementType="CALLABLE">
+        /*SysBuild07Mapper.commonCodeInsert*/
+        WITH CODE_M AS (
+            INSERT INTO ES_CODE(
+                  FIELD_CD
+                , COMPANY_CD
+                , FIELD_NM
+                , SYSCODE_FG1
+                , INSERT_ID
+                , INSERT_DTS
+                , FIELD_E_NM
+                , FIELD_CH_NM
+                , FIELD_JP_NM
+                , REMARK
+                , CONTROL_YN
+                , FIELD_L1_NM
+                , FIELD_L2_NM
+                , FIELD_L3_NM
+                , FIELD_L4_NM
+                , FIELD_L5_NM
+            )
+            SELECT
+                  FIELD_CD
+                , #{COMPANY_CD}
+                , FIELD_NM
+                , SYSCODE_FG1
+                , #{INSERT_ID}
+                , #{INSERT_DTS}
+                , FIELD_E_NM
+                , FIELD_CH_NM
+                , FIELD_JP_NM
+                , REMARK
+                , CONTROL_YN
+                , FIELD_L1_NM
+                , FIELD_L2_NM
+                , FIELD_L3_NM
+                , FIELD_L4_NM
+                , FIELD_L5_NM
+            FROM ES_CODE
+            WHERE 1=1
+            AND COMPANY_CD = 'MASTER'
+            <if test = "!L_COMMON_CODE.get(0).equals('') and L_COMMON_CODE.size() > 0">
+                AND FIELD_CD IN (
+                <foreach collection="L_COMMON_CODE" item="item" separator=",">
+                    #{item.FIELD_CD}
+                </foreach>
+                )
+            </if>
+        ),
+        CODE_D AS (
+            INSERT INTO ES_CODEDTL(
+                  FIELD_CD
+                , SYSDEF_CD
+                , COMPANY_CD
+                , SYSCODE_FG1
+                , USRDEF_CD
+                , USRDEF_NM
+                , SYSDEF_NM
+                , USE_YN
+                , FLAG1_CD
+                , FLAG2_CD
+                , FLAG3_CD
+                , SYSDEF_E_NM
+                , INSERT_ID
+                , INSERT_DTS
+                , SYSDEF_CH_NM
+                , SYSDEF_JP_NM
+                , REMARK
+                , SYSDEF_L4_NM
+                , SYSDEF_L5_NM
+                , ORDER_NO
+                , USERDEF_L1_NM
+                , USERDEF_L2_NM
+                , FLAG4_CD
+            )
+            SELECT
+                  FIELD_CD
+                , SYSDEF_CD
+                , #{COMPANY_CD}
+                , SYSCODE_FG1
+                , USRDEF_CD
+                , USRDEF_NM
+                , SYSDEF_NM
+                , USE_YN
+                , FLAG1_CD
+                , FLAG2_CD
+                , FLAG3_CD
+                , SYSDEF_E_NM
+                , #{INSERT_ID}
+                , #{INSERT_DTS}
+                , SYSDEF_CH_NM
+                , SYSDEF_JP_NM
+                , REMARK
+                , SYSDEF_L4_NM
+                , SYSDEF_L5_NM
+                , ORDER_NO
+                , USERDEF_L1_NM
+                , USERDEF_L2_NM
+                , FLAG4_CD
+            FROM ES_CODEDTL
+            WHERE 1=1
+            AND COMPANY_CD = 'MASTER'
+            <if test = "!L_COMMON_CODE.get(0).equals('') and L_COMMON_CODE.size() > 0">
+                AND FIELD_CD IN (
+                <foreach collection="L_COMMON_CODE" item="item" separator=",">
+                    #{item.FIELD_CD}
+                </foreach>
+                )
+            </if>
+        )
+        SELECT 'INSERT'
+    </insert>
+
+    <!--자동채번 정보 등록-->
+    <insert id="autoNumberInsert" parameterType="hashmap" statementType="CALLABLE">
+        /*SysBuild07Mapper.autoNumberInsert*/
+        INSERT INTO ES_DOCUCTRL(
+              COMPANY_CD
+            , MODULE_CD
+            , CLASS_CD
+            , CLASS_NM
+            , CTRL_CD
+            , CLASS_LEN
+            , INSERT_ID
+            , INSERT_DTS
+        )
+        SELECT
+              #{COMPANY_CD}
+            , MODULE_CD
+            , CLASS_CD
+            , CLASS_NM
+            , CTRL_CD
+            , CLASS_LEN
+            , #{INSERT_ID}
+            , #{INSERT_DTS}
+        FROM ES_DOCUCTRL
+        WHERE 1=1
+        AND COMPANY_CD = 'MASTER'
+        <if test = "!L_AUTO_CODE.get(0).equals('') and L_AUTO_CODE.size() > 0">
+            AND (
+            <foreach collection="L_AUTO_CODE" item="item" separator="OR">
+                (MODULE_CD = #{item.SYSDEF_CD} AND CLASS_CD = #{item.CLASS_CD})
+            </foreach>
+            )
+        </if>
+    </insert>
+
+    <!--고객사 정보 등록-->
+    <insert id="partnerInsert" parameterType="hashmap" statementType="CALLABLE">
+        /*SysBuild07Mapper.partnerInsert*/
+        INSERT INTO ES_CUSTOMER_M(
+              CUSTOMER_CD
+            , CUSTOMER_NM
+            , INSERT_ID
+            , INSERT_DTS
+        )
+        VALUES(
+              #{CUSTOMER_CD}
+            , #{CUSTOMER_NM}
+            , #{INSERT_ID}
+            , #{INSERT_DTS}
+        )
+    </insert>
+
+    <!--회사정보의 회사코드 또는 사업자번호 유효성 체크-->
+    <select id="chkDual" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+        /*SysBuild07Mapper.chkDual*/
+        SELECT
+            COUNT(*) AS "COUNT"
+        FROM ES_COMPANY
+        WHERE 1=1
+        <if test = "COMPANY_CD != null and COMPANY_CD != ''">
+            AND    COMPANY_CD = #{COMPANY_CD}
+        </if>
+        <if test = "COMPANY_NO != null and COMPANY_NO != ''">
+            AND    COMPANY_NO = #{COMPANY_NO}
+        </if>
+    </select>
+</mapper>

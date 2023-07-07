@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ensys.qray.sys.information09.SysInformation09Mapper">
+
+	<insert id="update4" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation09Mapper.update4*/
+		UPDATE ES_CODEDTL SET FLAG2_CD = #{FLAG2_CD}
+		WHERE COMPANY_CD = '1000'
+		AND SYSDEF_CD = '01'
+		AND FIELD_CD = 'ES_Q0116';
+	</insert>
+
+    <select id="select1" resultType="HashMap" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation09Mapper.select1*/
+		SELECT	DISTINCT
+				MAX(CASE SYS.FIELD_CD WHEN 'ES_Q0107' THEN SYS.SYSDEF_CD	ELSE	NULL	END)	AS	"ES_Q0107"	/*비밀번호 변경주기*/
+			,	MAX(CASE SYS.FIELD_CD WHEN 'ES_Q0108' THEN SYS.SYSDEF_CD	ELSE	NULL	END)	AS	"ES_Q0108"	/*접근제어 여부*/
+			,	MAX(CASE SYS.FIELD_CD WHEN 'ES_Q0109' THEN SYS.SYSDEF_CD	ELSE	NULL	END)	AS	"ES_Q0109"	/*로그인 유지 시간*/
+			,	MAX(CASE SYS.FIELD_CD WHEN 'ES_Q0110' THEN SYS.SYSDEF_CD	ELSE	NULL	END)	AS	"ES_Q0110"	/*통일 비밀번호 가능여부*/
+			,	MAX(CASE SYS.FIELD_CD WHEN 'ES_Q0111' THEN SYS.SYSDEF_CD	ELSE	NULL	END)	AS	"ES_Q0111"	/*비밀번호 변경 필수여부*/
+			,	MAX(CASE SYS.FIELD_CD WHEN 'ES_Q0133' THEN SYS.SYSDEF_CD	ELSE	NULL	END)	AS	"ES_Q0133"	/*하위부서 조회여부*/
+			,	MAX(CASE SYS.FIELD_CD WHEN 'ES_Q0133' THEN SYS.SYSDEF_CD	ELSE	NULL	END)	AS	"ES_Q0133"	/*하위계층조회여부*/
+		FROM	ES_SYSTEM	SYS
+		WHERE	SYS.COMPANY_CD	=	#{COMPANY_CD}
+    </select>
+    
+    <select id="codeDtl" resultType="HashMap" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation09Mapper.codeDtl*/
+		WITH	DT1	AS
+		(
+			SELECT	COUNT(1)  CNT
+			FROM	ES_SYSTEM
+			WHERE	COMPANY_CD	=	#{COMPANY_CD}
+		)
+		INSERT	INTO	ES_SYSTEM
+		(
+			COMPANY_CD
+		,	FIELD_CD
+		,	SYSDEF_CD
+		,	INSERT_ID
+		,	INSERT_DTS
+		)
+		SELECT	#{COMPANY_CD}
+			,	FIELD_CD
+			,	SYSDEF_CD
+			,	#{INSERT_ID}
+			,	#{INSERT_DTS}
+		FROM	ES_CODEDTL
+		WHERE	FIELD_CD IN (
+							'ES_Q0107'
+							,'ES_Q0108'
+							,'ES_Q0109'
+							,'ES_Q0110'
+							,'ES_Q0111'
+		                  	,'ES_Q0133'
+							)
+		AND		FLAG1_CD	=	'default'
+		AND		0 = (SELECT CNT FROM DT1)
+    </select>
+    
+    <insert id="insert1" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation09Mapper.insert1*/
+    	WITH	UPSERT 	AS
+		(
+			UPDATE	ES_SYSTEM
+			SET		SYSDEF_CD	=	#{SYSDEF_CD}
+				,	UPDATE_ID	=	#{UPDATE_ID}
+				,	UPDATE_DTS	=	#{UPDATE_DTS}
+			WHERE	COMPANY_CD	=	#{COMPANY_CD}
+			AND		FIELD_CD	=	#{FIELD_CD}	RETURNING *
+		)
+		INSERT	INTO	ES_SYSTEM
+		(
+			COMPANY_CD
+		,	FIELD_CD
+		,	SYSDEF_CD
+		,	INSERT_ID
+		,	INSERT_DTS
+		)
+		SELECT	#{COMPANY_CD}
+			,	#{FIELD_CD}
+			,	#{SYSDEF_CD}
+			,	#{INSERT_ID}
+			,	#{INSERT_DTS}
+		WHERE	NOT EXISTS	( SELECT SYSDEF_CD FROM UPSERT )
+    </insert>
+    
+    <select id="select2" resultType="com.ensys.qray.utils.UpperMap" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation09Mapper.select2*/
+		SELECT	A.COMPANY_CD
+			,	A.BIZAREA_CD
+			,	B.BIZAREA_NM
+			,	B.BIZAREA_NO
+			,	A.KEY_FILE_BYTE
+			,	A.DER_FILE_BYTE
+			,	A.FILE_PWD
+		FROM	ES_SIGN	A
+		JOIN	ES_BIZAREA B
+		ON  A.COMPANY_CD = B.COMPANY_CD
+		AND A.BIZAREA_CD = B.BIZAREA_CD
+		WHERE	A.COMPANY_CD	=	#{COMPANY_CD}
+    </select>
+    
+    <insert id="insert2" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation09Mapper.insert2*/
+		INSERT	INTO	ES_SIGN
+		(
+			COMPANY_CD
+		,	BIZAREA_CD
+		,	KEY_FILE_BYTE
+		,	DER_FILE_BYTE
+		,	FILE_PWD
+		)
+		VALUES
+		(
+			#{COMPANY_CD}
+		,	#{BIZAREA_CD}
+		,	#{KEY_FILE_BYTE}
+		,	#{DER_FILE_BYTE}
+		,	ENCODE(ENCRYPT(CONVERT_TO(#{FILE_PWD},'UTF8'),'ENC_KEY','AES'),'HEX')
+		)
+    </insert>
+    
+    <insert id="update2" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation09Mapper.update2*/
+    	UPDATE	ES_SIGN
+		SET		FILE_PWD	    =	ENCODE(ENCRYPT(CONVERT_TO(#{FILE_PWD},'UTF8'),'ENC_KEY','AES'),'HEX')
+		WHERE	COMPANY_CD		=	#{COMPANY_CD}
+		AND		BIZAREA_CD		=	#{BIZAREA_CD}
+    </insert>
+    
+    <insert id="delete2" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation09Mapper.delete2*/
+    	DELETE	FROM	ES_SIGN
+		WHERE	COMPANY_CD	=	#{COMPANY_CD}
+		AND		BIZAREA_CD	=	#{BIZAREA_CD}
+    </insert>
+</mapper>

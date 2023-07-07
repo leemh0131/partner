@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ensys.qray.sys.information02.SysInformation02Mapper">
+
+    <select id="select" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation02Mapper.select*/
+    	SELECT A.FIELD_CD    AS "FIELD_CD"
+    	     , A.FIELD_NM    AS "FIELD_NM"
+    	     , A.SYSCODE_FG1 AS "SYSCODE_FG1"
+    	     , A.INSERT_ID   AS "INSERT_ID"
+    	     , A.INSERT_DTS  AS "INSERT_DTS"
+    	     , A.UPDATE_ID   AS "UPDATE_ID"
+    	     , A.UPDATE_DTS  AS "UPDATE_DTS"
+    	     , B.USER_NM     AS "INSERT_NM"
+    	     , C.USER_NM     AS "UPDATE_NM"
+    	FROM ES_CODE A
+    	LEFT JOIN ES_USER B
+    	ON  A.COMPANY_CD = B.COMPANY_CD
+    	AND A.INSERT_ID  = B.USER_ID
+    	LEFT JOIN ES_USER C
+    	ON  A.COMPANY_CD = C.COMPANY_CD
+    	AND A.UPDATE_ID  = C.USER_ID
+    	WHERE A.COMPANY_CD = #{COMPANY_CD}
+    	AND   A.FIELD_CD LIKE 'ES_Q' || '%'
+    	AND   (    A.FIELD_NM LIKE '%' || #{KEYWORD} || '%'
+    	        OR A.FIELD_CD LIKE '%' || #{KEYWORD} || '%'
+    	        OR #{KEYWORD} IS NULL 
+    	        OR #{KEYWORD} = ''
+    	      )
+    	ORDER BY A.FIELD_CD
+    </select>
+    
+    <select id="selectDtl" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation02Mapper.selectDtl*/
+    	SELECT A.FIELD_CD    AS "FIELD_CD"
+    	     , A.SYSDEF_CD   AS "SYSDEF_CD"
+    	     , A.SYSDEF_NM   AS "SYSDEF_NM"
+    	     , A.SYSCODE_FG1 AS "SYSCODE_FG1"
+    	     , A.USE_YN      AS "USE_YN"
+    	     , A.FLAG1_CD    AS "FLAG1_CD"
+    	     , A.FLAG2_CD    AS "FLAG2_CD"
+    	     , A.FLAG3_CD    AS "FLAG3_CD"
+    	     , A.FLAG4_CD    AS "FLAG4_CD"
+    	     , A.SYSDEF_E_NM AS "SYSDEF_E_NM"
+    	FROM ES_CODEDTL A
+    	WHERE A.COMPANY_CD = #{COMPANY_CD}
+    	AND   A.FIELD_CD   = #{FIELD_CD}
+    	ORDER BY A.SYSDEF_CD
+    </select>
+    
+    <select id="getFieldCd"  parameterType="hashmap" resultType="string" statementType="CALLABLE">
+		/*SysInformation02Mapper.getFieldCd*/
+		SELECT CONCAT('ES_Q', LPAD( (SUBSTRING(MAX(FIELD_CD), 5, 5)::INT+1)::VARCHAR(15),  4, '0'))
+		FROM ES_CODE WHERE COMPANY_CD = #{COMPANY_CD}
+	    AND FIELD_CD LIKE '%ES_Q%'
+    </select>
+    
+    <update id="insert" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation02Mapper.insert*/
+    	INSERT INTO ES_CODE
+    	(
+    	   COMPANY_CD
+    	 , FIELD_CD
+    	 , FIELD_NM
+    	 , SYSCODE_FG1
+    	 , INSERT_ID
+    	 , INSERT_DTS
+    	 , UPDATE_ID
+    	 , UPDATE_DTS
+    	)
+    	VALUES
+    	(
+    	   #{COMPANY_CD}
+    	 , #{FIELD_CD}
+    	 , #{FIELD_NM}
+    	 , #{SYSCODE_FG1}
+    	 , #{INSERT_ID}
+    	 , #{INSERT_DTS}
+    	 , #{UPDATE_ID}
+    	 , #{UPDATE_DTS}
+    	)
+    </update>
+    
+    <update id="update" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation02Mapper.update*/
+    	UPDATE ES_CODE
+    	SET FIELD_NM    = #{FIELD_NM}
+    	 ,  SYSCODE_FG1 = #{SYSCODE_FG1}
+    	 ,  UPDATE_ID   = #{UPDATE_ID}
+    	 ,  UPDATE_DTS   = #{UPDATE_DTS}
+    	WHERE COMPANY_CD = #{COMPANY_CD}
+    	AND   FIELD_CD   = #{FIELD_CD}
+    </update>
+    
+    <update id="delete" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation02Mapper.delete*/
+    	WITH ES_CODEDTL_D AS
+    	(
+	    	DELETE FROM ES_CODEDTL
+	    	WHERE COMPANY_CD = #{COMPANY_CD}
+	    	AND   FIELD_CD   = #{FIELD_CD}
+    	),
+    	ES_CODE_D AS
+    	(
+	    	DELETE FROM ES_CODE
+	    	WHERE COMPANY_CD = #{COMPANY_CD}
+	    	AND   FIELD_CD   = #{FIELD_CD}
+    	)
+    	SELECT 'DELETE'
+    </update>
+    
+    <update id="insertDtl" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation02Mapper.insertDtl*/
+    	INSERT INTO ES_CODEDTL
+    	(
+    	   COMPANY_CD
+    	 , FIELD_CD
+    	 , SYSDEF_CD
+    	 , SYSDEF_NM
+    	 , FLAG1_CD
+    	 , FLAG2_CD
+    	 , FLAG3_CD
+    	 , FLAG4_CD
+    	 , USE_YN
+    	 , SYSCODE_FG1
+    	 , SYSDEF_E_NM
+    	 , INSERT_ID
+    	 , INSERT_DTS
+    	 , UPDATE_ID
+    	 , UPDATE_DTS
+    	)
+    	VALUES
+    	(
+    	   #{COMPANY_CD}
+    	 , #{FIELD_CD}
+    	 , #{SYSDEF_CD}
+    	 , #{SYSDEF_NM}
+    	 , #{FLAG1_CD}
+    	 , #{FLAG2_CD}
+    	 , #{FLAG3_CD}
+    	 , #{FLAG4_CD}
+    	 , #{USE_YN}
+    	 , #{SYSCODE_FG1}
+    	 , #{SYSDEF_E_NM}
+    	 , #{INSERT_ID}
+    	 , #{INSERT_DTS}
+    	 , #{UPDATE_ID}
+    	 , #{UPDATE_DTS}
+    	)
+    </update>
+    
+    <update id="updateDtl" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation02Mapper.updateDtl*/
+    	UPDATE ES_CODEDTL
+    	SET SYSDEF_NM    = #{SYSDEF_NM}
+    	 ,  USE_YN       = #{USE_YN}
+    	 ,  SYSCODE_FG1  = #{SYSCODE_FG1}
+    	 ,  FLAG1_CD     = #{FLAG1_CD}
+    	 ,  FLAG2_CD     = #{FLAG2_CD}
+    	 ,  FLAG3_CD     = #{FLAG3_CD}
+    	 ,  FLAG4_CD     = #{FLAG4_CD}
+    	 ,  SYSDEF_E_NM  = #{SYSDEF_E_NM}
+    	 ,  UPDATE_ID    = #{UPDATE_ID}
+    	 ,  UPDATE_DTS   = #{UPDATE_DTS}
+    	WHERE COMPANY_CD = #{COMPANY_CD}
+    	AND   FIELD_CD   = #{FIELD_CD}
+    	AND   SYSDEF_CD  = #{SYSDEF_CD}
+    </update>
+    
+    <update id="deleteDtl" parameterType="hashmap" statementType="CALLABLE">
+		/*SysInformation02Mapper.deleteDtl*/
+    	DELETE FROM ES_CODEDTL
+    	WHERE COMPANY_CD = #{COMPANY_CD}
+    	AND   FIELD_CD   = #{FIELD_CD}
+    	AND   SYSDEF_CD  = #{SYSDEF_CD}
+    </update>
+</mapper>

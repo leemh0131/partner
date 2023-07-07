@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ensys.qray.file.FileMapper">
+
+    <select id="search" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*FileMapper.search*/
+    	SELECT 	COMPANY_CD		AS "COMPANY_CD"
+		,		TABLE_ID        AS "TABLE_ID"
+		,		TABLE_KEY       AS "TABLE_KEY"
+		,		FILE_SEQ        AS "FILE_SEQ"
+		,		FILE_NAME       AS "FILE_NAME"
+		,		ORGN_FILE_NAME  AS "ORGN_FILE_NAME"
+		,		FILE_PATH       AS "FILE_PATH"
+		,		FILE_EXT        AS "FILE_EXT"
+		,		FILE_BYTE       AS "FILE_BYTE"
+		,		FILE_SIZE       AS "FILE_SIZE"
+		,		FILE_DIVISION   AS "FILE_DIVISION"
+		,		INSERT_ID       AS "INSERT_ID"
+		,		INSERT_DTS      AS "INSERT_DTS"
+		,		UPDATE_ID       AS "UPDATE_ID"
+		,		UPDATE_DTS      AS "UPDATE_DTS"
+		FROM ES_FILE
+		WHERE COMPANY_CD = #{COMPANY_CD}
+		AND   TABLE_ID   = #{TABLE_ID}
+		AND   TABLE_KEY  = #{TABLE_KEY}
+		<if test='FILE_SEQ != null and FILE_SEQ != ""'>
+		AND   FILE_SEQ   = #{FILE_SEQ}
+		</if>
+		<if test='FILE_NAME != null and KEYWORD != ""'>
+		AND   FILE_NAME  = #{FILE_NAME}
+		</if>
+    </select>
+
+    <insert id="insert" parameterType="hashmap" statementType="CALLABLE">
+		/*FileMapper.insert*/
+		INSERT INTO ES_FILE
+		(
+		  COMPANY_CD    
+		, TABLE_ID      
+		, TABLE_KEY     
+		, FILE_SEQ      
+		, FILE_NAME     
+		, ORGN_FILE_NAME
+		, FILE_PATH     
+		, FILE_EXT      
+		, FILE_BYTE     
+		, FILE_SIZE
+		, FILE_DIVISION     
+		, INSERT_ID     
+		, INSERT_DTS    
+		, UPDATE_ID     
+		, UPDATE_DTS
+		)
+		VALUES
+		(
+		  #{COMPANY_CD}    
+		, #{TABLE_ID}      
+		, #{TABLE_KEY}     
+		, #{FILE_SEQ}      
+		, #{FILE_NAME}     
+		, #{ORGN_FILE_NAME}
+		, #{FILE_PATH}     
+		, #{FILE_EXT}      
+		, #{FILE_BYTE}     
+		, #{FILE_SIZE} 
+		, #{FILE_DIVISION}   
+		, #{INSERT_ID}     
+		, #{INSERT_DTS}    
+		, #{UPDATE_ID}     
+		, #{UPDATE_DTS}
+		)
+    </insert>
+
+    <delete id="delete" parameterType="hashmap" statementType="CALLABLE">
+		/*FileMapper.delete*/
+		DELETE FROM ES_FILE
+		WHERE COMPANY_CD = #{COMPANY_CD}
+		AND   TABLE_ID   = #{TABLE_ID}
+		AND   TABLE_KEY  = cast(#{TABLE_KEY} as text)
+		AND   FILE_SEQ   = #{FILE_SEQ}
+    </delete>
+</mapper>

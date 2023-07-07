@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ensys.qray.user.IuUserMapper">
+
+	<select id="getIuSession" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*UserMapper2.getIuSession*/
+		SELECT	  C.NO_COMPANY AS companyCd
+				, C.NM_COMPANY AS companyNm
+				, A.NO_EMP AS empNo
+				, A.NM_KOR AS korNm
+				, B.CD_DEPT AS deptCd
+				, B.NM_DEPT AS deptNm
+				, D.CD_CC AS ccCd
+				, D.NM_CC AS ccNm
+				, E.CD_PC AS pcCd
+				, E.NM_PC AS pcNm
+				, F.CD_BIZAREA AS bizareaCd
+				, F.NM_BIZAREA AS bizareaNm
+				, A.CD_PJT AS projectCd
+				, H.NM_PROJECT AS projectNm
+		FROM MA_EMP AS A
+		LEFT JOIN MA_DEPT AS B
+			   ON A.CD_COMPANY = B.CD_COMPANY
+			   AND A.CD_DEPT = B.CD_DEPT
+	 	LEFT JOIN MA_COMPANY AS C
+		   	   ON B.CD_COMPANY = C.CD_COMPANY
+		LEFT JOIN MA_CC AS D
+	    	  ON B.CD_COMPANY = D.CD_COMPANY
+	   		 AND B.CD_CC = D.CD_CC
+	 	LEFT JOIN MA_BIZAREA AS F
+	   		   ON B.CD_COMPANY = F.CD_COMPANY
+	   		  AND B.CD_BIZAREA = F.CD_BIZAREA
+	 	LEFT JOIN MA_PC AS E
+	  		   ON F.CD_COMPANY = E.CD_COMPANY
+	   		  AND F.CD_PC = E.CD_PC
+		LEFT JOIN SA_PROJECTH AS H
+			   ON A.CD_COMPANY = H.CD_COMPANY
+		      AND A.CD_PJT = H.NO_PROJECT
+			WHERE A.CD_COMPANY = #{COMPANY_CD}
+		  	  AND A.NO_EMP = #{EMP_NO}
+	</select>
+</mapper>
