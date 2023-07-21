@@ -31605,7 +31605,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         this.needToPaintSum = false;
 
         GRID.page.statusUpdate.call(this);
-        GRID.page.pageUseUpdate.call(this);
+        //GRID.page.pageUseUpdate.call(this);
     };
 
     var repaintCell = function repaintCell(_panelName, _dindex, _doindex, _rowIndex, _colIndex, _newValue) {
@@ -35579,7 +35579,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     GRID.page = {
         navigationUpdate: navigationUpdate,
         statusUpdate: statusUpdate,
-        pageUseUpdate: pageUseUpdate
+        //pageUseUpdate: pageUseUpdate
     };
 })();
 // ax5.ui.grid.scroller
@@ -36123,7 +36123,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          *
          * 위에서 선언한 {{gridPagingCheck}} 를 이용해 true 일경우 select html 생성
          */
-        let selectbox = '{{#gridPagingCheck}}<select id="selectPageSize">';
+        /*let selectbox = '{{#gridPagingCheck}}<select id="selectPageSize">';
 
         let pageSize = fnObj[GRID.gridPagingId].target.config.page.pageSize;
         for (let i = 0; i < SCRIPT_PAGE_SIZE.length; i++) {
@@ -36135,7 +36135,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             }
         }
         selectbox += '</select>{{/gridPagingCheck}}';
-        return selectbox;
+        return selectbox;*/
     }
 
     var page_status = function page_status() {
