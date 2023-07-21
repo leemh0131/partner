@@ -51,7 +51,7 @@
 			console.log("멀티피커 -> ", $("#USER_IDS").getCode()); //멀티피커
 			console.log("날짜 -> ", $('#DATE').getDate()); //날짜
 			console.log("날짜 -> ", $('#DATE_FROM_TO').getStartDate()); //날짜
-			console.log("날짜 -> ", $('#DATE_FROM_TO').getStartEnd());//날짜
+			console.log("날짜 -> ", $('#DATE_FROM_TO').getEndDate());//날짜
 
 
 
