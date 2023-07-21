@@ -19,15 +19,20 @@ import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.core.io.Resource;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import java.io.*;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.*;
@@ -68,6 +73,12 @@ public class commonController extends BaseController {
     }
 
     @NoLoggingMethod
+    @RequestMapping(value = "getCommonCodes", method = RequestMethod.POST, produces = APPLICATION_JSON)
+    public Responses.ListResponse getCommonCodes(@RequestBody HashMap<String, Object> param) {
+        return Responses.ListResponse.of(commonService.getCommonCodes(param));
+    }
+
+    @NoLoggingMethod
     @RequestMapping(value = "HELP_CHECK_SEARCH", method = RequestMethod.POST, produces = APPLICATION_JSON)
     public Responses.ListResponse HELP_CHECK_SEARCH(@RequestBody HashMap<String, Object> param) {
         SessionUser user = SessionUtils.getCurrentUser();
@@ -103,7 +114,7 @@ public class commonController extends BaseController {
         long Time = System.currentTimeMillis();
         String mainReport = reportDir + param.get("fileName") + ".jrxml";
         List<HashMap<String, Object>> mainDatasource = (List) param.get("dataSource");
-        String destPath = "D:\\QRAY_TEMP";
+        String destPath = "D:\\NEW_QRAY_TEMP";
         Connection conn = null;
         Properties properties = new Properties();
         String driverClassName = null, url = null, username = null, password = null;

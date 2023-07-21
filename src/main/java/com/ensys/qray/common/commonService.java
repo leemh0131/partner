@@ -63,6 +63,14 @@ public class commonService extends BaseService {
     }
 
     @Transactional(readOnly = true)
+    public List<HashMap<String, Object>> getCommonCodes(HashMap<String, Object> param) {
+        SessionUser sessionUser = SessionUtils.getCurrentUser();
+        param.put("COMPANY_CD", sessionUser.getCompanyCd());
+
+        return commonMapper.getCommonCodes(param);
+    }
+
+    @Transactional(readOnly = true)
     public List<HashMap<String, Object>> HELP_CHECK_SEARCH(HashMap<String, Object> param) {
         return commonMapper.HELP_CHECK_SEARCH(param);
     }

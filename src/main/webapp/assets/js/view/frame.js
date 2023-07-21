@@ -21,26 +21,6 @@ fnObj.pageStart = function () {
     axboot.def["DEFAULT_TAB_LIST"][0].progNm = COL("ax.admin.home");
     axboot.def["DEFAULT_TAB_LIST"][0].menuNm = COL("ax.admin.home");
 
-    var convertMenuItems = function (list) {
-    /*
-        var _list = [];
-        list.forEach(function (m) {
-            var item = $.extend({}, m);
-            if (item.hasChildren = (item.children && item.children.length)) {
-                item.children = convertMenuItems(item.children);
-            }
-            if (item.multiLanguageJson && item.multiLanguageJson[SCRIPT_SESSION.details.language]) {
-                item.name = item.multiLanguageJson[SCRIPT_SESSION.details.language];
-            }
-            _list.push(item);
-        });
-        */
-        return _list;
-    };
-    //this.menuItems = convertMenuItems(TOP_MENU_DATA);
-    //this.menuItems[0].open = true;
-
-    //this.topMenuView.initView();
     this.frameView.initView();
     this.tabView.initView();
     this.activityTimerView.initView();
@@ -313,11 +293,12 @@ fnObj.tabView = axboot.viewExtend({
             items: [
                 {icon: '<i class="cqc-cancel3"></i>', label: '현재탭 닫기', action: "close"},
                 {icon: '<i class="cqc-cancel"></i>', label: '현재탭 제외하고 닫기', action: "closeAnother"},
-                {icon: '<i class="cqc-cancel"></i>', label: '모든탭 닫기', action: "closeAll"}
+                {icon: '<i class="cqc-cancel"></i>', label: '모든탭 닫기', action: "closeAll"},
+                /*{icon: '<i class="cqc-download"></i>', label: '현재탭 메뉴얼 다운로드', action: "manual"}*/
             ]
         });
 
-        menu.onClick = function () {
+        menu.onClick = function (e) {
             switch (this.action) {
                 case "reload":
                     for (var i = 0; i < fnObj.tabView.list.length; i++) {
@@ -366,6 +347,30 @@ fnObj.tabView = axboot.viewExtend({
                     }
                     /*fnObj.tabView.open(fnObj.tabView.list[0]);*/
                     break;
+                case "manual":
+
+                    let item = menu.item;
+                    let url = window.location.origin + '/manual/' + item.id + '.pptx';
+                    let name = item.name + '_메뉴얼' + '.pptx';
+                    let link = document.createElement('a');
+
+                    fileExists(url)
+                        .then((exists) => {
+                            if (exists) {
+                                link.href = url;
+                                link.download = name;
+                                document.body.appendChild(link);
+                                link.click();
+                                document.body.removeChild(link);
+                            } else {
+                                qray.alert("등록된 메뉴얼이 없습니다.");
+                            }
+                        })
+                        .catch((error) => {
+                            console.error('파일 체크 중 오류가 발생했습니다:', error);
+                        });
+
+                    break;
                 default:
                     return false;
             }
@@ -391,7 +396,6 @@ fnObj.tabView = axboot.viewExtend({
     },
     print: function () {
         var _this = this;
-
         var po = [], fo = [], active_item;
 
         po.push('<div class="tab-item-holder">');
@@ -403,8 +407,11 @@ fnObj.tabView = axboot.viewExtend({
                 active_item = _item;
             }
         });
-        po.push('<div class="tab-item-addon" data-tab-id=""></div>');
+        /*po.push('<div class="tab-item-addon" data-tab-id=""></div>');*/
         po.push('</div>');
+        po.push('<button type="button" class="lock" id="lock1" style="margin-left: auto; margin-top: 5px; padding-right: 40px;"><img src="/assets/images/lock1.png" alt=""></button>' +
+            '<button type="button" class="lock" id="lock2" style="margin-left: auto; margin-top: 5px; padding-right: 40px; display: none;"><img src="/assets/images/lock2.png" alt=""></button>' +
+            '</div>');
 
         this.target.html(po.join(''));
         this.frameTarget.html(fo.join(''));
@@ -412,6 +419,9 @@ fnObj.tabView = axboot.viewExtend({
         // event bind
         this.bindEvent();
 
+        $("#ax-frame-header-tab-container").css("display", "flex");
+        /** 탭 드래그 앤 드롭 설정*/
+        $('.tab-item-holder').sortable();
         if (active_item) {
             //topMenu.setHighLightOriginID(active_item.menuId || "");
         }
@@ -422,6 +432,7 @@ fnObj.tabView = axboot.viewExtend({
         $("#step1").text(item.name);
         $("#step2").text(item.menuNm);
         $("#content-frame-container").css("padding-top", "94px");
+
 
         var findedIndex = ax5.util.search(this.list, function () {
             this.status = '';
@@ -442,7 +453,8 @@ fnObj.tabView = axboot.viewExtend({
                 status: "on"
             });
             _item = this.list[this.list.length - 1];
-            this.targetHolder.find(".tab-item-addon").before(this._getItem(_item));
+            this.targetHolder.find(".tab-item").last().after(this._getItem(_item));
+            // this.targetHolder.find(".tab-item-addon").before(this._getItem(_item));
             this.frameTarget.append(this._getFrame(_item));
         } else {
             _item = this.list[findedIndex];
@@ -455,15 +467,47 @@ fnObj.tabView = axboot.viewExtend({
             //topMenu.setHighLightOriginID(_item.menuId || "");
         }
 
+        //메뉴오픈체크
+        let menuOpen = false;
+        $('.es_wrap').each(function(index, element) {
+            var fullName = $(element).attr('class');
+            if('es_wrap menu-open' == fullName){
+                menuOpen = true;
+                return false; // 반복문 중지
+            }
+        });
+
+        if(menuOpen){
+            if (_item.menuId != '00-dashboard') {
+                let parentId = '#' + _item.parentId;
+                $('.depth02-item').css('display', 'none');
+                $('.depth03').css('display', 'none');
+                $('.depth02').find('button').attr('class', '');
+                let depth03 = '#' + 'depth03_' + _item.parentId;
+                $(parentId).closest('.depth02-item').show();
+                $(parentId).find('button').attr('class', 'on');
+                $(depth03).show();
+            }
+        }
+
+        $('[qray-menu-id] a').css('color', '#666');
+        let qrayMenuId = $('[qray-menu-id="' + _item.menuId + '"]');
+        $(qrayMenuId.find('a')).css('color', '#5371e4');
+
         if (this.list.length > this.limitCount) {
             this.closeBefore(this.list[1].menuId);
         }
 
         this.bindEvent();
         this.resize();
+        try{
+            if ($(".frame-item.on").length > 0) $(".frame-item.on")[0].contentWindow.axboot.layoutResize();
+        } catch(error) {
+
+        }
     },
     click: function (id, e) {
-    	
+
         this.list.forEach(function (_item) {
             if (_item.menuId == id) {
                 _item.status = 'on';
@@ -497,6 +541,31 @@ fnObj.tabView = axboot.viewExtend({
                 if (_item) {
                     //topMenu.setHighLightOriginID(_item.menuId || "");
                 }
+
+                //메뉴오픈체크
+                let menuOpen = false;
+                $('.es_wrap').each(function(index, element) {
+                    var fullName = $(element).attr('class');
+                    if('es_wrap menu-open' == fullName){
+                        menuOpen = true;
+                        return false; // 반복문 중지
+                    }
+                });
+
+                if(menuOpen){
+                    if (_item.menuId != '00-dashboard') {
+                        let parentId = '#' + _item.parentId;
+                        $('.depth02-item').css('display', 'none');
+                        $('.depth03').css('display', 'none');
+                        $('.depth02').find('button').attr('class', '');
+                        let depth03 = '#' + 'depth03_' + _item.parentId;
+                        $(parentId).closest('.depth02-item').show();
+                        $(parentId).find('button').attr('class', 'on');
+                        $(depth03).show();
+                    }
+                }
+
+
             } else _item.status = '';
         });
         this.target.find('.tab-item').removeClass("on");
@@ -504,8 +573,13 @@ fnObj.tabView = axboot.viewExtend({
 
         this.target.find('[data-tab-id="' + id + '"]').addClass("on");
         this.frameTarget.find('[data-tab-id="' + id + '"]').addClass("on");
-        
+
         $("a[menuId]").removeClass("on");
+        try{
+            if ($(".frame-item.on").length > 0) $(".frame-item.on")[0].contentWindow.axboot.layoutResize();
+        } catch(error) {
+
+        }
     },
     // 화면 닫기시 미저장 데이터 체크
     closeBeforeMulti: function (menuIdArr, index) {
@@ -633,6 +707,8 @@ fnObj.tabView = axboot.viewExtend({
         this.list = newList;
         this.target.find('[data-tab-id="' + menuId + '"]').remove();
 
+
+
         // 프레임 제거
         (function () {
             var $iframe = this.frameTarget.find('[data-tab-id="' + menuId + '"]'), // iframe jQuery Object
@@ -652,11 +728,38 @@ fnObj.tabView = axboot.viewExtend({
         }).call(this);
 
         if (removeItem.status == 'on') {
+
             var lastIndex = this.list.length - 1;
             this.list[lastIndex].status = 'on';
             this.target.find('[data-tab-id="' + this.list[lastIndex].menuId + '"]').addClass("on");
             this.frameTarget.find('[data-tab-id="' + this.list[lastIndex].menuId + '"]').addClass("on");
 
+            $('[qray-menu-id] a').css('color', '#666');;
+            let qrayMenuId = $('[qray-menu-id="' + this.list[lastIndex].menuId + '"]');
+            $(qrayMenuId.find('a')).css('color', '#5371e4');
+
+            //메뉴오픈체크
+            let menuOpen = false;
+            $('.es_wrap').each(function(index, element) {
+                var fullName = $(element).attr('class');
+                if('es_wrap menu-open' == fullName){
+                    menuOpen = true;
+                    return false; // 반복문 중지
+                }
+            });
+
+            if(menuOpen){
+                if (this.list[lastIndex].menuId != '00-dashboard') {
+                    let parentId = '#' + this.list[lastIndex].parentId;
+                    $('.depth02-item').css('display', 'none');
+                    $('.depth03').css('display', 'none');
+                    $('.depth02').find('button').attr('class', '');
+                    let depth03 = '#' + 'depth03_' + this.list[lastIndex].parentId;
+                    $(parentId).closest('.depth02-item').show();
+                    $(parentId).find('button').attr('class', 'on');
+                    $(depth03).show();
+                }
+            }
 
             $("#step1").text(this.list[lastIndex].parentNm);
             $("#step2").text(this.list[lastIndex].menuNm);
@@ -682,7 +785,7 @@ fnObj.tabView = axboot.viewExtend({
                 $("#content-frame-container").css("padding-top", "94px");
             }
 
-			$('.depth03').find('.on').removeClass('on')
+            $('.depth03').find('.on').removeClass('on')
         }
 
         // check status = "on"
@@ -720,19 +823,39 @@ fnObj.tabView = axboot.viewExtend({
             } else {
                 $("#content-frame-container").css("padding-top", "94px");
             }
+
         }
+
         this.target.find('.tooltip').remove();
-        
+
         this.resize();
 
     },
     bindEvent: function () {
         var _this = this;
         this.target.find('.tab-item').unbind("click").bind("click", function (e) {
+
+            $('[qray-menu-id] a').css('color', '#666');
+            let qrayMenuId = $('[qray-menu-id="' + this.getAttribute("data-tab-id") + '"]');
+            $(qrayMenuId.find('a')).css('color', '#5371e4');
+
             if (e.target.tagName == "I") {
                 _this.closeBefore(this.getAttribute("data-tab-id"));
             } else {
                 _this.click(this.getAttribute("data-tab-id"), e);
+            }
+        });
+
+        // 자물쇠클릭에 따라 탭고정, 해제
+        this.target.find('.lock').unbind("click").bind("click", function (e) {
+            if(this.id=='lock1'){
+                $("#lock2")[0].style.display='block';
+                $("#lock1")[0].style.display='none';
+                $('.tab-item-holder').sortable("destroy");
+            }else if(this.id=='lock2'){
+                $("#lock2")[0].style.display='none';
+                $("#lock1")[0].style.display='block';
+                $('.tab-item-holder').sortable();
             }
         });
 
@@ -827,3 +950,19 @@ fnObj.ENSYS = axboot.viewExtend({
         console.log($.DATA_SEARCH('commonutility','ENSYS_F',param).list)
     }
 });
+
+
+// 파일 존재 여부를 체크하는 함수
+function fileExists(url) {
+    return new Promise((resolve, reject) => {
+        // 파일 존재 여부를 확인하는 비동기 로직을 구현합니다.
+        // 여기에서는 간단한 예시로 fetch를 사용하여 서버에 HEAD 요청을 보내서 상태 코드를 확인합니다.
+        fetch(url, { method: 'HEAD' })
+            .then((response) => {
+                resolve(response.ok);
+            })
+            .catch((error) => {
+                reject(error);
+            });
+    });
+}

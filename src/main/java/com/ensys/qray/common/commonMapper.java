@@ -20,6 +20,8 @@ public interface commonMapper extends MyBatisMapper {
 
     List<HashMap<String, Object>> getCommonCode(HashMap<String, Object> param);
 
+    List<HashMap<String, Object>> getCommonCodes(HashMap<String, Object> param);
+
     List<HashMap<String, Object>> MenuTree(HashMap<String, Object> param);
 
     int AlarmCount(HashMap<String, Object> param);

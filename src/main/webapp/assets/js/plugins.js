@@ -21146,6 +21146,7 @@ ax5.ui = function () {
          * ```
          */
         return function () {
+
             var self = this,
                 cfg = void 0,
                 selectableCount = 1;
@@ -21317,6 +21318,28 @@ ax5.ui = function () {
                 });
 
                 loopDate = tableStartDate;
+
+                //qray달력테이블에 있는 공휴일 데이터
+                let qrayMonthHoliday = [];
+                if(nvl(monthStratDate.format('yyyyMM')) != ''){
+                    axboot.ajax({
+                        type: "POST",
+                        url: ["common", "getQrayHoliday"],
+                        async: false,
+                        data: JSON.stringify({
+                            LOCDATE_S : monthStratDate.format('yyyyMM') + '01',
+                            LOCDATE_E : monthStratDate.format('yyyyMM') + '31'
+                        }),
+                        callback: function (res) {
+                            if(nvl(res.list) != ''){
+                                qrayMonthHoliday = res.list;
+                            }
+                        },
+                        options: {nomask: true}
+                    });
+                }
+
+
                 i = 0;
                 while (i < 6) {
                     k = 0;
@@ -21353,6 +21376,15 @@ ax5.ui = function () {
                                             }
                                             if (loopDate.getDay() == 6) {
                                                 classNames += " saturday";
+                                            }
+
+                                            //qray달력테이블 공휴일 체크 후 달력에 빨간색 표기
+                                            if(nvl(qrayMonthHoliday) != ''){
+                                                for(let mi = 0; mi < qrayMonthHoliday.length; mi++){
+                                                    if(U.date(loopDate, { "return": "yyyyMMdd" }) == qrayMonthHoliday[mi]['LOCDATE']){
+                                                        classNames += " sunday";
+                                                    }
+                                                }
                                             }
                                         }
                                     }
@@ -23633,14 +23665,14 @@ if (ax5 && ax5.ui && ax5.ui.picker) {
         // "32": "KEY_SPACE",
         "9": "KEY_TAB",
         "38": "KEY_UP",
-        "91": "KEY_WINDOW"
+        "91": "KEY_WINDOW",
         //"107" : "NUMPAD_ADD",
         //"194" : "NUMPAD_COMMA",
-        //"110" : "NUMPAD_DECIMAL",
+        "110" : "NUMPAD_DECIMAL",
         //"111" : "NUMPAD_DIVIDE",
         //"12" : "NUMPAD_EQUAL",
         //"106" : "NUMPAD_MULTIPLY",
-        //"109" : "NUMPAD_SUBTRACT"
+        "109" : "NUMPAD_SUBTRACT"
     };
     var numKeys = {
         '48': 1, '49': 1, '50': 1, '51': 1, '52': 1, '53': 1, '54': 1, '55': 1, '56': 1, '57': 1,
@@ -24234,6 +24266,12 @@ jQuery.fn.ax5formatter = function () {
                     '$target': activeMenu,
                     'data': jQuery.extend({}, data)
                 });
+
+                let item = {
+                    id : $($(event.target)).closest('[data-tab-id]').attr('data-tab-id'),
+                    name : event.target.innerHTML
+                }
+                this.item = item;
 
                 activeMenu.find('[data-menu-item-index]').bind("mouseover", function () {
                     var depth = this.getAttribute("data-menu-item-depth"),
@@ -26094,7 +26132,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 appendProgress: false,
 
                 //유저 커스텀 컬럼 기본 값
-                //userCustomColumns: true,
+                userCustomColumns: true,
 
                 // 틀고정 속성
                 frozenColumnIndex: 0,
@@ -26337,6 +26375,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         {label: "라벨변경", act_tp:"columnLabel", icon: '<i class="cqc-keyboard" aria-hidden="true"></i>'},
                         {label: "왼쪽이동", act_tp:"columnMoveLeft", icon: '<i class="cqc-chevron-left" aria-hidden="true"></i>'},
                         {label: "오른쪽이동", act_tp:"columnMoveRight", icon: '<i class="cqc-chevron-right" aria-hidden="true"></i>'},
+                        {label: "틀고정", act_tp:"columnfrozen", icon: '<i class="" aria-hidden="true"></i>'},
                         {label: "초기화", act_tp:"columnReset", icon: '<i class="cqc-cog3" aria-hidden="true"></i>'},
                         /*{divide: true},*/
                     ],
@@ -26439,6 +26478,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                                 }
 
 
+                            } else if(item.act_tp == 'columnfrozen'){
+                                let fixIndex = param.colIndex + 1;
+                                if(fixIndex != self.config.frozenColumnIndex){
+                                    self.config.frozenColumnIndex =fixIndex;
+                                    self.setConfig(self.config);
+                                }
+
                             }
                         } else {
                             qray.alert("지원하지않는 그리드입니다.");
@@ -26476,6 +26522,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             this.inlineEditing = {};
             this.listIndexMap = {}; // tree데이터 사용시 데이터 인덱싱 맵
             this.contextMenu = null; // contentMenu 의 인스턴스
+            this.selectedCheckBoxNumber = 0; // 현재 선택된 selectedCheckBoxNumber
+            this.selectedCheckBoxChk = null; // 현재 선택된 obj
 
             // header
             this.headerTable = {};
@@ -26559,7 +26607,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     },
                     "page": {
                         "navigation": this.$target.find('[data-ax5grid-page="navigation"]'),
-                        "status": this.$target.find('[data-ax5grid-page="status"]')
+                        "status": this.$target.find('[data-ax5grid-page="status"]'),
+                        /** 그리드 하단 부에 pageSize를 위한 ["use"] element 생성*/
+                        "use": this.$target.find('[data-ax5grid-page="use"]')
                     },
                     "form": {
                         "clipboard": this.$target.find('[data-ax5grid-form="clipboard"]')
@@ -26991,6 +27041,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
              * @param {Function} [_config.body.onClick]
              * @param {Function} [_config.body.onDBLClick]
              * @param {Function} [_config.body.onDataChanged]
+             * @param {Function} [_config.body.onRowChanged] - 그리드 행 추가, 삭제될 때 실행될 함수 (this.addRow, this.deleteRow, this.clear 에서 호출한다 -이용선-)
              * @param {String|Array} [_config.body.mergeCells=false] -
              * @param {String} [_config.body.align]
              * @param {Number} [_config.body.columnHeight=25]
@@ -27144,6 +27195,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 //this.onDblClick = cfg.onDblClick;
                 this.onLoad = cfg.onLoad;
                 this.onDataChanged = cfg.body.onDataChanged;
+                this.onRowChanged = cfg.body.onRowChanged;
                 // todo event에 대한 추가 정의 필요
 
                 this.$target = jQuery(cfg.target);
@@ -27255,15 +27307,29 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                                 self.keyDown("ESC", e.originalEvent);
                             } else if (e.which == ax5.info.eventKeys.RETURN) {
                                 self.keyDown("RETURN", e.originalEvent);
+                                self.keyDown("TAB", e.originalEvent);
                             } else if (e.which == ax5.info.eventKeys.TAB) {
                                 self.keyDown("TAB", e.originalEvent);
                                 U.stopEvent(e);
                             } else if (e.which == ax5.info.eventKeys.UP) {
-                                self.keyDown("RETURN", { shiftKey: true });
+                                self.keyDown("RETURN", { shiftKey: true }); //입력값 활성화 후 넘김
+                                self.keyDown("KEY_UP", e.originalEvent);
                             } else if (e.which == ax5.info.eventKeys.SHIFT) {
 
                             } else if (e.which == ax5.info.eventKeys.DOWN) {
-                                self.keyDown("RETURN", {});
+                                self.keyDown("RETURN", {}); //입력값 활성화 후 넘김
+                                self.keyDown("KEY_DOWN", e.originalEvent);
+                            } else if (e.which == ax5.info.eventKeys.RIGHT) {
+                                //console.log("eventKeys.RIGHT");
+                                if(nvl(e.target.value.length) == nvl(e.target.selectionStart)){
+                                    self.keyDown("TAB", e.originalEvent);
+                                }
+                            } else if (e.which == ax5.info.eventKeys.LEFT) {
+                                //console.log("eventKeys.LEFT");
+                                if(0 == nvl(e.target.selectionStart)){
+                                    //debugger
+                                    self.keyDown("TAB", { shiftKey: true });
+                                }
                             }
                         } else { //비활성 드리드
                             if (e.metaKey || e.ctrlKey) {
@@ -27910,6 +27976,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
              * @param {String} _color
              * @example
              * 색깔코드 : https://htmlcolorcodes.com/color-chart/
+             *
+             * 20221130 setCellCol issue 하나의 로직안에서 두번실행이 안됨 수정필요 **
+             *
              */
             this.setCellCol = function (_idx, _colName, _color) {
 
@@ -28090,8 +28159,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     GRID.scroller.resize.call(this);
                 }
 
-                return this;
+                if(nvl(this.onRowChanged)!=''){
+                    this.onRowChanged.call(this);
+                };
 
+                return this;
             };
 
 
@@ -28250,7 +28322,33 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 // 삭제시엔 포커스 ?
                 // GRID.body.moveFocus.call(this, (this.config.body.grouping) ? "START" : "END");
                 GRID.scroller.resize.call(this);
+
+                if(nvl(this.onRowChanged)!=''){
+                    this.onRowChanged.call(this);
+                };
+
                 return this;
+            };
+
+            /**
+             * GRID 데이터 초기화 함수
+             * 원래 axboot.js에서 사용했는데 플러그인에서 커스텀하려고 옮김
+             * 230713_이용선
+             * */
+            this.clear = function () {
+                this.setData({
+                list: [],
+                    page: {
+                        currentPage: 0,
+                        pageSize: 200,
+                        totalElements: 0,
+                        totalPages: 0
+                    }
+                });
+                // clear 하면 그리드에 있는 모든 데이터가 지워지면서 Row가 변하기 때문에 onRowChanged 함수를 호출 하도록한다.
+                if(nvl(this.onRowChanged)!=''){
+                    this.onRowChanged.call(this);
+                };
             };
 
             /**
@@ -28509,15 +28607,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             }
 
             this.setFormChange = function (targetForm) {
-
                 var elArray = $(targetForm).find('[form-bind-type]')
-                var _this = this
-                // console.log( ' ### setFormChange ###')
-                // console.log( ' this ' , this)
+                var _this = this;
+                //console.log( ' ### setFormChange ###')
+                //console.log( ' this ' , this)
 
                 for (var i = 0; i < elArray.length; i++) {
                     if (nvl(elArray[i].id) == '') continue;
-
 
                     var el = $('#'+elArray[i].id);
                     var el_id = elArray[i].id
@@ -28594,16 +28690,26 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                             var endKey = $('#' + parent_id ).attr('form-bind-end');
 
                             _this.setValue(_this.getList('selected')[0].__index , endKey  , $('#' + parent_id ).getEndDate() )
-                        })
-
+                        });
                     }else if(el_bind_type == 'datepicker'){
                         $('#date_' + el_id).change(function (e) {
                             if(!_this.getList('selected')[0]){
                                 return;
                             }
-                            var parent_id = $('#' + this.id).attr('parent-id')
+                            let parent_id = $('#' + this.id).attr('parent-id');
+
+                            /*
+                            if(!_this.getList('selected')[0][parent_id]){
+                                return;
+                            }
+                            */
+
+                            if(!$('#' + parent_id).getDate()){
+                                return;
+                            }
+
                             _this.setValue(_this.getList('selected')[0].__index , parent_id , $('#' + parent_id).getDate() )
-                        })
+                        });
                     }else if(el_bind_type == 'decimal'){
                         $('#' + el_id).change(function (e) {
                             if(!_this.getList('selected')[0]){
@@ -28612,11 +28718,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                             _this.setValue(_this.getList('selected')[0].__index , this.id  , Number(nvl($('#' + this.id ).val().replace(/\,/g, ''),0)) )
                         })
                     }else if(el_bind_type == 'money'){
+                        var oriValue = Number(nvl($(el[0]).attr('original-value'),0));
                         $('#' + el_id).change(function (e) {
                             if(!_this.getList('selected')[0]){
                                 return;
                             }
-                            var oriValue = Number(nvl($(el[0]).attr('original-value'),0));
                             var data = Number(nvl( $('#' + this.id ).val().replace(/\,/g, '') ,0) ,0)
                             if(data == oriValue){
                                 return;
@@ -28624,28 +28730,77 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                             _this.setValue(_this.getList('selected')[0].__index , this.id  , Number( uncomma(data) ) )
                         })
                     }else if(el_bind_type == 'number'){
+
+                        //let oriValue = Number(nvl($(el[0]).attr('original-value'),0));
                         $('#' + el_id).change(function (e) {
+                            let oriValue = Number(e.target.getAttribute('original-value'));
+
                             if(!_this.getList('selected')[0]){
                                 return;
                             }
-                            var oriValue = Number(nvl($(el[0]).attr('original-value'),0));
                             var data = Number(nvl( $('#' + this.id ).val() ,0))
                             if(data == oriValue){
+                                return;
+                            }
+                            if(oriValue == 0 && data == 0){
                                 return;
                             }
 
                             _this.setValue(_this.getList('selected')[0].__index , this.id  , data )
                         })
-                    }else{
+                    } else if(el_bind_type == 'html'){
+                        let oriValue = nvl($(el[0]).html());
+
                         $('#' + el_id).change(function (e) {
                             if(!_this.getList('selected')[0]){
                                 return;
                             }
-                            var formatter = $('#' + this.id ).attr('formatter');
-                            var oriValue = $(el[0]).attr('original-value');
-                            if($('#' + this.id ).val() == oriValue){
+
+                            if(nvl($('#' + this.id ).val()) == oriValue){
                                 return;
                             }
+                            _this.setValue(_this.getList('selected')[0].__index , this.id  , $('#' + this.id ).val() )
+                        });
+                    } else{
+
+                        $('#' + el_id).change(function (e) {
+
+                            if(!_this.getList('selected')[0]){
+                                return;
+                            }
+
+                            /*
+                            * 기존 AX그리드 안에있는 내용을 전체 드래그 후 삭제하면(한번에 삭제) getDirtyData() 에 수정된게 잡히지않는 문제가 있었다
+                            * 이유는 oriValue 변수선언을 이 $('#' + el_id).change() 함수 바깥에 선언해서 이 함수 안에서는  oriValue값이 무조건 ''로 가져와 졌다 그래서
+                            * 사용자가 그리드 수정한 value 와 oriValue 을 비교해서 같다면 (기존값과 변화된게 없다면) 리턴을 해주는 로직이 있는데 (여기서 리턴을 안하면 수정된 값을 setValue를 하고 -> DirtyData 가 세팅됨)
+                            * 그리드의 내용을 전체를 한번에 삭제하면 수정된 value 는 '' 일테고 oriValue 도 '' 이니 그리드의 기존 value와 수정된 value가 같아서 리턴이 되어
+                            * 최종적으로 setValue 가 이루어지지않아 그로인해 DirtyData도 수정된것이 세팅이 되지 않았던것이었다 그래서 oriValue를 이곳에서 선언하여 실제 기존 value를 알맞게 가져온다
+                            * 그렇게 알맞은 기존value 를 수정한 value 와 비교하도록 하여 기존 로직의 목적에 맞도록하였고 DirtyData에 수정된게 안잡혔던 문제점도 해결하였다
+                            * 230420_이용선
+                            * */
+                            var oriValue = nvl($(el[0]).attr('original-value')); // 기존 value
+
+                            if(nvl($('#' + this.id ).val()) == oriValue){ // 수정된 value 와 기존에있던 value를 비교하여 같다면(수정X) 리턴한다
+                                return;
+                            }
+
+                            //input 박스 길이 체크
+                            if(nvl(this.type) == 'text'){
+                                let column = this.id.toLowerCase();
+                                if(nvl(COLUMN_INFORMATION[column]) != ''){
+                                    let e = {
+                                        value : this.value,
+                                        maxLength : COLUMN_INFORMATION[column].MAX_LENGTH
+                                    }
+                                    let maxlength = maxlengthAlert(e);
+                                    if(maxlength.result){
+                                        _this.setValue(_this.getList('selected')[0].__index , this.id  , maxlength.value )
+                                        $('#' + this.id ).val(maxlength.value);
+                                        return;
+                                    }
+                                }
+                            }
+
                             _this.setValue(_this.getList('selected')[0].__index , this.id  , $('#' + this.id ).val() )
                         })
                     }
@@ -28694,13 +28849,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         var codeKey = $('#' + el_id ).attr('form-bind-code');
                         $('#' + el_id ).attr( { code: nvl(selectData[codeKey]) , text: nvl(selectData[textKey]) } );
                         $('#' + el_id ).val( nvl(selectData[textKey]) ).trigger('change')
+                        $('#' + el_id ).setPicker({ code: nvl(selectData[codeKey]) , text: nvl(selectData[textKey]) } );
                     }else if(el_bind_type == 'period-datepicker'){
                         var startKey = $('#' + el_id ).attr('form-bind-start');
                         var endKey = $('#' + el_id ).attr('form-bind-end');
                         $('#'+el_id).setStartDate( selectData[startKey] );
                         $('#'+el_id).setEndDate( selectData[endKey] )
                     }else if(el_bind_type == 'datepicker'){
-                        $('#' + el_id ).setDate( selectData[el_id] );
+                        $('#'+el_id).setDate(selectData[el_id]);
                     }else if(el_bind_type == 'decimal'){
                         var formatter = $('#' + el_id ).attr('decimal-formatter');
                         var temp = String(nvl(formatter,0)).split('.')
@@ -28719,8 +28875,44 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                             }
                             $('#' + el_id ).val(num).trigger('change')
                         }
-                    }
-                    else{
+                    }else if(el_bind_type == 'html') {
+                        $('#' + el_id ).val(bt).trigger('change');
+                        $('#' + el_id ).attr('original-value' , selectData[el_id]);
+                    } else if(el_bind_type == 'multipicker'){
+                        /**     폼 멀티피커 바인딩
+                         *      조건
+                         *      form-bind-code : "01|02|03|"
+                         *      form-bind-text : "test|test2|test3|"
+                         *
+                         */
+
+                        var textKey = $('#' + el_id ).attr('form-bind-text');
+                        var codeKey = $('#' + el_id ).attr('form-bind-code');
+                        let code = nvl(selectData[codeKey]);
+                        let text = nvl(selectData[textKey]);
+                        //let text = 'test1|test2|';
+                        if (code != "" && text != "") {
+                            let option = [];
+                            let arrCode = code.split("|");
+                            let arrText = text.split("|");
+                            for(let i = 0; i < arrCode.length; i++){
+                                if(arrCode[i] != ''){
+                                    option.push({
+                                        code : arrCode[i],
+                                        value : arrCode[i],
+                                        text : arrText[i]
+                                    });
+                                }
+                            }
+                            $('#' + el_id ).find("[data-ax5select='multi']").ax5select({
+                                options: option
+                            });
+                            $('#' + el_id ).find("[data-ax5select='multi']").ax5select("setValue", arrCode, true);
+                        } else {
+                            $('#' + el_id ).setClear();
+                        }
+
+                    }else{
                         //console.log(selectData[el_id],'else');
                         var formatter = $('#' + el_id ).attr('formatter');
                         var bt = $.changeDataFormat(selectData[el_id],nvl(formatter,'text'));
@@ -28918,6 +29110,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     , classUrl = nvl(this.config.classUrl , '')
                     , methodUrl = nvl(this.config.methodUrl , '')
                     , async = nvl(this.config.async, true)
+                    , nomask = nvl(this.config.nomask, false)
                     , param = nvl(this.config.param() , {})
                     , callback = nvl(this.config.callback , function(){})
                     , link = nvl(this.config.link, false)
@@ -28943,10 +29136,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         callback(res);
                     },
                     options: {
+                        nomask : nomask,
                         onError: function (err) {
                             self.queue_catch = true;
                             self.queue_catch_res = err;
-                        }
+                        },
                     }
                 });
             }
@@ -29625,7 +29819,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         return _panels.join("-");
                     }.call(this);
 
-                    this.$.panel[panelName].find('[data-ax5grid-tr-data-index="' + _dindex + '"]').find('[data-ax5grid-column-rowIndex="' + rowIndex + '"][data-ax5grid-column-colIndex="' + colIndex + '"]').find('[data-ax5grid-editor="checkbox"]').attr("data-ax5grid-checked", '' + _data.checked);
+                    if(!event.shiftKey){
+                        this.selectedCheckBoxNumber = _dindex;
+                        this.selectedCheckBoxChk = _data.checked;
+                        this.$.panel[panelName].find('[data-ax5grid-tr-data-index="' + _dindex + '"]').find('[data-ax5grid-column-rowIndex="' + rowIndex + '"][data-ax5grid-column-colIndex="' + colIndex + '"]').find('[data-ax5grid-editor="checkbox"]').attr("data-ax5grid-checked", '' + _data.checked);
+                    } else {
+                        GRID.data.selectedCheckBox.call(this, panelName, _dindex, rowIndex, colIndex);  //this 넣어야 selectedCheckBox 처리 부분에서 this 사용 가능 안하면 window 객체를 가져옮
+                    }
                 }
             };
 
@@ -29894,7 +30094,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 });
 
                 // 마우스 우클릭시 focus 변경
-                self.select(parseInt(e.originalEvent.path[2].dataset.ax5gridTrDataIndex));
+                //self.select(parseInt(e.originalEvent.path[2].dataset.ax5gridTrDataIndex));
                 U.stopEvent(e.originalEvent);
                 target = null;
                 dindex = null;
@@ -31405,6 +31605,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         this.needToPaintSum = false;
 
         GRID.page.statusUpdate.call(this);
+        GRID.page.pageUseUpdate.call(this);
     };
 
     var repaintCell = function repaintCell(_panelName, _dindex, _doindex, _rowIndex, _colIndex, _newValue) {
@@ -32570,6 +32771,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         },
         deActive: function deActive(_msg, _key, _value) {
             var self = this;
+            // console.log(this.inlineEditing.column.dindex, this.inlineEditing.$inlineEditor.val());
             if (!this.inlineEditing[_key]) return this;
 
             var panelName = this.inlineEditing[_key].panelName,
@@ -33277,6 +33479,32 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         return returnList;
     };
 
+    var selectedCheckBox = function selectedCheckBox(panelName, _dindex, rowIndex, colIndex) {
+        var startNum = this.selectedCheckBoxNumber;
+        var endNum = _dindex;
+        var key = this.columns[0].key;
+        var tVal = this.columns[0].editor.config.trueValue;
+        var fVal = this.columns[0].editor.config.falseValue;
+        var setVal = null;
+        var startVal = this.selectedCheckBoxChk;
+
+        if (startNum >= endNum) {
+            startNum = _dindex;
+            endNum = this.selectedCheckBoxNumber;
+        }
+
+        if (startVal) {
+            setVal = tVal;
+        } else {
+            setVal = fVal;
+        }
+
+        for (var selen = startNum; selen <= endNum; selen++) {
+            this.$.panel[panelName].find('[data-ax5grid-tr-data-index="' + selen + '"]').find('[data-ax5grid-column-rowIndex="' + rowIndex + '"][data-ax5grid-column-colIndex="' + colIndex + '"]').find('[data-ax5grid-editor="checkbox"]').attr("data-ax5grid-checked", '' + startVal);
+            this.setValue(selen, key, setVal);
+        }
+    };
+
     var add = function add(_row, _dindex, _options) {
         var list = this.config.body.grouping ? clearGroupingData.call(this, this.list) : this.list;
         var processor = {
@@ -33617,6 +33845,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         this.needToPaintSum = true;
         var dirty = true;
         var editor;
+        var checkboxLabel = '';
         var styleClass;
         for (var i = 0 ; i < target.columns.length ; i ++){
             if (target.columns[i].key == _key){
@@ -33633,6 +33862,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                             && String(nvl(originalValue)).replace(/-/g, "") == String(nvl(_value)).replace(/-/g, "")){
                             return;
                         }
+
                         list[listIndex][this.config.columnKeys.modified] = true;
 
                         Function("val", "this" + GRID.util.getRealPathForDataItem(_key) + " = val;").call(list[listIndex], _value);
@@ -33642,6 +33872,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         && String(nvl(originalValue)).replace(/-/g, "") == String(nvl(_value)).replace(/-/g, "")){
                         return;
                     }
+
                     list[listIndex][this.config.columnKeys.modified] = true;
                     list[listIndex][_key] = _value;
 
@@ -34045,6 +34276,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         init: init,
         set: set,
         get: get,
+        selectedCheckBox: selectedCheckBox,
         getList: getList,
         getProxyList: getProxyList,
         setValue: setValue,
@@ -34915,6 +35147,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     }
                 }
             }
+
             if (_e && (_e.which == ax5.info.eventKeys.RETURN || _e.type == 'dblclick')) {
                 $el.val(_value);
             }else {
@@ -35320,9 +35553,33 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         this.$["page"]["status"].html(GRID.tmpl.get("page_status", data));
     };
 
+    /** 페이징 이벤트 발생할 경우*/
+    var pageUseUpdate = function pageUseUpdate() {
+        var data = {};
+        /** 그리드에 navigation 이 있으면 페이지 사이즈 html 생성*/
+        data.gridPagingCheck = nvl($(this.$target.selector).find('div[data-ax5grid-page-navigation=holder]').attr('value')) == 'true' ? true : false;
+
+        /** 선택한 그리드 찾기*/
+        let gridPagingId = $(this.$target.selector).closest('div[data-ax5grid]').attr('data-ax5grid');
+
+        for (let prop in fnObj) {
+            if (prop.indexOf('gridView') != -1) {
+                if (fnObj[prop].target.$target.selector.indexOf(gridPagingId) != -1) {
+                    GRID.gridPagingId = prop;
+                }
+            }
+        }
+
+        /** 위에서 이벤트를 발생하여 필요한 데이터를 가공함.
+         * 아래에서 데이터를 이용해 html 작성
+         */
+        this.$["page"]["use"].html(GRID.tmpl.get("page_use", data));
+    }
+
     GRID.page = {
         navigationUpdate: navigationUpdate,
-        statusUpdate: statusUpdate
+        statusUpdate: statusUpdate,
+        pageUseUpdate: pageUseUpdate
     };
 })();
 // ax5.ui.grid.scroller
@@ -35846,12 +36103,40 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     var GRID = ax5.ui.grid;
 
     var main = function main() {
-        return "<div data-ax5grid-container=\"root\" data-ax5grid-instance=\"{{instanceId}}\">\n            <div data-ax5grid-container=\"hidden\">\n                <textarea data-ax5grid-form=\"clipboard\"></textarea>\n            </div>\n            <div data-ax5grid-container=\"header\">\n                <div data-ax5grid-panel=\"aside-header\"></div>\n                <div data-ax5grid-panel=\"left-header\"></div>\n                <div data-ax5grid-panel=\"header\">\n                    <div data-ax5grid-panel-scroll=\"header\"></div>\n                </div>\n                <div data-ax5grid-panel=\"right-header\"></div>\n            </div>\n            <div data-ax5grid-container=\"body\">\n                <div data-ax5grid-panel=\"top-aside-body\"></div>\n                <div data-ax5grid-panel=\"top-left-body\"></div>\n                <div data-ax5grid-panel=\"top-body\">\n                    <div data-ax5grid-panel-scroll=\"top-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"top-right-body\"></div>\n                <div data-ax5grid-panel=\"aside-body\">\n                    <div data-ax5grid-panel-scroll=\"aside-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"left-body\">\n                    <div data-ax5grid-panel-scroll=\"left-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"body\">\n                    <div data-ax5grid-panel-scroll=\"body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"right-body\">\n                  <div data-ax5grid-panel-scroll=\"right-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"bottom-aside-body\"></div>\n                <div data-ax5grid-panel=\"bottom-left-body\"></div>\n                <div data-ax5grid-panel=\"bottom-body\">\n                    <div data-ax5grid-panel-scroll=\"bottom-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"bottom-right-body\"></div>\n            </div>\n            <div data-ax5grid-container=\"page\">\n                <div data-ax5grid-page=\"holder\">\n                    <div data-ax5grid-page=\"navigation\"></div>\n                    <div data-ax5grid-page=\"status\"></div>\n                </div>\n            </div>\n            <div data-ax5grid-container=\"scroller\">\n                <div data-ax5grid-scroller=\"vertical\">\n                    <div data-ax5grid-scroller=\"vertical-bar\"></div>    \n                </div>\n                <div data-ax5grid-scroller=\"horizontal\">\n                    <div data-ax5grid-scroller=\"horizontal-bar\"></div>\n                </div>\n                <div data-ax5grid-scroller=\"corner\"></div>\n            </div>\n            <div data-ax5grid-resizer=\"vertical\"></div>\n            <div data-ax5grid-resizer=\"horizontal\"></div>\n        <div data-ax5grid-filter tabindex='-1'><div data-ax5grid-filter-top data-ax5grid-filter-search></div><div data-ax5grid-filter-top data-ax5grid-filter-check></div><div data-ax5grid-filter-content></div><div data-ax5grid-filter-bottom><button type='button' data-ax5grid-filter-bottom-ok>확인</button><button type='button' data-ax5grid-filter-bottom-cancel>취소</button></div></div>\n        </div>";
+        /** "use" element 담아줄 html 작성*/
+        return "<div data-ax5grid-container=\"root\" data-ax5grid-instance=\"{{instanceId}}\">\n            <div data-ax5grid-container=\"hidden\">\n                <textarea data-ax5grid-form=\"clipboard\"></textarea>\n            </div>\n            <div data-ax5grid-container=\"header\">\n                <div data-ax5grid-panel=\"aside-header\"></div>\n                <div data-ax5grid-panel=\"left-header\"></div>\n                <div data-ax5grid-panel=\"header\">\n                    <div data-ax5grid-panel-scroll=\"header\"></div>\n                </div>\n                <div data-ax5grid-panel=\"right-header\"></div>\n            </div>\n            <div data-ax5grid-container=\"body\">\n                <div data-ax5grid-panel=\"top-aside-body\"></div>\n                <div data-ax5grid-panel=\"top-left-body\"></div>\n                <div data-ax5grid-panel=\"top-body\">\n                    <div data-ax5grid-panel-scroll=\"top-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"top-right-body\"></div>\n                <div data-ax5grid-panel=\"aside-body\">\n                    <div data-ax5grid-panel-scroll=\"aside-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"left-body\">\n                    <div data-ax5grid-panel-scroll=\"left-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"body\">\n                    <div data-ax5grid-panel-scroll=\"body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"right-body\">\n                  <div data-ax5grid-panel-scroll=\"right-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"bottom-aside-body\"></div>\n                <div data-ax5grid-panel=\"bottom-left-body\"></div>\n                <div data-ax5grid-panel=\"bottom-body\">\n                    <div data-ax5grid-panel-scroll=\"bottom-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"bottom-right-body\"></div>\n            </div>\n            <div data-ax5grid-container=\"page\">\n                <div data-ax5grid-page=\"holder\">\n                    <div data-ax5grid-page=\"navigation\"></div>\n                <div data-ax5grid-page=\"use\"></div>\n                    <div data-ax5grid-page=\"status\"></div>\n                </div>\n            </div>\n            <div data-ax5grid-container=\"scroller\">\n                <div data-ax5grid-scroller=\"vertical\">\n                    <div data-ax5grid-scroller=\"vertical-bar\"></div>    \n                </div>\n                <div data-ax5grid-scroller=\"horizontal\">\n                    <div data-ax5grid-scroller=\"horizontal-bar\"></div>\n                </div>\n                <div data-ax5grid-scroller=\"corner\"></div>\n            </div>\n            <div data-ax5grid-resizer=\"vertical\"></div>\n            <div data-ax5grid-resizer=\"horizontal\"></div>\n        <div data-ax5grid-filter tabindex='-1'><div data-ax5grid-filter-top data-ax5grid-filter-search></div><div data-ax5grid-filter-top data-ax5grid-filter-check></div><div data-ax5grid-filter-content></div><div data-ax5grid-filter-bottom><button type='button' data-ax5grid-filter-bottom-ok>확인</button><button type='button' data-ax5grid-filter-bottom-cancel>취소</button></div></div>\n        </div>";
     };
 
     var page_navigation = function page_navigation() {
-        return "<div data-ax5grid-page-navigation=\"holder\">\n            {{#hasPage}}\n            <div data-ax5grid-page-navigation=\"cell\">    \n                {{#firstIcon}}<button type=\"button\" data-ax5grid-page-move=\"first\">{{{firstIcon}}}</button>{{/firstIcon}}\n                <button type=\"button\" data-ax5grid-page-move=\"prev\">{{{prevIcon}}}</button>\n            </div>\n            <div data-ax5grid-page-navigation=\"cell-paging\">\n                {{#@paging}}\n                <button type=\"button\" data-ax5grid-page-move=\"{{pageNo}}\" data-ax5grid-page-selected=\"{{selected}}\">{{pageNo}}</button>\n                {{/@paging}}\n            </div>\n            <div data-ax5grid-page-navigation=\"cell\">\n                <button type=\"button\" data-ax5grid-page-move=\"next\">{{{nextIcon}}}</button>\n                {{#lastIcon}}<button type=\"button\" data-ax5grid-page-move=\"last\">{{{lastIcon}}}</button>{{/lastIcon}}\n            </div>\n            {{/hasPage}}\n        </div>";
+        /** 네비게이션 생성 여부를 위해 html에 hasPage 추가*/
+        return "<div data-ax5grid-page-navigation=\"holder\" value=\"{{{hasPage}}}\">\n            {{#hasPage}}\n            <div data-ax5grid-page-navigation=\"cell\">    \n                {{#firstIcon}}<button type=\"button\" data-ax5grid-page-move=\"first\">{{{firstIcon}}}</button>{{/firstIcon}}\n                <button type=\"button\" data-ax5grid-page-move=\"prev\">{{{prevIcon}}}</button>\n            </div>\n            <div data-ax5grid-page-navigation=\"cell-paging\">\n                {{#@paging}}\n                <button type=\"button\" data-ax5grid-page-move=\"{{pageNo}}\" data-ax5grid-page-selected=\"{{selected}}\">{{pageNo}}</button>\n                {{/@paging}}\n            </div>\n            <div data-ax5grid-page-navigation=\"cell\">\n                <button type=\"button\" data-ax5grid-page-move=\"next\">{{{nextIcon}}}</button>\n                {{#lastIcon}}<button type=\"button\" data-ax5grid-page-move=\"last\">{{{lastIcon}}}</button>{{/lastIcon}}\n            </div>\n            {{/hasPage}}\n        </div>";
     };
+
+    /** 페이징 하단에 그려줄 html 작성*/
+    var page_use = function page_use() {
+        /**
+         * 위에서 page_use를 호출한 동적 이벤트가
+         * {{{}}} : 템플릿 문법(row level)로 선언하여 사용
+         * {{{}}} : 변수 값 가져오기
+         * {{#}} : 변수로 true, false 여부 확인
+         * {{/}} : {{#}}가 true이면 까지 생성
+         *
+         * 위에서 선언한 {{gridPagingCheck}} 를 이용해 true 일경우 select html 생성
+         */
+        let selectbox = '{{#gridPagingCheck}}<select id="selectPageSize">';
+
+        let pageSize = fnObj[GRID.gridPagingId].target.config.page.pageSize;
+        for (let i = 0; i < SCRIPT_PAGE_SIZE.length; i++) {
+            let text = SCRIPT_PAGE_SIZE[i].TEXT;
+            if (Number(text) == pageSize) {
+                selectbox += '<option value="' + text + '" selected>' + text + '</option>';
+            } else {
+                selectbox += '<option value="' + text + '">' + text + '</option>';
+            }
+        }
+        selectbox += '</select>{{/gridPagingCheck}}';
+        return selectbox;
+    }
 
     var page_status = function page_status() {
         return "<span>{{{progress}}} {{fromRowIndex}} - {{toRowIndex}} <!--of {{dataRowCount}}--> {{#totalElements}}&nbsp; Total {{.}}{{/totalElements}}</span>";
@@ -35861,6 +36146,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         "main": main,
         "page_navigation": page_navigation,
         "page_status": page_status,
+        "page_use": page_use,
 
         get: function get(tmplName, data, columnKeys) {
             var template = GRID.tmpl[tmplName].call(this, columnKeys);
@@ -41948,8 +42234,12 @@ Copyright 2013 Kevin Sylvestre
 
 }).call(this);
 
+//컬럼길이 체크 후 알럿 함수
 function maxlengthAlert(e){
-    if (e.value.length >= e.maxLength) {
+    let chk = false;
+    let result = {}
+    let value = e.value;
+    if (value.length > e.maxLength) {
         let toast = new ax5.ui.toast({
             containerPosition: "top-left",
             theme: "danger",
@@ -41960,8 +42250,13 @@ function maxlengthAlert(e){
         });
         toast.push("입력할 수 있는 글자가 초과하였습니다", function () {
             // close toast
-            //console.log(this);
         });
+        value = value.substring(0, e.maxLength);
+        chk = true;
 
     }
+    result.result = chk;
+    result.value = value;
+
+    return result;
 }

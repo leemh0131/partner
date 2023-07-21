@@ -56,7 +56,6 @@ $(document).on('mousedown', 'button[data-page-btn="search"], button[data-grid-vi
         if(helpBlankSearch == "true"){
             continue;
         }
-
         //결재하기(법인카드, 세금계산서) 화면 다중 HELP_ACTION 처리
         if(helpActionList.length == 8 || helpActionList.length == 6){
             let helpId = helpActionItem.getAttribute("id");
@@ -76,9 +75,34 @@ $(document).on('mousedown', 'button[data-page-btn="search"], button[data-grid-vi
         } else if(helpAction == "HELP_EMP" && helpCode == '') {
             qray.alert("조회 조건에 사원을 입력해주세요.");
             return;
+        } else if(helpAction == "HELP_COMMON_CARD" && helpCode == '') {
+            qray.alert("조회 조건에 카드를 입력해주세요.");
+            return;
         }
     }
 
+});
+
+
+/**
+ * 그리드 페이지 사이즈 수정
+ * 화면에 다중의 그리드가 있어 for문을 돌려 해당하는 그리드 찾아서 페이징 정보(pageSize) 수정
+ */
+$(document).on('change','#selectPageSize',function(){
+    let gridPagingId = $(this).closest('div[data-ax5grid]').attr('data-ax5grid');
+
+    for (let prop in fnObj) {
+        if (prop.indexOf('gridView') != -1) {
+            if (fnObj[prop].target.$target.selector.indexOf(gridPagingId) != -1) {
+                if ((Number(this.value)) == 0) {
+                    fnObj[prop].target.config.page.pageSize = 999999;
+                } else {
+                    fnObj[prop].target.config.page.pageSize = (Number(this.value));
+                }
+                break;
+            }
+        }
+    }
 });
 
 document.onkeydown = function () {
@@ -90,6 +114,130 @@ document.onkeydown = function () {
         if (t.tagName == "INPUT" && t.value == "") return false;
     }
 };
+
+var GET_NO = function(MODULE_CD, CLASS_CD){
+    var no = '';
+    axboot.ajax({
+        type: "POST",
+        url: ['SYS00011','getNo'],
+        data: JSON.stringify({COMPANY_CD : SCRIPT_SESSION.cdCompany, MODULE_CD : MODULE_CD, CLASS_CD : CLASS_CD}),
+        async: false,
+        callback: function (res) {
+            no =  res.map.NO
+        },
+        options: {
+            onError: function (err) {
+                qray.alert(err.message)
+            }
+        }
+    });
+    return no
+};
+
+/**
+ *  그리드 내에 엑셀파일을 드래그 앤 드롭하여 업로드하는함수
+ *  드래그존 : axboot grid
+ *  업로드 파일 : 엑셀파일 ('xls', 'xlsx')
+ *  업로드 갯수 : 1개
+ *  사용예시 : dragZoneSet('grid01', EXCEL_UPLOAD); / 만약 드래그존 그리드에 데이터를 조회해서 세팅하는 경우 조회함수(PAGE_SEARCH) 끝나고 실행 아니면 그냥 페이지시작할때 실행
+ *
+ * @param {string} dragZoneId - 드래그 영역의 ID
+ * @param {function} uploadFunction - 업로드된 파일을 처리하는 콜백 함수
+ * 작성자_이용선
+ */
+var dragZoneSet = function(dragZoneId, uploadFuntion){
+    /*
+    * gridElement   : 드래그 드롭하는 엘리먼트
+    * gridInstaceId : 그리드 객체 정보를 찾기위한 instance (이걸로 gridData를 구함)
+    * gridData      : 그리드 객체 (fnObj.gridView01.taget 이랑 같음)
+    * */
+    var gridElement = $("#"+dragZoneId);
+    var gridInstaceId = gridElement[0].querySelector('[data-ax5grid-instance]').getAttribute('data-ax5grid-instance');
+    var gridData = ax5.ui.grid_instance.find(obj => obj.id === gridInstaceId);
+
+    /** 그리드에(DragZone) 업로드 아이콘 생성하는 함수 */
+    function iconShow() {
+         gridElement.css('position', 'relative').append('<button type="button" style="position: absolute; top: 45%; left: 52%; transform: translate(-50%, -50%); z-index: 100;">' +
+             '<img src="/assets/images/upload.png" class="uploadIcon"></button>');
+    };
+
+    /**
+     *  그리드 데이터 갯수를 확인하고 데이터 갯수에 따라 아이콘 생성/삭제
+     *  데이터 1개 이상 -> 아이콘 지움 // 데이터 0개 -> 아이콘 생성
+     * */
+    function gridCheckicon() {
+        if(gridData.getList().length > 0){
+            $('.uploadIcon').remove();
+        } else {
+           iconShow();
+        }
+    };
+
+    gridCheckicon();
+
+    /*
+    * onRowChanged 함수는 그리드의 행이 추가 or 삭제 될때 호출되는 함수이다
+    * 예를 들어 그리드에 데이터가 있는상태 에서 행 삭제버튼이나 clear함수로 그리드 데이터를 모두 지우면 엑셀업로드 아이콘을 보여줘야한다
+    * 그래서 그리드의 row가 바뀔때마다 실행되는 함수인 onRowChanged 에 gridCheckicon() 함수 코드를 추가한다
+    * */
+    if(nvl(gridData.onRowChanged)==''){ // 사용자가 onRowChanged 함수 세팅 안한경우 그리드에 onRowChanged 함수를 만들어 코드 세팅
+        gridData.onRowChanged = function onRowChanged () {
+            gridCheckicon();
+        }
+    }else{ // 사용자가 onRowChanged 함수 세팅 해놓은 경우 기존 onRowChanged 함수코드에 추가
+        var originalFunction = gridData.onRowChanged;
+        gridData.onRowChanged = function() {
+            // 기존 함수의 동작
+            originalFunction();
+            // 추가적인 동작
+            gridCheckicon();
+        }
+    };
+
+    //  여기서 부터는 Drag & Drop 할때 함수
+
+    gridElement[0].addEventListener('dragover', handleDragOver, false);
+    gridElement[0].addEventListener('drop', handleFileDrop, false);
+
+    // 드래그 영역에 파일을 드래그할 때 발생하는 이벤트 핸들러
+    function handleDragOver(event) {
+        event.stopPropagation();
+        event.preventDefault();
+
+        event.dataTransfer.dropEffect = 'copy'; // 복사로 설정합니다.
+    }
+
+    // 파일 확장자 확인 (엑셀파일만 가능)
+    function checkFileExtension(fileName) {
+        var allowedExtensions = ['xls', 'xlsx'];
+        var fileExtension = fileName.slice(fileName.lastIndexOf('.') + 1).toLowerCase();
+        return allowedExtensions.includes(fileExtension);
+    }
+
+    // 파일을 드롭했을 때 발생하는 이벤트 핸들러
+    function handleFileDrop(event) {
+        event.stopPropagation();
+        event.preventDefault();
+
+        var files = event.dataTransfer.files; // 드롭된 파일들을 가져온다
+
+        // 파일 갯수 확인 (1개로 규칙)
+        if (files.length !== 1) {
+            qray.alert("한 개의 파일만 업로드할 수 있습니다.");
+            return;
+        }
+
+        // 파일 확장자 확인
+        for (var i = 0; i < files.length; i++) {
+            if (!checkFileExtension(files[i].name)) {
+                qray.alert("xls, xlsx 확장자의 파일만 사용 가능합니다.");
+                return;
+            }
+        }
+        uploadFuntion(files[0]);
+    };
+};
+
 
 $.extend({
     DATA_SEARCH_GET: function (Url, Url2, paramData, grid) {
@@ -134,7 +282,9 @@ $.extend({
                     grid.setData(res);
                     // grid.target.select(0);
                 }
+
                 list = res;
+
             },
             options: {
                 onError: function (err) {
@@ -155,6 +305,218 @@ $.extend({
         axboot.ajax({
             type: "POST",
             url: ["common", "getCommonCode"],
+            data: JSON.stringify({COMPANY_CD: COMPANY_CD, FIELD_CD: FIELD_CD}),
+            async: false,
+            callback: function (res) {
+                if (res.list.length == 0) {
+                    return false;
+                }
+                if (nvl(ALL, '') == '' || ALL == false || ALL == 'false' || ALL == 'FALSE') {  //  ALL 파라메터가 없거나 false이면 전체가 추가된다.
+                    codeInfo.push({
+                        CODE: '', VALUE: '', code: '', value: '', text: '', TEXT: ''
+                    });
+                }
+                var list = res.list.filter(function(n, i){
+                    if (nvl(FLAG1) != '') {return n.FLAG1_CD == FLAG1}else { return true}
+                }).filter(function(n, i){
+                    if (nvl(FLAG2) != '') {return n.FLAG2_CD == FLAG2}else { return true}
+                }).filter(function(n, i){
+                    if (nvl(FLAG3) != '') {return n.FLAG3_CD == FLAG3}else { return true}
+                }).filter(function(n, i){
+                    if (nvl(FLAG4) != '') {return n.FLAG4_CD == FLAG4}else { return true}
+                }).filter(function(n, i){
+                    if (nvl(SYSDEF_CD_ARRAY) != '' && SYSDEF_CD_ARRAY.length != 0) {
+                        for (var k = 0; k < SYSDEF_CD_ARRAY.length; k++) {
+                            return SYSDEF_CD_ARRAY[k] == n.SYSDEF_CD;
+                        }
+                    }else{
+                        return true;
+                    }
+                });
+
+                for (var i = 0 ; i < list.length ; i ++){
+                    var n = list[i];
+                    codeInfo.push({
+                        CODE: n.SYSDEF_CD,
+                        code: n.SYSDEF_CD,
+                        value: n.SYSDEF_CD,
+                        VALUE: n.SYSDEF_CD,
+                        text: n.SYSDEF_NM,
+                        TEXT: n.SYSDEF_NM,
+                        FLAG1_CD: n.FLAG1_CD,
+                        FLAG2_CD: n.FLAG2_CD,
+                        FLAG3_CD: n.FLAG3_CD,
+                        FLAG4_CD: n.FLAG4_CD
+                    });
+                }
+            }
+
+        });
+        return codeInfo;
+    },
+    /**
+     * 공통코드 조회용[배열]
+     * EX) $.SELECT_COMMON_ARRAY_CODE("ES_Q0049", "ES_Q0160")
+     * */
+    SELECT_COMMON_ARRAY_CODE: function (...FIELD_CD) {
+        var codeInfo = [];
+        if (nvl(FIELD_CD) == '') {
+            return false;
+        }
+        axboot.ajax({
+            type: "POST",
+            url: ["common", "getCommonCodes"],
+            data: JSON.stringify({FIELD_CD: FIELD_CD}),
+            async: false,
+            callback: function (res) {
+                if (res.list.length == 0) {
+                    return false;
+                }
+                for (var i = 0 ; i < res.list.length ; i ++){
+                    var n = res.list[i];
+                    codeInfo.push({
+                        FIELD_CD: n.FIELD_CD,
+                        CODE: n.SYSDEF_CD,
+                        code: n.SYSDEF_CD,
+                        value: n.SYSDEF_CD,
+                        VALUE: n.SYSDEF_CD,
+                        text: n.SYSDEF_NM,
+                        TEXT: n.SYSDEF_NM,
+                        FLAG1_CD: n.FLAG1_CD,
+                        FLAG2_CD: n.FLAG2_CD,
+                        FLAG3_CD: n.FLAG3_CD,
+                        FLAG4_CD: n.FLAG4_CD
+                    });
+                }
+            }
+        });
+        return codeInfo;
+    },
+    /**
+     * 배열 공통코드 필터
+     * */
+    SELECT_COMMON_GET_CODE: function (esCodes, fieldCd, flag, FLAG1, FLAG2, FLAG3, FLAG4) {
+        if (nvl(esCodes) == '') {
+            return false;
+        }
+        var codeInfo = esCodes
+            .filter(item => item.FIELD_CD === fieldCd)
+            .filter(function(n, i){
+                if (nvl(FLAG1) != '') {return n.FLAG1_CD == FLAG1}else {return true}
+            }).filter(function(n, i){
+                if (nvl(FLAG2) != '') {return n.FLAG2_CD == FLAG2}else {return true}
+            }).filter(function(n, i){
+                if (nvl(FLAG3) != '') {return n.FLAG3_CD == FLAG3}else {return true}
+            }).filter(function(n, i){
+                if (nvl(FLAG4) != '') {return n.FLAG4_CD == FLAG4}else {return true}
+            });
+
+        if (flag) {
+            return codeInfo;
+        }
+        return [{ FIELD_CD: '', CODE: '', VALUE: '', code: '', value: '', text: '', TEXT: '' }].concat(codeInfo);;
+    },
+    /**
+     * 연차종류 조회용
+     * @PARAM : CD_COMPANY , ALL
+     * @설명 : 회사코드, 전체사용유무
+     * */
+    SELECT_DAYOFF_CODE: function (COMPANY_CD, ALL) {
+        var codeInfo = [];
+        axboot.ajax({
+            type: "POST",
+            url: ["HR00004", "dayOff"],
+            data: JSON.stringify({COMPANY_CD: COMPANY_CD,ALL: ALL}),
+            async: false,
+            callback: function (res) {
+                if (res.list.length == 0) {
+                    return false;
+                }
+                if (nvl(ALL, '') == '' || ALL == false || ALL == 'false' || ALL == 'FALSE') {  //  ALL 파라메터가 없거나 false이면 전체가 추가된다.
+                    codeInfo.push({
+                        CODE: '', VALUE: '', code: '', value: '', text: '', TEXT: ''
+                    });
+                }
+                var list = res.list;
+                for (var i = 0 ; i < list.length ; i ++){
+                    var n = list[i];
+                    codeInfo.push({
+                        CODE: n.CODE,
+                        code: n.code,
+                        value: n.value,
+                        VALUE: n.VALUE,
+                        text: n.text,
+                        TEXT: n.TEXT,
+                    });
+                }
+            }
+
+        });
+        return codeInfo;
+    },
+
+    /**
+     * 커스텀 조회용
+     * @PARAM : CD_COMPANY , ALL, url1, url2
+     * @설명 : 회사코드, 전체사용유무, 호출, 호출메소드
+     * */
+    SELECT_BOX_CODE: function (COMPANY_CD, ALL, url1, url2) {
+        var codeInfo = [];
+        axboot.ajax({
+            type: "POST",
+            url: [url1, url2],
+            data: JSON.stringify({COMPANY_CD: COMPANY_CD,ALL: ALL}),
+            async: false,
+            callback: function (res) {
+                if (res.list.length == 0) {
+                    return false;
+                }
+                if (nvl(ALL, '') == '' || ALL == false || ALL == 'false' || ALL == 'FALSE') {  //  ALL 파라메터가 없거나 false이면 전체가 추가된다.
+                    codeInfo.push({
+                        CODE: '', VALUE: '', code: '', value: '', text: '', TEXT: ''
+                    });
+                }
+                var list = res.list;
+                for (var i = 0 ; i < list.length ; i ++){
+                    var n = list[i];
+                    codeInfo.push({
+                        CODE: n.CODE,
+                        code: n.code,
+                        value: n.value,
+                        VALUE: n.VALUE,
+                        text: n.text,
+                        TEXT: n.TEXT,
+                    });
+                }
+            }
+
+        });
+        return codeInfo;
+    },
+
+    /**
+     * 날짜 포맷 공통함수
+     * @PARAM : CD_COMPANY , ALL
+     * @설명 : 회사코드, 전체사용유무
+     * */
+    DATE_FORMMATTING: function (param) {
+        let year = param.substr(0,4);
+        let month = param.substr(4,2);
+        let day = param.substr(6,2);
+        let toStringByFormatting = year +"-"+month+"-"+day;
+
+        return toStringByFormatting;
+    },
+    /**
+     * 로그인 화면에서 공통코드 조회용 security 처리 x
+     * @PARAM : CD_COMPANY , CD_FIELD , ALL , FLAG
+     * @설명 : 회사코드 , 필드코드 , 전체사용유무 , 참조값
+     * */
+    SELECT_LOGIN_COMMON_CODE: function (COMPANY_CD, FIELD_CD, ALL, FLAG1, FLAG2, FLAG3, FLAG4, SYSDEF_CD_ARRAY) {
+        var codeInfo = [];
+        axboot.ajax({
+            type: "POST",
+            url: ["users", "getCommonCode"],
             data: JSON.stringify({COMPANY_CD: COMPANY_CD, FIELD_CD: FIELD_CD}),
             async: false,
             callback: function (res) {
@@ -244,12 +606,23 @@ $.extend({
             if (type == 'res') { //  주민번호
                 return value.replace(/(\d{6})(\d{7})/, '$1-$2')
             }
+            if (type == 'privateRes') { //  주민번호
+                return value.replace(/(\d{6})(\d{7})/, '$1-*******')
+            }
             if (type == 'company') { //  사업자번호
                 return value.replace(/(\d{3})(\d{2})(\d{4})/, '$1-$2-$3')
             }
-            if (type == 'time') {  //시간
-                return value.replace(/(\d{2})(\d{2})(\d{2})/, '$1:$2:$3')
-            }
+            if (type == 'time') {  //시간 ( hhmmss -> hh:mm:ss or hhmm -> hh:mm )
+              if(value.length == 6){
+                     return value.replace(/(\d{2})(\d{2})(\d{2})/, '$1:$2:$3');
+                }else if(value.length == 4){
+                    return value.replace(/(\d{2})(\d{2})/, '$1:$2');
+                };
+            };
+            if (type == 'time_hour_minute') {  //시간 ( hhmmss -> hh:mm)
+                return value.replace(/(\d{2})(\d{2})(\d{2})/, '$1:$2');
+            };
+
             if (type == 'card') {  //카드번호
                 if(value.length == 16){
                     return value.replace(/(\d{4})(\d{4})(\d{4})(\d{4})/, '$1-$2-$3-$4')
@@ -265,7 +638,11 @@ $.extend({
                 }
             }
             if (type == 'yyyyMMddhhmmss') {
-                return value.replace(/(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/, '$1-$2-$3 $4:$5:$6')
+                if(value.length == 8){
+                    return value.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3');
+                } else {
+                    return value.replace(/(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/, '$1-$2-$3 $4:$5:$6')
+                }
             }
             if (type == 'rt_exch'){
                 if (nvl(value) == '' || value == '0') {
@@ -345,7 +722,7 @@ $.extend({
     /*  height   : 높이
     /*  top      : 팝업위치
     /******************************/
-    openCommonPopup: function (name, CallBack, ACTION, KEYWORD, initData, width, height, top, MAPPING , DRAG) {
+    openCommonPopup: function (name, CallBack, ACTION, KEYWORD, initData, width, height, top, MAPPING , DRAG/*, tab*/) {
         var this_ = this;
 
         var pop;
@@ -379,45 +756,62 @@ $.extend({
             DRAG = false
         }
 
-        pop.open({
-            header: DRAG,
-            width: Number(width),
-            height: Number(height),
-            position: {
-                left: "center",
-                top: top
-            },
-            iframe: {
-                method: "get"
-                ,url: name
-                ,param: "modalName=" + 'modal_' + String(num) + "&callBack=" + CallBack + "&ACTION=" + ACTION + "&MAPPING=" + MAPPING
-            },
-            closeToEsc: true,
-            sendData: function () {
-                return {
-                    "initData": initData
-                    ,KEYWORD: KEYWORD
-                }
-            },
-            onStateChanged: function () {
-                // mask
-                if (this.state === "open") {
-                    if (nvl(this_.mask) == ''){
-                        mask.open();
-                    }else{
-                        this_.mask.open();
-                    }
-                } else if (this.state === "close") {
-                    if (nvl(this_.mask) == ''){
-                        mask.close();
-                    }else{
-                        this_.mask.close();
-                    }
-                }
-            }
-        }, function () {
+        /*if (tab) {
+            var url = location.protocol + "//" + window.location.hostname + ":" + location.port + name;
+            url += "?" + "modalName=" + modalName_ + "&callBack=" + CallBack + "&ACTION=" + ACTION + "&MAPPING=" + MAPPING;
 
-        });
+            var newTab = window.child.open(url, "_blank", "");
+            var script = document.createElement('script');
+            script.innerText =
+                "var parent = {};" +
+                "parent." + modalName_ + " = this;"
+                + "parent." + modalName_ + ".modalConfig = {};"
+                + "parent." + modalName_ + ".modalConfig.sendData = function() {  " +
+                " this.KEYWORD = " + JSON.stringify(KEYWORD) + ";" +
+                " this.initData = " + JSON.stringify(initData) + ";" +
+                " return this;};";
+            newTab.document.head.appendChild(script);
+        } else {*/
+            pop.open({
+                header: DRAG,
+                width: Number(width),
+                height: Number(height),
+                position: {
+                    left: "center",
+                    top: top
+                },
+                iframe: {
+                    method: "get"
+                    ,url: name
+                    ,param: "modalName=" + 'modal_' + String(num) + "&callBack=" + CallBack + "&ACTION=" + ACTION + "&MAPPING=" + MAPPING
+                },
+                closeToEsc: true,
+                sendData: function () {
+                    return {
+                        "initData": initData
+                        ,KEYWORD: KEYWORD
+                    }
+                },
+                onStateChanged: function () {
+                    // mask
+                    if (this.state === "open") {
+                        if (nvl(this_.mask) == ''){
+                            mask.open();
+                        }else{
+                            this_.mask.open();
+                        }
+                    } else if (this.state === "close") {
+                        if (nvl(this_.mask) == ''){
+                            mask.close();
+                        }else{
+                            this_.mask.close();
+                        }
+                    }
+                }
+            }, function () {
+
+            });
+        /*}*/
     },
 });
 
@@ -444,6 +838,21 @@ var isUndefined = function (value) {
     return false;
 };
 
+
+/**
+ * 주어진 객체가 비어있는지 확인하는 함수
+ * @param {Object} obj - 확인할 객체 ( [] or {} )
+ * @returns {boolean} - 객체가 비어있으면 true, 그렇지 않으면 false를 반환
+ * 작성 - 이용선_20230309
+ */
+var isEmpty = function (obj) {
+    if(typeof obj === 'object' && obj !== null){ //객체 여부를 확인
+        return Object.keys(obj).length === 0;
+    }else{
+        return false;
+    }
+};
+
 var nvl = function (A, B) {
     var type;
     var temp;
@@ -456,7 +865,7 @@ var nvl = function (A, B) {
     }else{
         temp = A;
     }
-    if (!isNull(temp) && !isUndefined(temp)) {
+    if (!isNull(temp) && !isUndefined(temp) && !isEmpty(temp)) {
 
         if (type == 'number'){
             A = Number(A);
@@ -691,10 +1100,10 @@ var qray = {
         if ($('.layer_wrap').length == 0) {
             return new Promise(function (resolve, reject) {
                 var messageHtml = "<div class=\"layer_wrap\">\n" +
-                    "            <div style='" + this.boxStyle + " width: " + width + "; height: " + height + " top: " + top + " left: " + left + "' class=\"layer_alert\">\n" +
+                    "            <div style='" + nvl(this.boxStyle) + " width: " + width + "; height: " + height + " top: " + top + " left: " + left + "' class=\"layer_alert\">\n" +
                     "<div class='layer_alertBar'>알림</div>" +
                     "                <p style='margin-top:25px;'>" + message + "</p>\n" +
-                    "                <div style='" + this.buttonStyle + "' class=\"layer_btn\"><button type=\"button\" class=\"ok\">확인</button></div>\n" +
+                    "                <div style='" + nvl(this.buttonStyle) + "' class=\"layer_btn\"><button type=\"button\" class=\"ok\">확인</button></div>\n" +
                     "            </div>\n" +
                     "        </div>";
 
@@ -711,10 +1120,10 @@ var qray = {
 
                     if ($('.layer_wrap').length == 0) {
                         var messageHtml = "<div class=\"layer_wrap\">\n" +
-                            "<div style='" + this.boxStyle + " width: " + width + "; height: " + height + " top: " + top + " left: " + left + "' class=\"layer_alert\">\n" +
+                            "<div style='" + nvl(this.boxStyle) + " width: " + width + "; height: " + height + " top: " + top + " left: " + left + "' class=\"layer_alert\">\n" +
                             "<div class='layer_alertBar'>알림</div>" +
                             "                <p style='margin-top:25px;'>" + message + "</p>\n" +
-                            "                <div style='" + this.buttonStyle + "' class=\"layer_btn\"><button type=\"button\" class=\"ok\">확인</button></div>\n" +
+                            "                <div style='" + nvl(this.buttonStyle) + "' class=\"layer_btn\"><button type=\"button\" class=\"ok\">확인</button></div>\n" +
                             "            </div>\n" +
                             "        </div>";
 
@@ -774,11 +1183,23 @@ var qray = {
         return this;
     },
     confirm: function (init, fn) {
-        var message, btnHtml = "", _this = this;
+        var message, btnHtml = "",inputHtml = "", _this = this;
         if (nvl(init) != '') {
             if (nvl(init.msg) != '') {
                 message = init.msg;
             }
+            /*if (nvl(init.approve_line) != '') {
+                let html = '';
+                html += '<input class="' + "1111" + '">'
+                $("body").append(html);
+                if(init.approve_line.APPROVE_CD !=''){
+
+                }
+                if(init.approve_line.APPROVE_FI_CD !=''){
+
+                }
+
+            }*/
             if (nvl(init.btns) != '') {
                 var obj = {};
                 for (var i = 0; i < Object.keys(init.btns).length; i++) {
@@ -795,10 +1216,14 @@ var qray = {
 
                     obj[btnKey] = btnEvent;
                 }
-
+                /*if (nvl(init.approve_line) != '') {
+                    inputHtml += "<input type='text' style='width: 40px'>"
+                    inputHtml += "<input type='text' style='width: 40px'>"
+                }*/
                 var messageHtml = "<div class=\"layer_wrap\">\n" +
                     "            <div  style='" + this.boxStyle + "' class=\"layer_alert\">\n" +
                     "<div class='layer_alertBar'>" + nvl(init.title, '알림') + "</div>" +
+                    /*"<div>" + inputHtml + "</div>" +*/
                     "                <p  style='margin-top:25px; " + this.textStyle + "'>" + message + "</p>\n" +
                     "                <div  style='" + this.buttonStyle + "' class=\"layer_btn\">" + btnHtml + "</div>\n" +
                     "            </div>\n" +
@@ -991,7 +1416,8 @@ var qray = {
                         err.message = temp[1]
                     }
 
-                    qray.alert(err.message)
+                    qray.alert(err.message);
+                    qray.loading.hide();
                 }
             }
         });
@@ -1072,6 +1498,20 @@ var qray = {
                 resolve();
             }, 10); //  0.01초 마다 refresh
         });
+    },
+    toast: function (msg, Position){
+        let toast = new ax5.ui.toast({
+                        containerPosition: nvl(Position, "top-right"),
+                        theme: "default",
+                        icon: '<i class="cqc-bell"></i>',
+                        onStateChanged: function(){
+                            //console.log(this);
+                        }
+                    });
+        toast.push(msg, function () {ㅅ
+            // close toast
+        });
+
     }
 };
 
@@ -1830,9 +2270,14 @@ $(document).ready(function () {
             self.attr("HELP_PARAM", e);
         }
     };
+    $.fn.setParamClear = function (e) {
+        var self = this;
+        self.attr("HELP_PARAM", '');
+    };
     $.fn.setClear = function (e) {
         var self = this;
 
+        self.attr("DEFAULT_VALUE", '');
         if(self.is('multipicker')) {
             self.find("[data-ax5select='multi']").ax5select({
                 options: []
@@ -2280,7 +2725,9 @@ $(document).ready(function () {
                     options: option
                 });
                 $(pickerInfo).find("#multi").ax5select("setValue", setting, true);
-                $(pickerInfo).attr('DEFALUT_VALUE',JSON.stringify(e))
+                $(pickerInfo).attr('DEFAULT_VALUE',JSON.stringify(e))
+                myEvent = new CustomEvent("dataBind", {'detail': e});
+                $(self)[0].dispatchEvent(myEvent);
             }
             modal.close();
         };
@@ -2298,8 +2745,8 @@ $(document).ready(function () {
             if(pickerInfo.getAttribute('HELP_PARAM')){
                 param = JSON.parse(pickerInfo.getAttribute('HELP_PARAM'));
             }
-            if(pickerInfo.getAttribute('DEFALUT_VALUE')){
-                param.DEFAULT_VALUE =  JSON.parse(pickerInfo.getAttribute('DEFALUT_VALUE'));
+            if(pickerInfo.getAttribute('DEFAULT_VALUE')){
+                param.DEFAULT_VALUE =  JSON.parse(pickerInfo.getAttribute('DEFAULT_VALUE'));
             }
             if (!disabled) {
                 $.openCommonPopup(url, "callback2", action, '', nvl(param, '') == '' ? {} : param, width, height, nvl(top,25), mapping);
@@ -3137,7 +3584,6 @@ $(document).ready(function () {
         // ,
         setFormData: {
             value: function (d) {
-                //console.log(d,'<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<');
                 this.FormClear();
                 if(!d){
                     return
@@ -3170,8 +3616,8 @@ $(document).ready(function () {
                             var startKey = $(co).attr('date-start-column');
                             var endKey = $(co).attr('date-end-column');
                             var parentId = $('#'+Object.keys(d)[i]).attr('parent-id')
-                            $('#'+parentId).setStartDate(d[startKey]);
-                            $('#'+parentId).setEndDate(d[endKey])
+                            $(co).setStartDate(d[startKey])
+                            $(co).setEndDate(d[endKey])
                         }else if(cot == 'datepicker'){
                             $('#'+Object.keys(d)[i]).setDate(d[Object.keys(d)[i]]);
                         }else if(cot == 'decimal'){
@@ -3565,89 +4011,6 @@ var groupWareOpen = function (type, draftNo) {
         requestParam.INTRLCK_CD_NAME, requestParam.INTRLCK_CD_VAL, requestParam.CMP_ID, SCRIPT_SESSION.empNo)
 }
 
-function 정보통신(type) {
-    if (type == 'card') {
-        return 정보통신_법인카드();
-    } else if (type == 'tax') {
-        return 정보통신_세금();
-    } else if (type == 'etc') {
-        return 정보통신_기타();
-    }
-}
-
-function 유통(type) {
-    if (type == 'card') {
-        return 유통_법인카드();
-    } else if (type == 'tax') {
-        return 유통_세금();
-    } else if (type == 'etc') {
-        return 유통_기타();
-    }
-}
-
-function 정보통신_법인카드() {
-    var param = {
-        WORK_ID : 'AW184162614329148232904',
-        INTRLCK_CD_NAME : 'QRCC_IC',
-        INTRLCK_CD_VAL : 'QRCC_IC',
-        CMP_ID : 'C451717708',
-        USER_ID : SCRIPT_SESSION.empNo
-    }
-    return param;
-}
-
-function 정보통신_세금() {
-    var param = {
-        WORK_ID : 'AW184150238372222792734',
-        INTRLCK_CD_NAME : 'QREC_IC',
-        INTRLCK_CD_VAL : 'QREC_IC',
-        CMP_ID : 'C451717708',
-        USER_ID : SCRIPT_SESSION.empNo
-    }
-    return param;
-}
-function 정보통신_기타() {
-    var param = {
-        WORK_ID : 'AW885447283077005350',
-        INTRLCK_CD_NAME : 'QRET_IC',
-        INTRLCK_CD_VAL : 'QRET_IC',
-        CMP_ID : 'C451717708',
-        USER_ID : SCRIPT_SESSION.empNo
-    }
-    return param;
-}
-function 유통_법인카드() {
-    var param = {
-        WORK_ID : 'AW184077250219526565428',
-        INTRLCK_CD_NAME : 'QRCC_CC',
-        INTRLCK_CD_VAL : 'QRCC_CC',
-        CMP_ID : 'C445520882',
-        USER_ID : SCRIPT_SESSION.empNo
-    }
-    return param;
-}
-function 유통_세금() {
-    var param = {
-        WORK_ID : 'AW184065371464562921752',
-        INTRLCK_CD_NAME : 'QREC_CC',
-        INTRLCK_CD_VAL : 'QREC_CC',
-        CMP_ID : 'C445520882',
-        USER_ID : SCRIPT_SESSION.empNo
-    }
-    return param;
-}
-function 유통_기타() {
-    var param = {
-        WORK_ID : 'AW184077818527611681783',
-        INTRLCK_CD_NAME : 'QRET_CC',
-        INTRLCK_CD_VAL : 'QRET_CC',
-        CMP_ID : 'C445520882',
-        USER_ID : SCRIPT_SESSION.empNo
-    }
-    return param;
-}
-
-
 function onSubmit(url, serverKey, companyCd, draftNo, WORK_ID, INTRLCK_CD_NAME, INTRLCK_CD_VAL, CMP_ID, USER_ID){
     var url = "https://dgw.daebogroup.com/ekp/view/openapi/IF_GWQRAY_goWrite"
     var param = {
@@ -3677,6 +4040,22 @@ function onSubmit(url, serverKey, companyCd, draftNo, WORK_ID, INTRLCK_CD_NAME, 
         }
         return result;
     }
+}
+
+/**
+ * 법인카드 내역 및 매입 내역 미리보기
+ * ex)docuView(KEY, DOCU_CD);
+ * 법인카드 경우 KEY = RESULT_KEY or TEMP_RESULT_KEY, DOCU_CD = 05
+ * 매입    경우 KEY = ISS_NO, DOCU_CD = 03
+ */
+var docuViewCallBack;
+function docuView(KEY, DOCU_CD){
+    docuViewCallBack = function () {
+        qray.loading.hide();
+    }
+
+    qray.loading.show('미리보기 생성중 입니다.');
+    $.openCommonPopup("/jsp/docuView.jsp", "docuViewCallBack",  '', '', {"KEY": KEY, "DOCU_CD": DOCU_CD}, 1600, 1000, 10000);
 }
 
 
@@ -3802,4 +4181,62 @@ async function userColumnSet(gridName){
     }
     return result;
 
+    // Code filtering function
+    function filterCodes(codes, column) {
+        if (filterEnabled === 'Y' && filterSettings.hasOwnProperty(column)) {
+            return codes.filter(item => filterSettings[column].includes(item.CODE));
+        }
+        return codes;
+    }
+
+
+}
+
+/**
+ * 휴폐업조회 함수
+ * @param companyNos
+ * companyNos 사업자번호 arr
+ * @returns {data}
+ */
+function commonCompanyCheck(companyNos) {
+
+    if(companyNos != '' && Array.isArray(companyNos)){
+
+        let result;
+        axboot.ajax({
+            type: "POST",
+            url: ["common", "companyCheck"],
+            async: false,
+            data: JSON.stringify({
+                companyNos : companyNos
+            }),
+            callback: function (res) {
+                result = res.map
+            },
+            options: {
+                onError: function (err) {
+                    qray.alert(err.message);
+                    axAJAXMask.close(300);
+                }
+            }
+        });
+
+        return result;
+
+    }
+
+}
+
+/** 공급가액으로 부가세를 계산해주는 함수
+ *  @param 공급가액
+ *  세액 계산시 반올림 후 총액 – 세액 = 공급가액
+ *  @retrun ex {supplyAmt : 1000, vat : 100, totAmt : 1100}
+ */
+function autoSupplyVat(supplyAmt){
+    supplyAmt = Number(supplyAmt);
+    let vat = supplyAmt * 0.1;
+    vat =  Math.round(vat);
+    let totAmt = vat + supplyAmt;
+    supplyAmt = totAmt - vat;
+    return {supplyAmt : supplyAmt, vat : vat, totAmt : totAmt};
 }

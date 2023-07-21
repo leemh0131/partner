@@ -17,7 +17,6 @@
 
         </style>
 
-
         <script type="text/javascript">
             var _tabview 	= this.parent.fnObj.tabView; 				//받아온데이터 대상객체(초기화할때사용함)
             var _urlGetData = this.parent.fnObj.tabView.urlGetData(); 	//받아온데이터
@@ -167,6 +166,7 @@
                     });
                 },
                 ITEM_ADD: function(caller, act, data){
+                    debugger;
                     fnObj.gridView01.addRow();
                     var lastIdx = nvl(fnObj.gridView01.target.list.length, fnObj.gridView01.lastRow());
                     selectRow = lastIdx - 1;
@@ -279,18 +279,7 @@
                 },
             });
 
-            fnObj.pageStart = function () {
-                this.pageButtonView.initView();
-                this.gridView01.initView();
-                this.gridViewTab1.initView();
-                this.gridViewTab2.initView();
 
-                if (nvl(_urlGetData) != ''){
-                    ACTIONS.dispatch(ACTIONS.PARAM_ADD);
-                }else{
-                    ACTIONS.dispatch(ACTIONS.PAGE_SEARCH);
-                }
-            };
 
             fnObj.pageButtonView = axboot.viewExtend({
                 initView: function () {
@@ -572,7 +561,6 @@
                 }
             });
 
-
             fnObj.gridViewTab2 = axboot.viewExtend(axboot.gridView, {
                 page: {
                     pageNumber: 0,
@@ -717,8 +705,18 @@
                 });
             };
 
+            fnObj.pageStart = function () {
+                this.pageButtonView.initView();
+                this.gridView01.initView();
+                this.gridViewTab1.initView();
+                this.gridViewTab2.initView();
 
-
+                if (nvl(_urlGetData) != ''){
+                    ACTIONS.dispatch(ACTIONS.PARAM_ADD);
+                }else{
+                    ACTIONS.dispatch(ACTIONS.PAGE_SEARCH);
+                }
+            };
 
             $(document).ready(function () {
                 changesize();
@@ -929,6 +927,7 @@
                  */
 
             }
+
             function isChecked(data) {
                 var array = [];
                 for (var i = 0; i < data.length; i++) {
@@ -961,9 +960,9 @@
 
             });
 
-
         </script>
     </jsp:attribute>
+
     <jsp:body>
         <style>
 
@@ -1025,10 +1024,10 @@
                     <div class="right">
                         <button type="button" class="btn btn-small" data-grid-view-01-btn="add"
                                 style="width:80px;"><i
-                                class="icon_add"></i> <ax:lang id="ax.admin.add"/></button>
+                                class="icon_add"></i><ax:lang id="ax.admin.add"/></button>
                         <button type="button" class="btn btn-small" data-grid-view-01-btn="delete"
                                 style="width:80px;"><i
-                                class="icon_del"></i> <ax:lang id="ax.admin.delete"/></button>
+                                class="icon_del"></i><ax:lang id="ax.admin.delete"/></button>
                     </div>
                 </div>
                 <div data-ax5grid="grid-view-01"

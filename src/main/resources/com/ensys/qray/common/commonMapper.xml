@@ -89,6 +89,31 @@
     <select id="HELP_CHECK_SEARCH" resultType="hashmap" parameterType="hashmap">
         SELECT NULL
     </select>
+
+	<select id="getCommonCodes" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*commonMapper.getCommonCodes*/
+		SELECT    B.FIELD_CD	AS "FIELD_CD"
+		, B.SYSDEF_CD 	AS "SYSDEF_CD"
+		, B.SYSDEF_NM 	AS "SYSDEF_NM"
+		, B.FLAG1_CD	AS "FLAG1_CD"
+		, B.FLAG2_CD	AS "FLAG2_CD"
+		, B.FLAG3_CD	AS "FLAG3_CD"
+		, B.FLAG4_CD  	AS "FLAG4_CD"
+		FROM   ES_CODE A
+		JOIN   ES_CODEDTL B
+		ON     A.COMPANY_CD = B.COMPANY_CD
+		AND    A.FIELD_CD   = B.FIELD_CD
+		WHERE  1 = 1
+		AND    A.COMPANY_CD = #{COMPANY_CD}
+		<if test = " FIELD_CD.size() > 0 and !FIELD_CD.get(0).equals('') ">
+			AND    A.FIELD_CD   IN
+			<foreach collection="FIELD_CD" item="item"  open="(" close=")" separator=",">
+				#{item}
+			</foreach>
+		</if>
+		AND B.USE_YN = 'Y'
+		ORDER BY B.SYSDEF_CD
+	</select>
     
     <select id="getCommonCode" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
 		/*commonMapper.getCommonCode*/
