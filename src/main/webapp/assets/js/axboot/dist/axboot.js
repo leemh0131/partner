@@ -121,7 +121,20 @@ axboot.pageStart = function () {
         var inputs = $("input");
         if (inputs.length > 0) {
             for (var i = 0; i < inputs.length; i++) {
-				inputs[i].setAttribute('autocomplete', "off");
+                //inputs[i].setAttribute('autocomplete', "off");  엣지에서 동작하기 위해서 off -> nope로 변경 (Firefox 에선 동작하지 않음)
+                if (navigator.userAgent.indexOf("MSIE") !== -1 || navigator.userAgent.indexOf("Trident") !== -1) {
+                    // Internet Explorer 또는 IE 기반 브라우저
+                    inputs[i].setAttribute('autocomplete', "off");
+                } else if (navigator.userAgent.indexOf("Firefox") !== -1) {
+                    // Firefox
+                    inputs[i].setAttribute('autocomplete', "nope");
+                } else if (navigator.userAgent.indexOf("Chrome") !== -1 || navigator.userAgent.indexOf("Safari") !== -1) {
+                    // Chrome 또는 Safari
+                    inputs[i].setAttribute('autocomplete', "off");
+                } else {
+                    // 다른 브라우저
+                    inputs[i].setAttribute('autocomplete', "nope");
+                }
 
                 if (nvl(inputs[i].getAttribute('code')) != '') {
                     var target = $(inputs[i]);
@@ -706,6 +719,15 @@ axboot.pageResize = function () {
  */
 axboot.layoutResize = function (_delay) {
 
+    // 원하지 않게 호출된 경우 _delay 가 undifined다 이 경우 페이지 resize를 할 필요가 없어서 리턴한다.
+    if(nvl(_delay)=='') {
+        return;
+    }
+
+    if (typeof changesize != 'undefined' && changesize != null && $.isFunction(changesize)) {
+        changesize.call();
+    }
+
     $('[data-fit-height-content]').each(function () {
         var $this = $(this);
         var _pHeight = $this.offsetParent().height();
@@ -716,6 +738,7 @@ axboot.layoutResize = function (_delay) {
         });
         $this.css({height: _pHeight - _asideHeight});
     });
+
 
     function fn() {
         if (ax5.ui.grid_instance) {
@@ -2086,11 +2109,33 @@ axboot.gridBuilder = function () {
             firstIcon: '<i class="cqc-controller-jump-to-start"></i>',
             prevIcon: '<i class="cqc-triangle-left"></i>',
             nextIcon: '<i class="cqc-triangle-right"></i>',
-            lastIcon: '<i class="cqc-controller-next"></i>'
+            lastIcon: '<i class="cqc-controller-next"></i>',
+            /** this.target에 담아줄 page 정보 생성 */
+            currentPage: 0,        /** 현재 페이지(css)*/
+            pageSize: 100,               /** 한 페이지에 보여줄 개수*/
+            totalElements: 0,           /** 총 개수 */
+            totalPages: 0,             /** 총 페이지*/
+            clear: function() {
+                this.currentPage = 0;
+                this.totalElements = 0;
+                this.totalPages = 0;
+            },
+            init: function () {
+                for (let i = 0; i < SCRIPT_PAGE_SIZE.length; i++) {
+                    if (nvl(SCRIPT_PAGE_SIZE[i].FLAG1_CD) == 'Y') {
+                        this.pageSize = Number(SCRIPT_PAGE_SIZE[i].TEXT);
+                    }
+                }
+                if (this.pageSize == 0) {
+                    this.pageSize = 999999;
+                }
+            }
         }
     };
 
     return function (_config) {
+        /** 기본으로 설정 되어있는 pageSize로 조정 */
+        defaultGridConfig.page.init();
         var myGridConfig = $.extend(true, {}, defaultGridConfig, _config);
 
         var convertColumn = function convertColumn(columns) {
@@ -3115,13 +3160,7 @@ axboot.gridView = {
         currentPage: 0,        /** 현재 페이지(css)*/
         pageSize: 200,               /** 한 페이지에 보여줄 개수*/
         totalElements: 0,           /** 총 개수 */
-        totalPages: 0,             /** 총 페이지*/
-        clear: function() {
-            this.currentPage = 0;
-            this.pageSize = 200;
-            this.totalElements = 0;
-            this.totalPages = 0;
-        }
+        totalPages: 0             /** 총 페이지*/
     },
     setData: function setData(_data) {
         this.target.setData(_data);
@@ -3148,15 +3187,7 @@ axboot.gridView = {
         this.target.align();
     },
     clear: function clear() {
-        this.target.setData({
-            list: [],
-            page: {
-                currentPage: 0,
-                pageSize: 200,
-                totalElements: 0,
-                totalPages: 0
-            }
-        });
+        this.target.clear();
     },
     setPageData: function setPageData(_page) {
         this.page = $.extend(this.page, _page);
