@@ -30,6 +30,7 @@
         var SCRIPT_SESSION = (function(json){return json;})(${loginUser});
         </script>
         <link href="/assets/css/style.css" rel="stylesheet" type="text/css" />
+        <link rel="stylesheet" href="/assets/css/guide.css?v=<%=System.currentTimeMillis()%>" type="text/css">
 		<link rel="stylesheet" href="/assets/css/reset.css" type="text/css">
 	    <link rel="stylesheet" href="/assets/css/common.css" type="text/css">
 	    <link rel="stylesheet" href="/assets/css/content.css?v=<%=System.currentTimeMillis()%>" type="text/css">

@@ -38,6 +38,7 @@
 
         <link rel="stylesheet" type="text/css" href="/assets/css/font-awesome.min.css?v=<%=System.currentTimeMillis()%>">
         <link rel="stylesheet" type="text/css" href="/assets/css/axboot.css?v=<%=System.currentTimeMillis()%>">
+        <link rel="stylesheet" href="/assets/css/guide.css?v=<%=System.currentTimeMillis()%>" type="text/css">
         <link rel="stylesheet" href="/assets/css/content.css?v=<%=System.currentTimeMillis()%>" type="text/css">
         <link rel="stylesheet" href="/assets/css/reset.css?v=<%=System.currentTimeMillis()%>" type="text/css">
         <link href="/assets/css/layout.css?v=<%=System.currentTimeMillis()%>" rel="stylesheet" type="text/css"/>
