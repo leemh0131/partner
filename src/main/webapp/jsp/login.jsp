@@ -148,9 +148,9 @@
 				<p class="login-locataion">
 					<b>Login</b><!--Expense Management System-->
 				</p>
-				<div class="login-form">
+				<div class="login-form" style="height: 400px">
 					<p class="logo">
-						<img src="/assets/images/login/img_logo.svg" alt="Q-RAY">
+						<%--<img src="/assets/images/login/img_logo.svg" alt="PARTNER">--%>
 					</p>
 					<p class="title"></p>
 					<%--<div class="form-depth1">
