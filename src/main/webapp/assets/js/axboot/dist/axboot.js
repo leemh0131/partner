@@ -2121,11 +2121,11 @@ axboot.gridBuilder = function () {
                 this.totalPages = 0;
             },
             init: function () {
-                for (let i = 0; i < SCRIPT_PAGE_SIZE.length; i++) {
+                /*for (let i = 0; i < SCRIPT_PAGE_SIZE.length; i++) {
                     if (nvl(SCRIPT_PAGE_SIZE[i].FLAG1_CD) == 'Y') {
                         this.pageSize = Number(SCRIPT_PAGE_SIZE[i].TEXT);
                     }
-                }
+                }*/
                 if (this.pageSize == 0) {
                     this.pageSize = 999999;
                 }
