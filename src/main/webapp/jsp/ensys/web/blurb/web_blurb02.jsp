@@ -3,7 +3,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="ax" tagdir="/WEB-INF/tags" %>
 
-<ax:set key="title" value="괄고패키지"/>
+<ax:set key="title" value="광고패키지"/>
 <ax:set key="page_desc" value="${pageRemark}"/>
 <ax:set key="page_auto_height" value="true"/>
 <ax:layout name="base">
@@ -708,466 +708,365 @@
             fnObj.pageStart = function () {
                 this.pageButtonView.initView();
                 this.gridView01.initView();
-                this.gridViewTab1.initView();
-                this.gridViewTab2.initView();
+                this.gridView02.initView();
 
-                if (nvl(_urlGetData) != ''){
-                    ACTIONS.dispatch(ACTIONS.PARAM_ADD);
-                }else{
-                    ACTIONS.dispatch(ACTIONS.PAGE_SEARCH);
-                }
+                ACTIONS.dispatch(ACTIONS.PAGE_SEARCH);
             };
 
-            $(document).ready(function () {
-                changesize();
+            fnObj.pageResize = function () {
 
-                $('#tabGrid0, #tabGrid1, #tabGrid2').attrchange({
-                    trackValues: true,
-                    callback: function (event) {
-                        if(event.attributeName == 'data-tab-active'){
-                            changesize();
+            };
+
+
+            fnObj.pageButtonView = axboot.viewExtend({
+                initView: function () {
+                    axboot.buttonClick(this, "data-page-btn", {
+                        "search": function () {
+                            ACTIONS.dispatch(ACTIONS.PAGE_SEARCH);
+                        },
+                        "save": function () {
+                            ACTIONS.dispatch(ACTIONS.PAGE_SAVE);
                         }
-                    }
-                });
+                    });
+                }
+            });
 
-                $("#KEYWORD").focus();
-                $("#KEYWORD").keydown(function (e) {
-                    if (e.keyCode == '13') {
-                        ACTIONS.dispatch(ACTIONS.PAGE_SEARCH);
-                    }
-                });
+            /**
+             * gridView01
+             */
+            fnObj.gridView01 = axboot.viewExtend(axboot.gridView, {
+                page: {
+                    pageNumber: 0,
+                    pageSize: 10
+                },
+                initView: function () {
 
-                $("#FILE").on('dataBind', function(e){
-                    console.log("file dataBind : ", e);
-                    var itemH = fnObj.gridView01.target.getList('selected')[0];
-                    if (nvl(itemH) == '') return;
+                    this.target = axboot.gridBuilder({
+                        showRowSelector: true,
+                        frozenColumnIndex: 0,
+                        target: $('[data-ax5grid="grid-view-01"]'),
+                        childGrid : [fnObj.gridView02],
+                        type : "POST",
+                        classUrl : "Webblurb02",
+                        methodUrl :  "packageHeader",
+                        async : false,
+                        param : function(){
+                            var param = {
 
-                })
+                            }
+                            return JSON.stringify(param);
+                        },
+                        columns: [
+                            {
+                                key: "CD_PACKAGE", label: "패키지코드", width: 80, align: "left", editor: {
+                                    type: "text",
+                                    disabled: function () {
+                                        var created = fnObj.gridView01.target.getList('selected')[0].__created__;
 
-                $(".QRAY_FORM").find("[data-ax5select]").change(function () {
-                    console.log(this.id, " : ", this.value);
-                    var itemH = fnObj.gridView01.target.getList('selected')[0];
-                    if (nvl(itemH) == '') return;
-                    fnObj.gridView01.target.setValue(itemH.__index, this.id, $('select[name="' + this.id + '"]').val())
-                });
+                                        if(nvl(created, '') == '') {
+                                            return true;
+                                        }else {
+                                            return false;
+                                        }
+                                    }
+                                }, sortable: true,
+                            },
+                            {
+                                key: "NM_PACKAGE",
+                                label: "패키지명",
+                                width: '100',
+                                align: "left",
+                                editor: {type: "text"},
+                                sortable: true,
+                            },
+                            {
+                                key: "YN_USE",
+                                label: "사용여부",
+                                width: '60',
+                                align: "left",
+                                editor: {type: "text"},
+                                sortable: true,
+                            },
+                            {
+                                key: "DT_PRODUCE",
+                                label: "생성일자",
+                                width: '80',
+                                align: "left",
+                                editor: {type: "text"},     // 날짜타입있나? 해야하나?
+                                sortable: true,
+                            },
+                        ],
+                        body: {
+                            onClick: function () {
+                                var chekVal;
+                                var sameSelected;
+                                var idx;
+                                idx = this.dindex;
 
-                $(".QRAY_FORM").find("input[type='text'], input[type='number']").change(function () {
-                    console.log(this.id, " : ", this.value);
-                    var itemH = fnObj.gridView01.target.getList('selected')[0];
-                    if (nvl(itemH) == '') return;
-                    fnObj.gridView01.target.setValue(itemH.__index, this.id, $('#' + this.id).val())
-                });
+                                $(this.list).each(function (i, e) {
+                                    if(e.__created__) {
+                                        if(i != idx) {
+                                            chekVal = true;
+                                        }
+                                    }
 
-                $(".QRAY_FORM").find("input[type='checkbox']").change(function () {
-                    var itemH = fnObj.gridView01.target.getList('selected')[0];
-                    if (nvl(itemH) == '') return;
-                    if ($("input[id=" + this.id + "]").prop('checked')){
-                        fnObj.gridView01.target.setValue(itemH.__index, this.id, 'Y');
-                    }else{
-                        fnObj.gridView01.target.setValue(itemH.__index, this.id, 'N');
-                    }
-
-                });
-
-                $('#COMPANY_NO').focusout(function () {
-                    if (nvl(fnObj.gridView01.target.getList('selected')[0]) == '') {
-                        return false;
-                    }
-
-                    var Hipervalue = this.value;
-                    if (nvl(Hipervalue) == '') {
-                        return;
-                    }
-                    var value = Hipervalue.replace(/\-/g, '');
-                    if (value == '8888888888' || value == '9999999999') {     //  히든 값 [ 개인일 때 사업자번호가 없을 수 있으니까. ]
-                        return false;
-                    }
-
-                    if (fnObj.gridView01.target.getList('selected')[0].COMPANY_NO2 == fnObj.gridView01.target.getList('selected')[0].COMPANY_NO) {
-                        return false;
-                    }
-                    // if (value.length == 10) {
-                    /*axboot.ajax({
-                        type: "POST",
-                        url: ["mapartnerm", "NoCompanyChk"],
-                        data: JSON.stringify({COMPANY_NO: value}),
-                        callback: function (res) {
-                            console.log("nocompanychk", res);
-                            if (res.map.COUNT > 0) {
-                                Dialog.alert({
-                                    title: "알림",
-                                    msg: "이미 등록된 거래처의 사업자번호입니다.",
-                                    onStateChanged: function () {
-                                        if (this.state === "open") {
-                                            mask.open();
-                                        } else if (this.state === "close") {
-                                            mask.close();
-                                            fnObj.gridView01.target.setValue(fnObj.gridView01.target.getList('selected')[0].__index, 'COMPANY_NO', '');
-                                            $("#COMPANY_NO").val('');
+                                    if(e.__selected__) {
+                                        if(i == idx) {
+                                            sameSelected = true;
                                         }
                                     }
                                 });
-                            } else {
 
-                                // 사업자등록번호 검사
-                                // 사업자등록번호는 숫자만 10자리로 해서 문자열로 넘긴다.
-                                var checkID = [1, 3, 7, 1, 3, 7, 1, 3, 5, 1];
-                                var i, chkSum = 0, c2, remander;
-
-                                for (i = 0; i <= 7; i++)
-                                    chkSum += checkID[i] * value.charAt(i);
-                                c2 = "0" + (checkID[8] * value.charAt(8));
-                                c2 = c2.substring(c2.length - 2, c2.length);
-                                chkSum += Math.floor(c2.charAt(0)) + Math.floor(c2.charAt(1));
-                                remander = (10 - (chkSum % 10)) % 10;
-
-                                if (Math.floor(value.charAt(9)) != remander || value.length < 10) // remander와 같으면 형식에 맞는 사업자 번호이다.
-                                {
-
-                                    Dialog.alert({
-                                        title: "알림",
-                                        msg: "사업자번호가 잘못된 형식입니다.",
-                                        onStateChanged: function () {
-                                            if (this.state === "open") {
-                                                mask.open();
-                                            } else if (this.state === "close") {
-                                                mask.close();
-                                                fnObj.gridView01.target.setValue(fnObj.gridView01.target.getList('selected')[0].__index, 'COMPANY_NO', '');
-                                                $("#COMPANY_NO").val('');
-                                            }
+                                if(sameSelected == false && chekVal == false) {
+                                    $(fnObj.gridView02.target.list).each(function (i, e) {
+                                        if(e.__modified__) {
+                                            chekVal = true;
+                                            return false;
                                         }
                                     });
+                                }
 
-                                    /!*qray.confirm({
-                                        msg: '사업자번호가 잘못된 형식입니다. \n 허용 하시겠습니까?',
-                                        btns: {
-                                            apply: {
-                                                label: '네', onClick: function (key) {
-                                                    Dialog.close();
-                                                }
-                                            },
-                                            other: {
-                                                label: '아니요', onClick: function (key) {
-                                                    $("#COMPANY_NO").val('');
-                                                    Dialog.close();
-                                                }
-                                            }
-                                        }
-                                    }, function () {
+                                if(sameSelected) return;
 
-                                    });*!/
+                                this.self.select(this.dindex);
+                                ACTIONS.dispatch(ACTIONS.ITEM_CLICK, this.item);
+                            },
+                            onDataChanged: function () {
+                                if(this.key == 'CD_PACKAGE') {
+                                    var list = fnObj.gridView02.target.list;
+
+                                    for(var i = 0; i < list.length; i++) {
+                                        fnObj.gridView02.target.setValue(i, 'CD_PACKAGE', this.value);
+                                    }
                                 }
                             }
                         }
-                    })*/
-                    // }
-                });
+                    });
+
+                    axboot.buttonClick(this, "data-grid-view-01-btn", {
+                        "add": function () {
+                            var chekVal;
+
+                            ACTIONS.dispatch(ACTIONS.ITEM_ADD1);
+                        },
+                        "delete": function () {
+                            ACTIONS.dispatch(ACTIONS.ITEM_DEL1);
+                        }
+                    });
+                },
+                addRow: function () {
+                    this.target.addRow({__created__: true}, "last");
+                },
+                lastRow: function () {
+                    return ($("div [data-ax5grid='grid-view-01']").find("div [data-ax5grid-panel='body'] table tr").length);
+                }
             });
 
-            function companyCheck(){
-                var COMPANY_NO = $('#COMPANY_NO').val()
-                qray.loading.show('휴폐업 조회중입니다.').then(function(){
-                    var result = qray.search('scrapApi' , 'getTaxTypeFromNts' , {COMPANY_NO : COMPANY_NO} )
-                    if(result && result.map && result.map.MSG){
-                        qray.loading.hide();
-                        qray.alert(result.map.MSG)
-                    }else{
-                        qray.loading.hide();
-                    }
-                })
 
-            }
+            /**
+             * gridView02
+             */
+            fnObj.gridView02 = axboot.viewExtend(axboot.gridView, {
+                page: {
+                    pageNumber: 0,
+                    pageSize: 10
+                },
+                initView: function () {
 
+                    this.target = axboot.gridBuilder({
+                        showRowSelector: true,
+                        frozenColumnIndex: 0,
+                        target: $('[data-ax5grid="grid-view-02"]'),
+                        parentGrid : fnObj.gridView01,
+                        type : "POST",
+                        classUrl : "Webblurb02",
+                        methodUrl :  "packageDetail",
+                        async : false,
+                        param : function(){
+                            var selected = fnObj.gridView01.target.getList('selected')[0];
+                            return JSON.stringify($.extend({}, selected));
+                        },
+                        columns: [
+                            {
+                                key: "CHK", label: "", width: 40, align: "center", dirty: false,
+                                label:
+                                    '<div id="headerBox" data-ax5grid-editor="checkbox" data-ax5grid-checked="false" data-ax5grid-column-selected="true" style="height:17px;width:17px;margin-top:2px;  onclick="javascript:alert(1);"></div>',
+                                editor: {
+                                    type: "checkbox", config: {height: 17, trueValue: "Y", falseValue: "N"}
+                                }
+                            },
+                            {
+                                key: "CD_PACKAGE",
+                                label: "패키지코드",
+                                width: 80,
+                                align: "left",
+                                editor: {type: "text"},
+                                hidden: true, sortable: true,
+                            },
+                            {key: "CD_ADVERTISE", label: "광고코드", width: 80, sortable: true, align: "left",editor: false},
+                            {key: "SEQ", label: "순번", width: 60, align: "left", sortable: true, editor: false},
+                            {key: "AM", label: "금액", width: 100, sortable: true, align: "left",editor: {type: "number"}},
+                            {key: "RT_SALE", label: "할인율", width: 80, align: "left", sortable: true, editor: {type: "number"}}
+
+                        ],
+                        body: {
+                            onClick: function () {
+                                this.self.select(this.dindex);
+                                selectRow = this.dindex;
+                            },
+                            onDataChanged: function () {
+                                if(this.key == 'CD_PACKAGE') {
+                                    if(this.value == '') {
+                                        // fnObj.gridView02.target.setValue(this.dindex, "NM_PACKAGE", '');
+                                    }
+                                }
+                            }
+                        }
+                    });
+
+                    axboot.buttonClick(this, "data-grid-view-02-btn", {
+                        "add": function () {
+                            ACTIONS.dispatch(ACTIONS.ITEM_ADD2);
+                        },
+                        "delete": function () {
+                            var beforeIdx = this.target.selectedDataIndexs[0];
+                            var dataLen = this.target.getList().length;
+
+                            if((beforeIdx + 1) == dataLen) {
+                                beforeIdx = beforeIdx - 1;
+                            }
+
+                            ACTIONS.dispatch(ACTIONS.ITEM_DEL2);
+
+                            if(beforeIdx > 0 || beforeIdx == 0) {
+                                this.target.select(beforeIdx);
+                            }
+                        }
+                    });
+                },
+                addRow: function () {
+                    this.target.addRow({__created__: true}, "last");
+                },
+                lastRow: function () {
+                    return ($("div [data-ax5grid='grid-view-02']").find("div [data-ax5grid-panel='body'] table tr").length);
+                }
+            });
+
+
+            $(document).on('click', '#headerBox', function (caller) {
+                var gridList = fnObj.gridView02.target.list;
+
+                if(cnt == 0) {
+                    cnt++;
+                    $("div [data-ax5grid='grid-view-02']").find("div #headerBox").attr("data-ax5grid-checked", true);
+                    gridList.forEach(function (e, i) {
+                        fnObj.gridView02.target.setValue(i, "CHK", "Y");
+                    });
+                }else {
+                    cnt = 0;
+                    $("div [data-ax5grid='grid-view-02']").find("div #headerBox").attr("data-ax5grid-checked", false);
+                    gridList.forEach(function (e, i) {
+                        fnObj.gridView02.target.setValue(i, "CHK", "N");
+                    });
+                }
+            });
+
+            $(document).ready(function () {
+                changesize();
+            });
+
+            $(window).resize(function () {
+                changesize();
+            });
 
             //////////////////////////////////////
             //크기자동조정
             var _pop_top = 0;
             var _pop_height = 0;
-
-            $(window).resize(function(){
-                changesize();
-            });
-
-            function changesize(){
+            function changesize() {
                 //전체영역높이
                 var totheight = $("#ax-base-root").height();
-                if(totheight < 500){
-                    $("#FILE").attr("WIDTH",800);
-                }
-                else if(totheight > 700){
-                    $("#FILE").attr("WIDTH",1000);
+
+                if(totheight > 700) {
                     _pop_height = 600;
                     _pop_top = parseInt((totheight - _pop_height) / 2);
-                }
-                else{
-                    $("#FILE").attr("WIDTH",1000);
+                }else {
                     _pop_height = totheight / 10 * 8;
                     _pop_top = parseInt((totheight - _pop_height) / 2);
                 }
-                $("#cdEmp").attr("HEIGHT",_pop_height);
-                $("#cdEmp").attr("TOP",_pop_top);
-                $("#FILE").attr("HEIGHT",_pop_height);
-                $("#FILE").attr("TOP",_pop_top);
 
                 //데이터가 들어갈 실제높이
                 var datarealheight = $("#ax-base-root").height() - $(".ax-base-title").height() - $("#pageheader").height();
+                //타이틀을 뺀 상하단 그리드 합친높이
+                var tempgridheight = datarealheight - $("#left_title").height();
 
-                $("#left_grid").css("height",(datarealheight - $("#left_title").height()) / 100 * 99);
-
-//                $("#right_content").css("height",datarealheight  - $("#right_title").height() - $("#tab_area").height());
-
-                $("#tab_area").css('height', (datarealheight)/ 100 * 99);
-                $("#tab1_grid").css("height", (datarealheight - 40 - $("#tab_area").children('div[data-tab-panel-label-holder]').height() )/ 100 * 99);
-                $("#tab2_grid").css("height", (datarealheight - 40 - $("#tab_area").children('div[data-tab-panel-label-holder]').height() )/ 100 * 99);
-                $("#right_content").css("height", (datarealheight - $("#tab_area").children('div[data-tab-panel-label-holder]').height())/ 100 * 99);
-                /*
-                alert($("#ax-base-root").height()); // 컨텐츠영역높이
-                ax-base-title //타이틀부분높이(class)
-                ax-base-content //검색조건높이(class)
-                 */
-
+                $("#left_grid").css("height", tempgridheight / 100 * 99);
+                $("#right_grid").css("height", tempgridheight / 100 * 99);
             }
-
-            function isChecked(data) {
-                var array = [];
-                for (var i = 0; i < data.length; i++) {
-                    if (data[i].CHK == 'Y') {
-                        array.push(data[i])
-                    }
-                }
-                return array;
-            }
-
-            var cnt = 0;
-            $(document).on('click', '#headerBox', function(e) {
-                if(cnt == 0){
-                    $("div [data-ax5grid='grid-view-01']").find("div #headerBox").attr("data-ax5grid-checked",true);
-                    cnt++;
-                    var gridList = fnObj.gridView01.target.getList();
-                    gridList.forEach(function(e, i){
-                        fnObj.gridView01.target.setValue(i,"CHK",'Y');
-                    });
-                    $("div [data-ax5grid-editor='checkbox']").attr("data-ax5grid-checked",true)
-                }else{
-                    $("div [data-ax5grid='grid-view-01']").find("div #headerBox").attr("data-ax5grid-checked",false);
-                    cnt = 0;
-                    var gridList = fnObj.gridView01.target.getList();
-                    gridList.forEach(function(e, i){
-                        fnObj.gridView01.target.setValue(i,"CHK",'N');
-                    });
-                    $("div [data-ax5grid-editor='checkbox']").attr("data-ax5grid-checked",false)
-                }
-
-            });
 
         </script>
     </jsp:attribute>
 
     <jsp:body>
-        <style>
-
-            .form-control_02[readonly] {
-                background-color: #eeeeee;
-                opacity: 1
-            }
-
-            .form-control_02 {
-                height: 25px;
-                padding: 3px 6px;
-                font-size: 12px;
-                line-height: 1.42857;
-                color: #555555;
-                background-color: #fff;
-                background-image: none;
-                border: 1px solid #ccc;
-                -webkit-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
-                -o-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
-                transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
-            }
-        </style>
         <div data-page-buttons="">
             <div class="button-warp">
-                <button type="button" class="btn btn-reload" data-page-btn="reload" style="width: 80px;" onclick="window.location.reload();"><i class="icon_reload"></i></button>
-                    <%--<button type="button" class="btn btn-info" data-page-btn="excelUploadICUBE">엑셀업로드(ICUBE)</button>--%>
-                <button type="button" class="btn btn-info" data-page-btn="search" style="width: 80px;"><i class="icon_search"></i><ax:lang id="ax.admin.sample.modal.button.search"/></button>
-                <button type="button" class="btn btn-info" data-page-btn="save" id="save_btn" style="width: 80px;"><i class="icon_save"></i>저장</button>
+                <button type="button" class="btn btn-reload" data-page-btn="reload" onclick="window.location.reload();"
+                        style="width:80px;">
+                    <i class="icon_reload"></i></button>
+                <button type="button" class="btn btn-info" data-page-btn="search" style="width:80px;"><i
+                        class="icon_search"></i>조회
+                </button>
+                <button type="button" class="btn btn-info" data-page-btn="save" style="width:80px;"><i
+                        class="icon_save"></i>저장
+                </button>
             </div>
         </div>
 
-        <div role="page-header" id="pageheader">
-            <ax:form name="searchView0">
-                <ax:tbl clazz="ax-search-tb1" minWidth="500px">
-                    <ax:tr>
-                        <ax:td label="거래처타입" width="250px">
-                            <div id="S_PARTNER_TP" name="S_PARTNER_TP" data-ax5select="S_PARTNER_TP" data-ax5select-config='{}'>
-                            </div>
-                        </ax:td>
-                        <ax:td label="거래처" width="450px">
-                            <div class="input-group">
-                                <input type="text" class="form-control" name="KEYWORD" id="KEYWORD"/>
-                            </div>
-                        </ax:td>
-                    </ax:tr>
-                </ax:tbl>
-            </ax:form>
-        </div>
-
-        <%-- 그리드 영역 시작 --%>
         <div style="width:100%;overflow:hidden">
-            <div style="width:50%;float:left;overflow:hidden;">
-                <div class="ax-button-group" data-fit-height-aside="grid-view-01" id="left_title" name="왼쪽그리드타이틀">
+            <div style="width:45%;float:left;">
+                <!-- 목록 -->
+                <div class="ax-button-group" data-fit-height-aside="grid-view-01" id="left_title" name="왼쪽영역제목부분">
                     <div class="left">
                         <h2>
-                            <i class="icon_list"></i> 거래처리스트
+                            <i class="icon_list"></i> 패키지정보
                         </h2>
                     </div>
                     <div class="right">
-                        <button type="button" class="btn btn-small" data-grid-view-01-btn="add"
-                                style="width:80px;"><i
-                                class="icon_add"></i><ax:lang id="ax.admin.add"/></button>
-                        <button type="button" class="btn btn-small" data-grid-view-01-btn="delete"
-                                style="width:80px;"><i
-                                class="icon_del"></i><ax:lang id="ax.admin.delete"/></button>
+                        <button type="button" class="btn btn-small" data-grid-view-01-btn="add" style="width:80px;"><i
+                                class="icon_add"></i>
+                            <ax:lang id="ax.admin.add"/></button>
+                        <button type="button" class="btn btn-small" data-grid-view-01-btn="delete" style="width:80px;">
+                            <i
+                                    class="icon_del"></i> <ax:lang id="ax.admin.delete"/></button>
                     </div>
                 </div>
                 <div data-ax5grid="grid-view-01"
                      data-ax5grid-config="{  showLineNumber: true,showRowSelector: false, multipleSelect: false,lineNumberColumnWidth: 40,rowSelectorColumnWidth: 27, }"
-                     id = "left_grid"
+                     id="left_grid"
                      name="왼쪽그리드"
                 ></div>
             </div>
-            <div style="width:49%;float:right;overflow:hidden;">
-
-                <div id="tab_area" data-ax5layout="ax1" data-config="{layout:'tab-panel'}" name="하단탭영역">
-                    <div data-tab-panel="{label: '상세정보', active: 'true'}" id="tabGrid0" >
-                        <div id="right_content" style="overflow-y:auto; height:300px;" name="오른쪽부분내용">
-                            <div class="QRAY_FORM">
-                                <ax:form name="binder-form">
-                                    <ax:tbl clazz="ax-search-tb2" minWidth="650px">
-                                        <ax:tr>
-                                            <ax:td label='거래처코드' width="350px">
-                                                <input type="text" class="form-control" data-ax-path="PARTNER_CD" name="PARTNER_CD"
-                                                       id="PARTNER_CD" form-bind-text='PARTNER_CD' form-bind-type='text'/>
-                                            </ax:td>
-                                            <ax:td label='거래처명' width="300px">
-                                                <input type="text" class="form-control" data-ax-path="PARTNER_NM" name="PARTNER_NM"
-                                                       id="PARTNER_NM" form-bind-text='PARTNER_NM' form-bind-type='text'/>
-                                            </ax:td>
-                                        </ax:tr>
-                                        <ax:tr>
-                                            <ax:td label='사업자등록번호' width="350px">
-                                                <input type="text" class="form-control_02" data-ax-path="COMPANY_NO" name="COMPANY_NO"
-                                                       id="COMPANY_NO" form-bind-text='COMPANY_NO' form-bind-type='text' maxlength="12" style="width: 120px;"/>
-                                                <input type="button" class="form-control_02" id="btnCompany" onclick="companyCheck();" value="휴폐업 조회">
-                                            </ax:td>
-                                            <ax:td label='대표자명' width="300px">
-                                                <input type="text" class="form-control" data-ax-path="CEO_NM" name="CEO_NM"
-                                                       id="CEO_NM" form-bind-text='JOB_CLS' form-bind-type='text' />
-                                            </ax:td>
-                                        </ax:tr>
-                                        <ax:tr>
-                                            <ax:td label='거래처구분' width="350px">
-                                                <div id="PARTNER_FG" name="PARTNER_FG" data-ax5select="PARTNER_FG" data-ax5select-config='{}'
-                                                     form-bind-text='PARTNER_FG' form-bind-type="selectBox"></div>
-                                            </ax:td>
-                                            <ax:td label='거래처분류' width="300px">
-                                                <div id="PARTNER_CLS" name="PARTNER_CLS" data-ax5select="PARTNER_CLS" data-ax5select-config='{}'
-                                                     form-bind-text='PARTNER_CLS' form-bind-type="selectBox"></div>
-                                            </ax:td>
-                                        </ax:tr>
-                                        <ax:tr>
-                                            <ax:td label='거래처타입' width="350px">
-                                                <div id="PARTNER_TP" name="PARTNER_TP" data-ax5select="PARTNER_TP" data-ax5select-config='{}'
-                                                     form-bind-text='PARTNER_TP' form-bind-type="selectBox"></div>
-                                            </ax:td>
-                                            <ax:td label='전화번호' width="300px">
-                                                <input type="text" class="form-control" data-ax-path="TEL_NO" name="TEL_NO"
-                                                       id="TEL_NO" form-bind-text='TEL_NO' form-bind-type='text' />
-                                            </ax:td>
-                                        </ax:tr>
-                                        <ax:tr>
-                                            <ax:td label='업태' width="350px">
-                                                <input type="text" class="form-control" data-ax-path="JOB_TP" name="JOB_TP"
-                                                       id="JOB_TP" form-bind-text='JOB_TP' form-bind-type='text' />
-                                            </ax:td>
-                                            <ax:td label='업종' width="300px">
-                                                <input type="text" class="form-control" data-ax-path="JOB_CLS" name="JOB_CLS"
-                                                       id="JOB_CLS" form-bind-text='JOB_CLS' form-bind-type='text' />
-                                            </ax:td>
-                                        </ax:tr>
-
-                                        <ax:tr>
-                                            <ax:td label='주소' width="650px">
-                                                <input type="text" class="form-control_02" data-ax-path="POST_NO"
-                                                       name="POST_NO" id="POST_NO" style="width: 100px;"
-                                                       form-bind-text='POST_NO' form-bind-type='text' readonly="readonly"/>
-                                                <input type="text" class="form-control_02" data-ax-path="ADS_H"
-                                                       name="ADS_H" id="ADS_H" style="width: 200px"
-                                                       form-bind-text='POST_NO' form-bind-type='text' readonly="readonly"/>
-                                                <input type="button" class="form-control_02" id="btnPost"
-                                                       onclick="post();" value="우편번호 조회">
-                                            </ax:td>
-                                        </ax:tr>
-                                        <ax:tr>
-                                            <ax:td label='상세주소' width="650px">
-                                                <input type="text" class="form-control" data-ax-path="ADS_D"
-                                                       name="ADS_D" id="ADS_D" form-bind-text='ADS_D' form-bind-type='text'/>
-                                            </ax:td>
-                                        </ax:tr>
-                                        <ax:tr>
-                                            <ax:td label='첨부파일' width="350px">
-                                                <filemodal id="FILE" TABLE_ID="partner" MODE="1" READONLY/>
-                                            </ax:td>
-                                            <ax:td label='사용여부' width="300px">
-                                                <input type="checkbox"  data-ax-path="USE_YN" name="USE_YN"
-                                                       id="USE_YN" form-bind-text='USE_YN' form-bind-type='checkBox' />
-                                            </ax:td>
-                                        </ax:tr>
-
-                                    </ax:tbl>
-                                </ax:form>
-                            </div>
-                        </div>
+            <div style="width:54%;float:right">
+                <!-- 목록 -->
+                <div class="ax-button-group" data-fit-height-aside="grid-view-02" id="right_title" name="오른쪽타이틀">
+                    <div class="left">
+                        <h2>
+                            <i class="icon_list"></i> 패키지상세
+                        </h2>
                     </div>
-                    <div data-tab-panel="{label: '계좌정보', active: 'false'}" id="tabGrid1" >
-                        <div class="ax-button-group" data-fit-height-aside="grid-view-tab1" id="tab1_button">
-                            <div class="left">
-
-                            </div>
-                            <div class="right">
-                                <button type="button" class="btn btn-small" data-grid-view-tab1-btn="add" style="width:80px;"><i
-                                        class="icon_add"></i><ax:lang id="ax.admin.add"/></button>
-                                <button type="button" class="btn btn-small" data-grid-view-tab1-btn="delete"
-                                        style="width:80px;">
-                                    <i class="icon_del"></i> <ax:lang id="ax.admin.delete"/></button>
-                            </div>
-                        </div>
-                        <div data-ax5grid="grid-view-tab1"
-                             data-ax5grid-config="{  showLineNumber: true,showRowSelector: false, multipleSelect: false,lineNumberColumnWidth: 40,rowSelectorColumnWidth: 27, }"
-                             id="tab1_grid"
-                             name="탭1그리드"
-                        ></div>
-                    </div>
-                    <div data-tab-panel="{label: '담당자정보', active: 'true'}" id="tabGrid2" >
-                        <div class="ax-button-group" data-fit-height-aside="grid-view-tab2" id="tab2_button">
-                            <div class="left">
-
-                            </div>
-                            <div class="right">
-                                <button type="button" class="btn btn-small" data-grid-view-tab2-btn="add" style="width:80px;"><i
-                                        class="icon_add"></i><ax:lang id="ax.admin.add"/></button>
-                                <button type="button" class="btn btn-small" data-grid-view-tab2-btn="delete"
-                                        style="width:80px;">
-                                    <i class="icon_del"></i> <ax:lang id="ax.admin.delete"/></button>
-                            </div>
-                        </div>
-                        <div data-ax5grid="grid-view-tab2"
-                             data-ax5grid-config="{  showLineNumber: true,showRowSelector: false, multipleSelect: false,lineNumberColumnWidth: 40,rowSelectorColumnWidth: 27, }"
-                             id="tab2_grid"
-                             name="탭2그리드"
-                        ></div>
+                    <div class="right">
+                        <button type="button" class="btn btn-small" data-grid-view-02-btn="add" style="width:80px;"><i
+                                class="icon_add"></i>
+                            <ax:lang id="ax.admin.add"/></button>
+                        <button type="button" class="btn btn-small" data-grid-view-02-btn="delete" style="width:80px;">
+                            <i class="icon_del"></i> <ax:lang id="ax.admin.delete"/></button>
                     </div>
                 </div>
+                <div data-ax5grid="grid-view-02"
+                     data-ax5grid-config="{  showLineNumber: true,showRowSelector: false, multipleSelect: false,lineNumberColumnWidth: 40,rowSelectorColumnWidth: 27, }"
+                     id="right_grid"
+                     name="오른쪽그리드"
+                ></div>
             </div>
         </div>
     </jsp:body>
