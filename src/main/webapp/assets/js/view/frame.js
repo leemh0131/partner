@@ -411,7 +411,7 @@ fnObj.tabView = axboot.viewExtend({
         po.push('</div>');
         po.push('<button type="button" class="lock" id="lock1" style="margin-left: auto; margin-top: 5px; padding-right: 40px;"><img src="/assets/images/lock1.png" alt=""></button>' +
             '<button type="button" class="lock" id="lock2" style="margin-left: auto; margin-top: 5px; padding-right: 40px; display: none;"><img src="/assets/images/lock2.png" alt=""></button>' +
-            '</div>');
+        '</div>');
 
         this.target.html(po.join(''));
         this.frameTarget.html(fo.join(''));
@@ -573,7 +573,7 @@ fnObj.tabView = axboot.viewExtend({
 
         this.target.find('[data-tab-id="' + id + '"]').addClass("on");
         this.frameTarget.find('[data-tab-id="' + id + '"]').addClass("on");
-
+        
         $("a[menuId]").removeClass("on");
         try{
             if ($(".frame-item.on").length > 0) $(".frame-item.on")[0].contentWindow.axboot.layoutResize();
@@ -785,7 +785,7 @@ fnObj.tabView = axboot.viewExtend({
                 $("#content-frame-container").css("padding-top", "94px");
             }
 
-            $('.depth03').find('.on').removeClass('on')
+			$('.depth03').find('.on').removeClass('on')
         }
 
         // check status = "on"
@@ -827,7 +827,7 @@ fnObj.tabView = axboot.viewExtend({
         }
 
         this.target.find('.tooltip').remove();
-
+        
         this.resize();
 
     },
