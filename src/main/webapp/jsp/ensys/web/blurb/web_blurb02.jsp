@@ -18,9 +18,8 @@
         </style>
 
         <script type="text/javascript">
-            var _tabview 	= this.parent.fnObj.tabView; 				//받아온데이터 대상객체(초기화할때사용함)
-            var _urlGetData = this.parent.fnObj.tabView.urlGetData(); 	//받아온데이터
             var selectRow = 0;
+            var userCallBack;
 
             var ES_CODES = $.SELECT_COMMON_ARRAY_CODE('ES_Q0001');
             var ES_Q0001 = $.SELECT_COMMON_GET_CODE(ES_CODES, "ES_Q0001", true);   //사용여부
@@ -109,14 +108,28 @@
                 },
                 //그리드2 추가
                 ITEM_ADD2: function(caller, act, data){
-                    fnObj.gridView02.addRow();
-                    var lastIdx = nvl(fnObj.gridView02.target.list.length, fnObj.gridView02.lastRow());
-                    selectRow = lastIdx - 1;
-                    fnObj.gridView02.target.focus(lastIdx - 1);
-                    fnObj.gridView02.target.select(lastIdx - 1);
 
-                    // fnObj.gridView02.target.setValue(lastIdx - 1, "PACKAGE_CD", );
-                    ACTIONS.dispatch(ACTIONS.ITEM_CLICK);
+                    userCallBack = function (e){
+
+                        if(e.length > 0){
+                            for(let i = 0; i < e.length; i++){
+
+                                fnObj.gridView02.addRow();
+
+                                var lastIdx = nvl(fnObj.gridView02.target.list.length, fnObj.gridView02.lastRow());
+
+                                /*fnObj.gridView02.target.setValue(lastIdx - 1, "ACCT_CD", e[i].ACCT_CD);
+                                fnObj.gridView02.target.setValue(lastIdx - 1, "ACCT_NM", e[i].ACCT_NM);
+                                fnObj.gridView02.target.setValue(lastIdx - 1, "BGACCT_CD", BGACCT_CD_);*/
+
+                            }
+
+                        }
+
+                    }
+
+                    $.openCommonPopup("/jsp/ensys/help/blurbHelper.jsp", 'userCallBack',  'HELP_BLURB', '', '',900, 600);
+
                 },
                 //그리드2 삭제
                 ITEM_DEL2: function(caller, act, data){

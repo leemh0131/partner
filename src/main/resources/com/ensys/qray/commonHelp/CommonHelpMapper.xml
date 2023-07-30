@@ -222,4 +222,30 @@
 			)
 		</if>
 	</select>
+
+	<select id="HELP_BLURB" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*CommonHelpMapper.HELP_BLURB*/
+		SELECT
+				  A.COMPANY_CD		AS "COMPANY_CD"
+				, A.ADV_CD		 	AS "ADV_CD"
+				, A.ADV_NM		 	AS "ADV_NM"
+				, A.AM		 		AS "AM"
+				, A.ADV_MONTH		AS "ADV_MONTH"
+				, A.BOX_YN		 	AS "BOX_YN"
+				, A.BOX_NUM			AS "BOX_NUM"
+				, A.INSERT_ID		AS "INSERT_ID"
+				, A.INSERT_DTS		AS "INSERT_DTS"
+				, A.UPDATE_ID		AS "UPDATE_ID"
+				, A.UPDATE_DTS		AS "UPDATE_DTS"
+		FROM ES_BLURB_MASTER A
+		WHERE A.COMPANY_CD = #{COMPANY_CD}
+		<if test=' KEYWORD != null and KEYWORD != ""'>
+			AND
+			(  A.ADV_CD LIKE  '%' || #{KEYWORD} || '%'
+			OR A.ADV_NM LIKE  '%' || #{KEYWORD} || '%'
+			)
+		</if>
+	</select>
+
+
 </mapper>

@@ -71,4 +71,11 @@ public class CommonHelpController extends BaseController {
 	public Responses.ListResponse HELP_ANTICIPATION(@RequestBody HashMap<String, Object> param) {
 		return Responses.ListResponse.of(commonHelpService.HELP_CODEDTL(param));
 	}
+
+	// 공통코드
+	@RequestMapping(value = "HELP_BLURB", method = RequestMethod.POST, produces = APPLICATION_JSON)
+	public Responses.ListResponse HELP_BLURB(@RequestBody HashMap<String, Object> param) {
+		return Responses.ListResponse.of(commonHelpService.HELP_BLURB(param));
+	}
+
 }

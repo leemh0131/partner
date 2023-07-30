@@ -83,4 +83,11 @@ public class CommonHelpService extends BaseService {
 
 		return commonHelpMapper.HELP_CODEDTL(param);
 	}
+
+	public List<HashMap<String, Object>> HELP_BLURB(HashMap<String, Object> param) {
+		SessionUser sessionUser = SessionUtils.getCurrentUser();
+		param.put("COMPANY_CD", sessionUser.getCompanyCd());
+
+		return commonHelpMapper.HELP_BLURB(param);
+	}
 }
