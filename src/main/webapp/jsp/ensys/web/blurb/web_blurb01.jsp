@@ -24,8 +24,83 @@
             var ACTIONS = axboot.actionExtend(fnObj, {
                 PAGE_SEARCH: function(caller, act, data) {
 
+                    axboot.ajax({
+                        type: "POST",
+                        url: ["/api/web/blurb01", "select"],
+                        data: JSON.stringify({
+
+                        }),
+                        callback: function(res) {
+
+                            if(nvl(res) != '' && nvl(res.list) != ''){
+                                fnObj.gridView01.setData(res);
+                                fnObj.gridView01.target.focus(selectRow);
+                                fnObj.gridView01.target.select(selectRow);
+                                ACTIONS.dispatch(ACTIONS.ITEM_CLICK);
+                            }
+
+
+                        },
+                        options : {
+                            onError : function(err){
+                                qray.loading.hide().then(function(){
+                                    qray.alert(err.message);
+                                    return;
+                                })
+                            }
+                        }
+                    });
+
                 },
+                //저장
                 PAGE_SAVE : function (caller, act, data) {
+
+                    let saveData = fnObj.gridView01.target.getDirtyData();
+
+                    if(saveData.count == 0){
+                        qray.alert("변경된 데이터가 없습니다.");
+                        return;
+                    }
+
+                    let verify = saveData.verify;
+
+                    for(let i = 0; i < verify.length; i++){
+                        if(nvl(verify[i].ADV_NM) == ''){
+                            qray.alert("광고명을 입력해주세요.");
+                            return;
+                        }
+                    }
+
+                    qray.confirm({
+                        msg: "저장하시겠습니까?"
+                    }, function () {
+                        if (this.key == "ok") {
+
+                            axboot.ajax({
+                                type: "POST",
+                                url: ["/api/web/blurb01", "save"],
+                                data: JSON.stringify({
+                                    saveData : saveData
+                                }),
+                                callback: function(res) {
+                                    qray.alert('저장되었습니다.').then(function() {
+                                        ACTIONS.dispatch(ACTIONS.PAGE_SEARCH);
+                                    })
+                                },
+                                options : {
+                                    onError : function(err){
+                                        qray.alert(err.message);
+                                        qray.loading.hide()
+                                        return;
+                                    }
+                                }
+                            });
+
+                        }
+                    });
+
+
+                    console.log("saveData", saveData);
 
                 },
                 //추가
@@ -79,32 +154,6 @@
                     $('.QRAY_FORM').setFormData(selected); // 폼 세팅
 
                 },
-                PAGE_DATA: function (caller, act, data){
-
-                    $.openCommonPopup("/jsp/ensys/web/partner/web_contract_helper.jsp", "popCallBack",  '', '', {selected : {test : 'test'}}, $(".ax-body").width(), $(".ax-body").height(), null, null, false);
-
-                    /*let list = [];
-
-                    fnObj.gridView01.clear();
-                    for(let i = 0; i < 10; i++){
-                        list.push({
-                            column1 :"데이터" + i,
-                            column2 :'N',
-                            column3_cd :"데이터" + i,
-                            column3_nm :"데이터" + i,
-                            column4 :"데이터" + i,
-                            column5 :"데이터" + i,
-                            column6 :"데이터" + i,
-                            column7 :"데이터" + i
-                        });
-                    }
-
-                    fnObj.gridView01.target.setData(list);
-                    fnObj.gridView01.target.select(selectRow);
-                    fnObj.gridView01.target.focus(selectRow);*/
-
-
-                }
             });
 
             fnObj.pageStart = function () {
@@ -159,6 +208,13 @@
                                     disabled: function () {
                                         return true;
                                     },
+                                },
+                                formatter:function(){
+                                    if (nvl(this.item.AM) == '') {
+                                        this.item.AM = 0;
+                                    }
+                                    this.item.AM = Math.floor(Number(this.item.AM));
+                                    return ax5.util.number(Math.floor(this.item.AM), {"money": true});
                                 }
                             },
                             {key: "MONTH", label: "기본개월수", width: 150, align: "left", sortable: true,
@@ -186,6 +242,7 @@
                                 }
                                 selectRow = this.dindex
                                 this.self.select(this.dindex);
+                                ACTIONS.dispatch(ACTIONS.ITEM_CLICK);
                             }
                         }
                     });
@@ -253,8 +310,8 @@
                 <button type="button" class="btn btn-info" data-page-btn="search" style="width:80px;"><i
                         class="icon_search"></i>조회
                 </button>
-                <button type="button" class="btn btn-info" data-page-btn="data" style="width:80px;">데이터 세팅
-                </button>
+                <button type="button" class="btn btn-info" data-page-btn="save" style="width:80px;"><i
+                        class="icon_save"></i>저장
             </div>
         </div>
 
