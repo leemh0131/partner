@@ -165,15 +165,14 @@
                         }
                     });
                 },
-                ITEM_ADD: function(caller, act, data){
-                    debugger;
+                ITEM_ADD1: function(caller, act, data){
                     fnObj.gridView01.addRow();
                     var lastIdx = nvl(fnObj.gridView01.target.list.length, fnObj.gridView01.lastRow());
                     selectRow = lastIdx - 1;
                     fnObj.gridView01.target.focus(lastIdx - 1);
                     fnObj.gridView01.target.select(lastIdx - 1);
 
-                    fnObj.gridView01.target.setValue(lastIdx - 1, "PARTNER_CD", '');
+                    fnObj.gridView01.target.setValue(lastIdx - 1, "CD_PACKAGE", GET_NO('MA', '23'));
                     ACTIONS.dispatch(ACTIONS.ITEM_CLICK);
                 },
                 ITEM_DEL: function(caller, act, data){
@@ -845,8 +844,6 @@
 
                     axboot.buttonClick(this, "data-grid-view-01-btn", {
                         "add": function () {
-                            var chekVal;
-
                             ACTIONS.dispatch(ACTIONS.ITEM_ADD1);
                         },
                         "delete": function () {
