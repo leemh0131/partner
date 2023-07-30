@@ -193,6 +193,7 @@
                 this.pageButtonView.initView();
                 this.gridView01.initView();
                 this.gridView02.initView();
+//                console.log(this);
 
                 ACTIONS.dispatch(ACTIONS.PAGE_SEARCH);
             };
