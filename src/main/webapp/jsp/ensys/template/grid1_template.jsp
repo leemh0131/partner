@@ -186,8 +186,15 @@
 				target: $('[data-ax5grid="grid-view-01"]'),
 				columns: [
 					{key: "editor_false", label: "비활성 컬럼", width: 150, align: "left", sortable: true,editor: false},
-					{key: "editor_text", label: "text 컬럼", width: 150, align: "left", sortable: true,editor: {type: "text"}},
-					{key: "editor_number", label: "number 컬럼", width: 150, align: "left", sortable: true,editor: {type: "number"}},
+					{key: "editor_text", label: "text 컬럼", width: 150, align: "left", sortable: true,editor : {type: "text"}},
+					{key: "editor_number", label: "number 컬럼", width: 150, align: "left", sortable: true,
+						editor : {
+							type: "number",
+							disabled: function () {
+								return true;
+							},
+						}
+					},
 					{key: "editor_code", label: "코드피커 컬럼", width: 150, align: "left", sortable: true,
 						picker: {
 							top: _pop_top,
