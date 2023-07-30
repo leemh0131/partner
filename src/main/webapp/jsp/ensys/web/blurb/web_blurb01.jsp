@@ -161,7 +161,7 @@
                                     },
                                 }
                             },
-                            {key: "MONTH", label: "기본개월수", width: 150, align: "left", sortable: true,
+                            {key: "ADV_MONTH", label: "기본개월수", width: 150, align: "left", sortable: true,
                                 editor : {
                                     type: "number",
                                     disabled: function () {
@@ -327,8 +327,8 @@
                             </ax:tr>
                             <ax:tr>
                                 <ax:td label='기본개월수' width="300px">
-                                    <input type="text" class="form-control" data-ax-path="MONTH" name="MONTH"
-                                           id="MONTH" form-bind-text='MONTH' form-bind-type='text'
+                                    <input type="text" class="form-control" data-ax-path="ADV_MONTH" name="ADV_MONTH"
+                                           id="ADV_MONTH" form-bind-text='MONTH' form-bind-type='text'
                                            oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" />
                                 </ax:td>
                                 <ax:td label='박스수' width="300px">
