@@ -22,6 +22,9 @@
             var _urlGetData = this.parent.fnObj.tabView.urlGetData(); 	//받아온데이터
             var selectRow = 0;
 
+            var ES_CODES = $.SELECT_COMMON_ARRAY_CODE('ES_Q0001');
+            var ES_Q0001 = $.SELECT_COMMON_GET_CODE(ES_CODES, "ES_Q0001", true);   //사용여부
+
             var fnObj = {}, CODE = {};
             var ACTIONS = axboot.actionExtend(fnObj, {
                 PAGE_SEARCH: function (caller, act, data) {
@@ -104,6 +107,7 @@
                     fnObj.gridView01.target.select(lastIdx - 1);
 
                     fnObj.gridView01.target.setValue(lastIdx - 1, "PACKAGE_CD", GET_NO('MA', '23'));
+                    fnObj.gridView01.target.setValue(lastIdx - 1, "USE_YN", 'Y');
                     ACTIONS.dispatch(ACTIONS.ITEM_CLICK);
                 },
                 ITEM_DEL: function(caller, act, data){
@@ -116,7 +120,7 @@
                     var grid = caller.gridView01.target.list;
                     var i = grid.length;
                     while (i--) {
-                            caller.gridView01.delRow(i);
+                        caller.gridView01.delRow(i);
                     }
                     i = null;
                 },
@@ -269,7 +273,14 @@
                                 label: "사용여부",
                                 width: '60',
                                 align: "left",
-                                editor: {type: "text"},
+                                editor: {
+                                    type: "select", config: {
+                                        options: ES_Q0001
+                                    }
+                                },
+                                formatter: function () {
+                                    return $.changeTextValue(ES_Q0001, this.value);
+                                },
                                 sortable: true,
                             },
 
