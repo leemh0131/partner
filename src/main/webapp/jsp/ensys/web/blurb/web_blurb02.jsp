@@ -27,6 +27,7 @@
 
             var fnObj = {}, CODE = {};
             var ACTIONS = axboot.actionExtend(fnObj, {
+                //조회
                 PAGE_SEARCH: function (caller, act, data) {
                     axboot.ajax({
                         type: "POST",
@@ -51,6 +52,7 @@
                         }
                     });
                 },
+                //저장
                 PAGE_SAVE: function (caller, act, data) {
                     var saveDataH = [].concat(fnObj.gridView01.target.getList('deleted')).concat(fnObj.gridView01.target.getList('modified'));
                     var saveDataD = [].concat(fnObj.gridView02.target.getList('deleted')).concat(fnObj.gridView02.target.getList('modified'));
@@ -99,6 +101,7 @@
                         }
                     });
                 },
+                //그리드1 추가
                 ITEM_ADD1: function(caller, act, data){
                     fnObj.gridView01.addRow();
                     var lastIdx = nvl(fnObj.gridView01.target.list.length, fnObj.gridView01.lastRow());
@@ -110,6 +113,7 @@
                     fnObj.gridView01.target.setValue(lastIdx - 1, "USE_YN", 'Y');
                     ACTIONS.dispatch(ACTIONS.ITEM_CLICK);
                 },
+                //그리드1 삭제
                 ITEM_DEL: function(caller, act, data){
 
                     if (isChecked(fnObj.gridView01.target.list).length == 0) {
@@ -124,6 +128,7 @@
                     }
                     i = null;
                 },
+                //그리드2 추가
                 ITEM_ADD2: function(caller, act, data){
                     fnObj.gridView02.addRow();
                     var lastIdx = nvl(fnObj.gridView02.target.list.length, fnObj.gridView02.lastRow());
@@ -134,6 +139,7 @@
                     // fnObj.gridView02.target.setValue(lastIdx - 1, "PACKAGE_CD", );
                     ACTIONS.dispatch(ACTIONS.ITEM_CLICK);
                 },
+                //그리드2 삭제
                 ITEM_DEL2: function(caller, act, data){
 
                     if (isChecked(fnObj.gridView02.target.list).length == 0) {
@@ -152,8 +158,7 @@
                 },
             });
 
-
-
+            //최상단 이벤트
             fnObj.pageButtonView = axboot.viewExtend({
                 initView: function () {
                     axboot.buttonClick(this, "data-page-btn", {
@@ -167,6 +172,9 @@
                 }
             });
 
+            /**
+             * gridView01
+             */
             fnObj.gridView01 = axboot.viewExtend(axboot.gridView, {
                 page: {
                     pageNumber: 0,
@@ -192,175 +200,6 @@
 
                 }
             });
-
-            fnObj.pageStart = function () {
-                this.pageButtonView.initView();
-                this.gridView01.initView();
-                this.gridView02.initView();
-//                console.log(this);
-
-                ACTIONS.dispatch(ACTIONS.PAGE_SEARCH);
-            };
-
-            fnObj.pageResize = function () {
-
-            };
-
-
-            fnObj.pageButtonView = axboot.viewExtend({
-                initView: function () {
-                    axboot.buttonClick(this, "data-page-btn", {
-                        "search": function () {
-                            ACTIONS.dispatch(ACTIONS.PAGE_SEARCH);
-                        },
-                        "save": function () {
-                            ACTIONS.dispatch(ACTIONS.PAGE_SAVE);
-                        }
-                    });
-                }
-            });
-
-            /**
-             * gridView01
-             */
-            fnObj.gridView01 = axboot.viewExtend(axboot.gridView, {
-                page: {
-                    pageNumber: 0,
-                    pageSize: 10
-                },
-                initView: function () {
-
-                    this.target = axboot.gridBuilder({
-                        showRowSelector: true,
-                        frozenColumnIndex: 0,
-                        target: $('[data-ax5grid="grid-view-01"]'),
-                        childGrid : [fnObj.gridView02],
-                        type : "POST",
-                        classUrl : "Webblurb02",
-                        methodUrl :  "packageHeader",
-                        async : false,
-                        param : function(){
-                            var param = {
-
-                            }
-                            return JSON.stringify(param);
-                        },
-                        columns: [
-                            {
-                                key: "PACKAGE_CD", label: "패키지코드", width: 80, align: "left", editor: {
-                                    type: false,
-                                    disabled: function () {
-                                        var created = fnObj.gridView01.target.getList('selected')[0].__created__;
-
-                                        if(nvl(created, '') == '') {
-                                            return true;
-                                        }else {
-                                            return false;
-                                        }
-                                    }
-                                }, sortable: true,
-                            },
-                            {
-                                key: "PACKAGE_NM",
-                                label: "패키지명",
-                                width: '100',
-                                align: "left",
-                                editor: {type: "text"},
-                                sortable: true,
-                            },
-                            {
-                                key: "USE_YN",
-                                label: "사용여부",
-                                width: '60',
-                                align: "left",
-                                editor: {
-                                    type: "select", config: {
-                                        options: ES_Q0001
-                                    }
-                                },
-                                formatter: function () {
-                                    return $.changeTextValue(ES_Q0001, this.value);
-                                },
-                                sortable: true,
-                            },
-
-                            {key: "PRODUCE_DT", label: "생성일자", width: 150, align: "center", sortable: true,
-                                editor: {
-                                    type: "date", config: {
-                                        content: {
-                                            config: {
-                                                mode: "day",
-                                                selectMode: "day"
-                                            }
-                                        }
-                                    }
-                                },
-                            },
-                        ],
-                        body: {
-                            onClick: function () {
-                                var chekVal;
-                                var sameSelected;
-                                var idx;
-                                idx = this.dindex;
-
-                                $(this.list).each(function (i, e) {
-                                    if(e.__created__) {
-                                        if(i != idx) {
-                                            chekVal = true;
-                                        }
-                                    }
-
-                                    if(e.__selected__) {
-                                        if(i == idx) {
-                                            sameSelected = true;
-                                        }
-                                    }
-                                });
-
-                                if(sameSelected == false && chekVal == false) {
-                                    $(fnObj.gridView02.target.list).each(function (i, e) {
-                                        if(e.__modified__) {
-                                            chekVal = true;
-                                            return false;
-                                        }
-                                    });
-                                }
-
-                                if(sameSelected) return;
-
-                                this.self.select(this.dindex);
-                                ACTIONS.dispatch(ACTIONS.ITEM_CLICK, this.item);
-                            },
-                            onDataChanged: function () {
-                                if(this.key == 'PACKAGE_CD') {
-                                    var list = fnObj.gridView02.target.list;
-
-                                    for(var i = 0; i < list.length; i++) {
-                                        fnObj.gridView02.target.setValue(i, 'PACKAGE_CD', this.value);
-                                    }
-                                }
-                            }
-                        }
-                    });
-
-                    axboot.buttonClick(this, "data-grid-view-01-btn", {
-                        "add": function () {
-                            ACTIONS.dispatch(ACTIONS.ITEM_ADD1);
-                        },
-                        "delete": function () {
-                            ACTIONS.dispatch(ACTIONS.ITEM_DEL1);
-                        }
-                    });
-                },
-                addRow: function () {
-                    this.target.addRow({__created__: true}, "last");
-                },
-                lastRow: function () {
-                    return ($("div [data-ax5grid='grid-view-01']").find("div [data-ax5grid-panel='body'] table tr").length);
-                }
-            });
-
 
             /**
              * gridView02
@@ -451,7 +290,20 @@
                 }
             });
 
+            fnObj.pageStart = function () {
+                this.pageButtonView.initView();
+                this.gridView01.initView();
+                this.gridView02.initView();
+//                console.log(this);
 
+                ACTIONS.dispatch(ACTIONS.PAGE_SEARCH);
+            };
+
+            fnObj.pageResize = function () {
+
+            };
+
+            //전체체크 이벤트
             $(document).on('click', '#headerBox', function (caller) {
                 var gridList = fnObj.gridView02.target.list;
 
@@ -469,6 +321,17 @@
                     });
                 }
             });
+
+            //체크된 row
+            function isChecked(data) {
+                var array = [];
+                for (var i = 0; i < data.length; i++) {
+                    if (data[i].CHK == true || data[i].CHK == 'Y') {
+                        array.push(data[i]);
+                    }
+                }
+                return array;
+            }
 
             $(document).ready(function () {
                 changesize();
