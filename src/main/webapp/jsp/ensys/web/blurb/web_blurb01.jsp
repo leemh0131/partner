@@ -153,10 +153,31 @@
                         columns: [
                             { key: "ADV_CD", label: "광고코드", width: 160, align: "center", sortable: true ,editor: false},
                             { key: "ADV_NM", label: "광고명", width: 160, align: "center", sortable: true ,editor: false},
-                            { key: "AM", label: "금액", width: 160, align: "center", sortable: true ,editor: false},
-                            { key: "MONTH", label: "기본개월수", width: 160, align: "center", sortable: true ,editor: false},
+                            {key: "AM", label: "금액", width: 150, align: "left", sortable: true,
+                                editor : {
+                                    type: "number",
+                                    disabled: function () {
+                                        return true;
+                                    },
+                                }
+                            },
+                            {key: "MONTH", label: "기본개월수", width: 150, align: "left", sortable: true,
+                                editor : {
+                                    type: "number",
+                                    disabled: function () {
+                                        return true;
+                                    },
+                                }
+                            },
                             { key: "BOX_YN", label: "박스수지정여부", width: 160, align: "center", sortable: true ,editor: false},
-                            { key: "BOX_NUM", label: "박스수", width: 160, align: "center", sortable: true ,editor: false},
+                            {key: "BOX_NUM", label: "박스수", width: 150, align: "left", sortable: true,
+                                editor : {
+                                    type: "number",
+                                    disabled: function () {
+                                        return true;
+                                    },
+                                }
+                            },
                         ],
                         body: {
                             onClick: function () {
@@ -295,7 +316,8 @@
 <%--                                </ax:td>--%>
                                 <ax:td label='금액' width="300px">
                                     <input type="text" class="form-control" data-ax-path="AM" name="AM"
-                                           id="AM" form-bind-text='AM' form-bind-type='text'/>
+                                           id="AM" form-bind-text='AM' form-bind-type='text'
+                                           oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" />
                                 </ax:td>
                                 <ax:td label='박스수지정여부' width="300px">
 <%--                                    <div id="column2" name="column2" data-ax5select="column2" data-ax5select-config='{}' form-bind-type="selectBox"></div>--%>
@@ -306,11 +328,13 @@
                             <ax:tr>
                                 <ax:td label='기본개월수' width="300px">
                                     <input type="text" class="form-control" data-ax-path="MONTH" name="MONTH"
-                                           id="MONTH" form-bind-text='MONTH' form-bind-type='text'/>
+                                           id="MONTH" form-bind-text='MONTH' form-bind-type='text'
+                                           oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" />
                                 </ax:td>
                                 <ax:td label='박스수' width="300px">
                                     <input type="text" class="form-control" data-ax-path="BOX_NUM" name="BOX_NUM"
-                                           id="BOX_NUM" form-bind-text='BOX_NUM' form-bind-type='text'/>
+                                           id="BOX_NUM" form-bind-text='BOX_NUM' form-bind-type='text'
+                                           oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" />
                                 </ax:td>
                             </ax:tr>
                             <ax:tr>
