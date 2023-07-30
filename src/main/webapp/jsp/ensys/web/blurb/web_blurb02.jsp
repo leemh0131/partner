@@ -29,7 +29,7 @@
             var ACTIONS = axboot.actionExtend(fnObj, {
                 //조회
                 PAGE_SEARCH: function (caller, act, data) {
-                    axboot.ajax({
+                    /*axboot.ajax({
                         type: "POST",
                         url: ["web_blurb_02", "searchMst"],
                         data: JSON.stringify({
@@ -50,36 +50,15 @@
                             ACTIONS.dispatch(ACTIONS.ITEM_CLICK);
 
                         }
-                    });
+                    });*/
                 },
                 //저장
                 PAGE_SAVE: function (caller, act, data) {
-                    var saveDataH = [].concat(fnObj.gridView01.target.getList('deleted')).concat(fnObj.gridView01.target.getList('modified'));
-                    var saveDataD = [].concat(fnObj.gridView02.target.getList('deleted')).concat(fnObj.gridView02.target.getList('modified'));
+                    var gridView01 = fnObj.gridView01.target.getDirtyData();
 
-                    for (var i = 0 ; i < saveDataH.length ; i ++){
-                        if (saveDataH[i].__deleted__) continue;
+                    var gridView02 = fnObj.gridView02.target.getDirtyData();
 
-                        if (saveDataH[i].PACKAGE_CD == '' || saveDataH[i].PACKAGE_CD ==undefined){
-                            qray.alert('패키지코드를 입력해주십시오.');
-                            return;
-                        }
-
-                    }
-                    for (var i = 0 ; i < saveDataD.length ; i ++){
-                        if (saveDataD[i].__deleted__) continue;
-
-                        if (saveDataD[i].ADVERTISE_CD == ''){
-                            qray.alert('광고코드를 입력해주십시오.');
-                            return;
-                        }
-                    }
-
-                    if (fnObj.gridView01.target.getDirtyData().count == 0
-                        && fnObj.gridView02.target.getDirtyData().count == 0){
-                        qray.alert('변경된 데이터가 없습니다.');
-                        return;
-                    }
+                    debugger;
 
                     qray.confirm({
                         msg: "저장하시겠습니까?"
@@ -175,6 +154,9 @@
             /**
              * gridView01
              */
+            /**
+             * gridView01
+             */
             fnObj.gridView01 = axboot.viewExtend(axboot.gridView, {
                 page: {
                     pageNumber: 0,
@@ -182,22 +164,128 @@
                 },
                 initView: function () {
 
-                },
-                getData: function (_type) {
-                    var list = [];
-                    var _list = this.target.getList(_type);
-                    list = _list;
+                    this.target = axboot.gridBuilder({
+                        showRowSelector: true,
+                        frozenColumnIndex: 0,
+                        target: $('[data-ax5grid="grid-view-01"]'),
+                        childGrid : [fnObj.gridView02],
+                        type : "POST",
+                        classUrl : "Webblurb02",
+                        methodUrl :  "packageHeader",
+                        async : false,
+                        param : function(){
+                            var param = {
 
-                    return list;
+                            }
+                            return JSON.stringify(param);
+                        },
+                        columns: [
+                            {
+                                key: "PACKAGE_CD", label: "패키지코드", width: 80, align: "left", editor: {
+                                    type: false,
+                                    disabled: function () {
+                                        var created = fnObj.gridView01.target.getList('selected')[0].__created__;
+
+                                        if(nvl(created, '') == '') {
+                                            return true;
+                                        }else {
+                                            return false;
+                                        }
+                                    }
+                                }, sortable: true,
+                            },
+                            {
+                                key: "PACKAGE_NM",
+                                label: "패키지명",
+                                width: '100',
+                                align: "left",
+                                editor: {type: "text"},
+                                sortable: true,
+                            },
+                            {
+                                key: "USE_YN",
+                                label: "사용여부",
+                                width: '60',
+                                align: "left",
+                                editor: {
+                                    type: "select", config: {
+                                        options: ES_Q0001
+                                    }
+                                },
+                                formatter: function () {
+                                    return $.changeTextValue(ES_Q0001, this.value);
+                                },
+                                sortable: true,
+                            },
+
+                            {key: "PRODUCE_DT", label: "생성일자", width: 150, align: "center", sortable: true,
+                                editor: {
+                                    type: "date", config: {
+                                        content: {
+                                            config: {
+                                                mode: "day",
+                                                selectMode: "day"
+                                            }
+                                        }
+                                    }
+                                },
+                            },
+                        ],
+                        body: {
+                            onClick: function () {
+                                var chekVal;
+                                var sameSelected;
+                                var idx;
+                                idx = this.dindex;
+
+                                $(this.list).each(function (i, e) {
+                                    if(e.__created__) {
+                                        if(i != idx) {
+                                            chekVal = true;
+                                        }
+                                    }
+
+                                    if(e.__selected__) {
+                                        if(i == idx) {
+                                            sameSelected = true;
+                                        }
+                                    }
+                                });
+
+                                if(sameSelected == false && chekVal == false) {
+                                    $(fnObj.gridView02.target.list).each(function (i, e) {
+                                        if(e.__modified__) {
+                                            chekVal = true;
+                                            return false;
+                                        }
+                                    });
+                                }
+
+                                if(sameSelected) return;
+
+                                this.self.select(this.dindex);
+                                ACTIONS.dispatch(ACTIONS.ITEM_CLICK, this.item);
+                            },
+                            onDataChanged: function () {
+
+                            }
+                        }
+                    });
+
+                    axboot.buttonClick(this, "data-grid-view-01-btn", {
+                        "add": function () {
+                            ACTIONS.dispatch(ACTIONS.ITEM_ADD1);
+                        },
+                        "delete": function () {
+                            ACTIONS.dispatch(ACTIONS.ITEM_DEL1);
+                        }
+                    });
                 },
                 addRow: function () {
                     this.target.addRow({__created__: true}, "last");
                 },
                 lastRow: function () {
-                    return ($("div [data-ax5grid='grid-view-01']").find("div [data-ax5grid-panel='body'] table tr").length)
-                },
-                sort: function () {
-
+                    return ($("div [data-ax5grid='grid-view-01']").find("div [data-ax5grid-panel='body'] table tr").length);
                 }
             });
 
