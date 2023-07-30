@@ -26,6 +26,15 @@
     let attachment = new FormData(); //첨부파일변수
 
     var ACTIONS = axboot.actionExtend(fnObj, {
+        //닫기
+        PAGE_CLOSE: function (caller, act, data) {
+            /* parent.modal.close(); */
+            if (param.modalName) {
+                eval("parent." + param.modalName + ".close()");
+                return;
+            }
+            parent.modal.close();
+        },
         //조회
         PAGE_SEARCH: function(caller, act, data) {
             $('.QRAY_FORM').FormClear();
@@ -91,6 +100,9 @@
                 "save": function () {
                     ACTIONS.dispatch(ACTIONS.PAGE_SAVE);
                 },
+                "close": function () {
+                    ACTIONS.dispatch(ACTIONS.PAGE_CLOSE);
+                }
             });
         }
     });
@@ -145,13 +157,6 @@
 
         changesize();
     });
-
-    //닫기 버튼 이벤트
-    fnObj.popView.close = function(){
-        parent[param.callBack]();
-        this.close();
-    }
-
     $(window).resize(function () {
         changesize();
     });
@@ -311,7 +316,8 @@
                 </button>
                 <button type="button" class="btn btn-info" data-page-btn="save"     style="width: 80px;">저장</button>
                 <button type="button" class="btn btn-info" data-page-btn="delete"   style="width: 80px;">삭제</button>
-                <button type="button" class="btn btn-info btn-close"                style="width: 80px;" id="popup-close">닫기</button>
+                <button type="button" class="btn btn-info" data-page-btn="close"><ax:lang
+                        id="ax.admin.sample.modal.button.close"/></button>
             </div>
         </div>
         <div style="width:100%;">
@@ -327,94 +333,94 @@
                     <div class="QRAY_FORM">
                         <ax:form name="binder-form">
                         <ax:tbl clazz="ax-search-tb2" minWidth="700px" style=" text-align-last:left;">
-                            <ax:tr>
-                                <ax:td label='계약번호' width="49%">
-                                    <input readonly type="text" class="form-control" data-ax-path="CTRT_NO" name="CTRT_NO" id="CTRT_NO"
-                                           form-bind-text='CTRT_NO' form-bind-type='text' style="width: 70%;" />
-                                </ax:td>
-                                <ax:td label="<span style='color:red'>*</span> 계약명" width="49%">
-                                    <input type="text" class="form-control required" data-ax-path="CTRT_NM" name="CTRT_NM" id="CTRT_NM"
-                                           form-bind-text='CTRT_NM' form-bind-type='text' style="width: 70%;" />
-                                </ax:td>
-                            </ax:tr>
-                            <ax:tr>
-                                <ax:td label='계약상태' width='49%'>
-                                    <div id="CTRT_ST" name="CTRT_ST" data-ax5select="CTRT_ST" data-ax5select-config='{}'
-                                         form-bind-text='CTRT_ST' form-bind-type="selectBox" style="width: 63%;"></div>
-                                </ax:td>
-                                <ax:td label="<span style='color:red'>*</span> 계약매체" width="49%;">
-                                    <div id="CTRT_METHOD" class="required" name="CTRT_METHOD" data-ax5select="CTRT_METHOD" data-ax5select-config='{}'
-                                         form-bind-text='CTRT_METHOD' form-bind-type="selectBox" style="width: 63%;"></div>
-                                </ax:td>
-                            </ax:tr>
-                            <ax:tr>
-                                <ax:td label='계약당사자(갑)' width="49%">
-                                    <input type="hidden" class="form-control" data-ax-path="MAIN_CTRT_AGENT_CD" name="MAIN_CTRT_AGENT_CD" id="MAIN_CTRT_AGENT_CD"
-                                           form-bind-text='MAIN_CTRT_AGENT_CD' form-bind-type='text' style="width: 70%;" />
-                                    <input readonly type="text" class="form-control" data-ax-path="MAIN_CTRT_AGENT_NM" name="MAIN_CTRT_AGENT_NM" id="MAIN_CTRT_AGENT_NM"
-                                           form-bind-text='MAIN_CTRT_AGENT_NM' form-bind-type='text' style="width: 70%;" />
-                                </ax:td>
+                        <ax:tr>
+                            <ax:td label='계약번호' width="49%">
+                                <input readonly type="text" class="form-control" data-ax-path="CTRT_NO" name="CTRT_NO" id="CTRT_NO"
+                                       form-bind-text='CTRT_NO' form-bind-type='text' style="width: 70%;" />
+                            </ax:td>
+                            <ax:td label="<span style='color:red'>*</span> 계약명" width="49%">
+                                <input type="text" class="form-control required" data-ax-path="CTRT_NM" name="CTRT_NM" id="CTRT_NM"
+                                       form-bind-text='CTRT_NM' form-bind-type='text' style="width: 70%;" />
+                            </ax:td>
+                        </ax:tr>
+                        <ax:tr>
+                            <ax:td label='계약상태' width='49%'>
+                                <div id="CTRT_ST" name="CTRT_ST" data-ax5select="CTRT_ST" data-ax5select-config='{}'
+                                     form-bind-text='CTRT_ST' form-bind-type="selectBox" style="width: 63%;"></div>
+                            </ax:td>
+                            <ax:td label="<span style='color:red'>*</span> 계약매체" width="49%;">
+                                <div id="CTRT_METHOD" class="required" name="CTRT_METHOD" data-ax5select="CTRT_METHOD" data-ax5select-config='{}'
+                                     form-bind-text='CTRT_METHOD' form-bind-type="selectBox" style="width: 63%;"></div>
+                            </ax:td>
+                        </ax:tr>
+                        <ax:tr>
+                            <ax:td label='계약당사자(갑)' width="49%">
+                                <input type="hidden" class="form-control" data-ax-path="MAIN_CTRT_AGENT_CD" name="MAIN_CTRT_AGENT_CD" id="MAIN_CTRT_AGENT_CD"
+                                       form-bind-text='MAIN_CTRT_AGENT_CD' form-bind-type='text' style="width: 70%;" />
+                                <input readonly type="text" class="form-control" data-ax-path="MAIN_CTRT_AGENT_NM" name="MAIN_CTRT_AGENT_NM" id="MAIN_CTRT_AGENT_NM"
+                                       form-bind-text='MAIN_CTRT_AGENT_NM' form-bind-type='text' style="width: 70%;" />
+                            </ax:td>
 
-                                <ax:td label='거래처명(을)' width="49%">
-                                    <input type="hidden" class="form-control" data-ax-path="CTRT_AGENT_CD" name="CTRT_AGENT_CD" id="CTRT_AGENT_CD"
-                                           form-bind-text='CTRT_AGENT_CD' form-bind-type='text' style="width: 70%;" />
-                                    <input readonly type="text" class="form-control" data-ax-path="CTRT_AGENT_NM" name="CTRT_AGENT_NM" id="CTRT_AGENT_NM"
-                                           form-bind-text='CTRT_AGENT_NM' form-bind-type='text' style="width: 70%;" />
-                                </ax:td>
-                            </ax:tr>
-                            <ax:tr>
-                                <ax:td label="<span style='color:red'>*</span> 계약구분" width="49%;">
-                                    <div id="CTRT_SP" class="required" name="CTRT_SP" data-ax5select="CTRT_SP" data-ax5select-config='{}' style="width: 63%;"
-                                         form-bind-text='CTRT_SP' form-bind-type="selectBox" ></div>
-                                </ax:td>
-                                <ax:td label="<span style='color:red'>*</span> 계약종류" width="49%">
-                                    <div id="CTRT_TP" class="required" name="CTRT_TP" data-ax5select="CTRT_TP" data-ax5select-config='{}' style="width: 63%;"
-                                         form-bind-text='CTRT_TP' form-bind-type="selectBox" ></div>
-                                </ax:td>
-                            </ax:tr>
-                            <ax:tr>
-                                <ax:td label="<span style='color:red'>*</span> 계약일자" width="33%">
-                                    <datepicker class="required" mode="date" id="CTRT_DT" form-bind-code="CTRT_DT" form-bind-text='CTRT_DT' form-bind-type="datepicker">
-                                </ax:td>
-                                <ax:td label="<span style='color:red'>*</span> 계약기간" width="33%">
-                                    <period-datepicker class="required" id="CTRT_DTS" form-bind-type="period-datepicker" date-start-column="CTRT_START_DT" date-end-column="CTRT_END_DT" > </period-datepicker>
-                                </ax:td>
-                                <ax:td label="<span style='color:red'>*</span> 계약형태" width="33%">
-                                    <div id="CTRT_TC" class="required" name="CTRT_TC" data-ax5select="CTRT_TC" data-ax5select-config='{}' style="width: 63%; background: #ffe0cf;"
-                                         form-bind-text='CTRT_TC' form-bind-type="selectBox">
-                                    </div>
-                                </ax:td>
+                            <ax:td label='거래처명(을)' width="49%">
+                                <input type="hidden" class="form-control" data-ax-path="CTRT_AGENT_CD" name="CTRT_AGENT_CD" id="CTRT_AGENT_CD"
+                                       form-bind-text='CTRT_AGENT_CD' form-bind-type='text' style="width: 70%;" />
+                                <input readonly type="text" class="form-control" data-ax-path="CTRT_AGENT_NM" name="CTRT_AGENT_NM" id="CTRT_AGENT_NM"
+                                       form-bind-text='CTRT_AGENT_NM' form-bind-type='text' style="width: 70%;" />
+                            </ax:td>
+                        </ax:tr>
+                        <ax:tr>
+                            <ax:td label="<span style='color:red'>*</span> 계약구분" width="49%;">
+                                <div id="CTRT_SP" class="required" name="CTRT_SP" data-ax5select="CTRT_SP" data-ax5select-config='{}' style="width: 63%;"
+                                     form-bind-text='CTRT_SP' form-bind-type="selectBox" ></div>
+                            </ax:td>
+                            <ax:td label="<span style='color:red'>*</span> 계약종류" width="49%">
+                                <div id="CTRT_TP" class="required" name="CTRT_TP" data-ax5select="CTRT_TP" data-ax5select-config='{}' style="width: 63%;"
+                                     form-bind-text='CTRT_TP' form-bind-type="selectBox" ></div>
+                            </ax:td>
+                        </ax:tr>
+                        <ax:tr>
+                        <ax:td label="<span style='color:red'>*</span> 계약일자" width="33%">
+                        <datepicker class="required" mode="date" id="CTRT_DT" form-bind-code="CTRT_DT" form-bind-text='CTRT_DT' form-bind-type="datepicker">
+                            </ax:td>
+                            <ax:td label="<span style='color:red'>*</span> 계약기간" width="33%">
+                            <period-datepicker class="required" id="CTRT_DTS" form-bind-type="period-datepicker" date-start-column="CTRT_START_DT" date-end-column="CTRT_END_DT" > </period-datepicker>
+                            </ax:td>
+                            <ax:td label="<span style='color:red'>*</span> 계약형태" width="33%">
+                            <div id="CTRT_TC" class="required" name="CTRT_TC" data-ax5select="CTRT_TC" data-ax5select-config='{}' style="width: 63%; background: #ffe0cf;"
+                                 form-bind-text='CTRT_TC' form-bind-type="selectBox">
+                            </div>
+                            </ax:td>
                             </ax:tr>
                             <ax:tr>
                             <ax:td label='특약사항' width="92.3%">
-                                <textarea type="text"
-                                          style="height: 110px;"
-                                          class="form-control"
-                                          data-ax-path="SPCONTR_CONT"
-                                          form-bind-text='SPCONTR_CONT'
-                                          form-bind-type='text'
-                                          name="SPCONTR_CONT"
-                                          id="SPCONTR_CONT"
-                                          maxlength="1000">
+                            <textarea type="text"
+                                      style="height: 110px;"
+                                      class="form-control"
+                                      data-ax-path="SPCONTR_CONT"
+                                      form-bind-text='SPCONTR_CONT'
+                                      form-bind-type='text'
+                                      name="SPCONTR_CONT"
+                                      id="SPCONTR_CONT"
+                                      maxlength="1000">
                                 </textarea>
                             </ax:td>
                             </ax:tr>
                             <ax:tr>
-                                <ax:td label='비고' width="92.3%">
-                                <textarea type="text"
-                                          style="height: 110px;"
-                                          class="form-control"
-                                          data-ax-path="REMARK"
-                                          form-bind-text='REMARK'
-                                          form-bind-type='text'
-                                          name="REMARK"
-                                          id="REMARK"
-                                          maxlength="1000">
+                            <ax:td label='비고' width="92.3%">
+                            <textarea type="text"
+                                      style="height: 110px;"
+                                      class="form-control"
+                                      data-ax-path="REMARK"
+                                      form-bind-text='REMARK'
+                                      form-bind-type='text'
+                                      name="REMARK"
+                                      id="REMARK"
+                                      maxlength="1000">
                                 </textarea>
-                                </ax:td>
+                            </ax:td>
                             </ax:tr>
-                        </ax:tbl>
-                    </ax:form>
+                            </ax:tbl>
+                            </ax:form>
                     </div>
                 </div>
             </div>
