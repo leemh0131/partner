@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="ax" tagdir="/WEB-INF/tags" %>
 
-<ax:set key="title" value="그리드1 폼"/>
+<ax:set key="title" value="광고마스터"/>
 <ax:set key="page_desc" value="${pageRemark}"/>
 <ax:set key="page_auto_height" value="true"/>
 
@@ -19,7 +19,7 @@
 
             var ES_Q0001 = $.SELECT_COMMON_GET_CODE(ES_CODES, "ES_Q0001", false);   //사용여부
             //엘리먼트값 id="column2" 제이쿼리로 정의 $("#column2")의 콤보박스는 ES_Q0001 로 정의해주는 부분
-            $("#column2").ax5select({options: ES_Q0001});
+            $("#BOX_YN").ax5select({options: ES_Q0001});
 
             var ACTIONS = axboot.actionExtend(fnObj, {
                 PAGE_SEARCH: function(caller, act, data) {
@@ -37,6 +37,11 @@
                     //마지막 인덱스를 구하는 로직
                     var lastIdx = nvl(caller.gridView01.target.list.length, caller.gridView01.lastRow());
                     selectRow = lastIdx - 1;
+                    fnObj.gridView01.target.focus(lastIdx - 1);
+                    fnObj.gridView01.target.select(lastIdx - 1);
+
+                    fnObj.gridView01.target.setValue(lastIdx - 1, "ADV_CD", GET_NO('MA', '24'));
+                    ACTIONS.dispatch(ACTIONS.ITEM_CLICK);
 
                     //그리드row 포커스
                     fnObj.gridView01.target.select(selectRow);
@@ -146,14 +151,12 @@
                         targetForm : [ $('.QRAY_FORM') ] , // 그리드 폼 정의
                         target: $('[data-ax5grid="grid-view-01"]'),
                         columns: [
-                            { key: "column1", label: "컬럼1", width: 160, align: "center", sortable: true ,editor: false},
-                            { key: "column2", label: "컬럼2", width: 160, align: "center", sortable: true ,editor: false},
-                            { key: "column3_cd", label: "컬럼3_cd", width: 160, align: "center", sortable: true ,editor: false},
-                            { key: "column3_nm", label: "컬럼3_nm", width: 160, align: "center", sortable: true ,editor: false},
-                            { key: "column4", label: "컬럼4", width: 160, align: "center", sortable: true ,editor: false},
-                            { key: "column5", label: "컬럼5", width: 160, align: "center", sortable: true ,editor: false},
-                            { key: "column6", label: "컬럼6", width: 160, align: "center", sortable: true ,editor: false},
-                            { key: "column7", label: "컬럼7", width: 160, align: "center", sortable: true ,editor: false},
+                            { key: "ADV_CD", label: "광고코드", width: 160, align: "center", sortable: true ,editor: false},
+                            { key: "ADV_NM", label: "광고명", width: 160, align: "center", sortable: true ,editor: false},
+                            { key: "AM", label: "금액", width: 160, align: "center", sortable: true ,editor: false},
+                            { key: "MONTH", label: "기본개월수", width: 160, align: "center", sortable: true ,editor: false},
+                            { key: "BOX_YN", label: "박스수지정여부", width: 160, align: "center", sortable: true ,editor: false},
+                            { key: "BOX_NUM", label: "박스수", width: 160, align: "center", sortable: true ,editor: false},
                         ],
                         body: {
                             onClick: function () {
@@ -221,7 +224,6 @@
         </script>
     </jsp:attribute>
     <jsp:body>
-
         <div data-page-buttons="">
             <div class="button-warp">
                 <button type="button" class="btn btn-reload" data-page-btn="reload" onclick="window.location.reload();"
@@ -270,70 +272,48 @@
                     <ax:form name="binder-form">
                         <ax:tbl clazz="ax-search-tb2" minWidth="600px">
                             <ax:tr>
-                                <ax:td label='column1' width="300px">
-                                    <input type="text"
-                                           class="form-control"
-                                           data-ax-path="column1"
-                                           name="column1"
-                                           id="column1"
-                                           form-bind-text='column1'
-                                           form-bind-type='text'/>
+                                <ax:td label='광고코드' width="300px">
+                                    <input type="text" class="form-control" data-ax-path="ADV_CD" name="ADV_CD"
+                                           id="ADV_CD" form-bind-text='ADV_CD' form-bind-type='text'/>
                                 </ax:td>
-                                <ax:td label='column2(콤보박스)' width="300px">
-                                    <div id="column2" name="column2" data-ax5select="column2" data-ax5select-config='{}' form-bind-type="selectBox"></div>
+                                <ax:td label='광고명' width="300px">
+                                    <input type="text" class="form-control" data-ax-path="ADV_NM" name="ADV_NM"
+                                           id="ADV_NM" form-bind-text='ADV_NM' form-bind-type='text'/>
+                                </ax:td>
+
+                            </ax:tr>
+                            <ax:tr>
+<%--                                <ax:td label='column3(코드피커)' width="300px">--%>
+<%--                                    <codepicker id="column3_cd"--%>
+<%--                                                HELP_ACTION="HELP_USER"--%>
+<%--                                                HELP_URL="/jsp/ensys/help/userHelper.jsp"--%>
+<%--                                                BIND-CODE="USER_ID"--%>
+<%--                                                BIND-TEXT="USER_NM"--%>
+<%--                                                form-bind-type="codepicker"--%>
+<%--                                                form-bind-code="column3_cd"--%>
+<%--                                                form-bind-text="column3_nm"></codepicker>--%>
+<%--                                </ax:td>--%>
+                                <ax:td label='금액' width="300px">
+                                    <input type="text" class="form-control" data-ax-path="AM" name="AM"
+                                           id="AM" form-bind-text='AM' form-bind-type='text'/>
+                                </ax:td>
+                                <ax:td label='박스수지정여부' width="300px">
+<%--                                    <div id="column2" name="column2" data-ax5select="column2" data-ax5select-config='{}' form-bind-type="selectBox"></div>--%>
+                                    <div id="BOX_YN" name="BOX_YN" data-ax5select="BOX_YN" data-ax5select-config='{}'
+                                         form-bind-text='BOX_YN' form-bind-type="selectBox"></div>
                                 </ax:td>
                             </ax:tr>
                             <ax:tr>
-                                <ax:td label='column3(코드피커)' width="300px">
-                                    <codepicker id="column3_cd"
-                                                HELP_ACTION="HELP_USER"
-                                                HELP_URL="/jsp/ensys/help/userHelper.jsp"
-                                                BIND-CODE="USER_ID"
-                                                BIND-TEXT="USER_NM"
-                                                form-bind-type="codepicker"
-                                                form-bind-code="column3_cd"
-                                                form-bind-text="column3_nm"></codepicker>
+                                <ax:td label='기본개월수' width="300px">
+                                    <input type="text" class="form-control" data-ax-path="MONTH" name="MONTH"
+                                           id="MONTH" form-bind-text='MONTH' form-bind-type='text'/>
                                 </ax:td>
-                                <ax:td label='column4' width="300px">
-                                    <input type="text"
-                                           class="form-control"
-                                           data-ax-path="column4"
-                                           name="column4"
-                                           id="column4"
-                                           form-bind-text='column4'
-                                           form-bind-type='text'/>
+                                <ax:td label='박스수' width="300px">
+                                    <input type="text" class="form-control" data-ax-path="BOX_NUM" name="BOX_NUM"
+                                           id="BOX_NUM" form-bind-text='BOX_NUM' form-bind-type='text'/>
                                 </ax:td>
                             </ax:tr>
                             <ax:tr>
-                                <ax:td label='column5' width="300px">
-                                    <input type="text"
-                                           class="form-control"
-                                           data-ax-path="column5"
-                                           name="column5"
-                                           id="column5"
-                                           form-bind-text='column5'
-                                           form-bind-type='text'/>
-                                </ax:td>
-                                <ax:td label='column6' width="300px">
-                                    <input type="text"
-                                           class="form-control"
-                                           data-ax-path="column6"
-                                           name="column6"
-                                           id="column6"
-                                           form-bind-text='column6'
-                                           form-bind-type='text'/>
-                                </ax:td>
-                            </ax:tr>
-                            <ax:tr>
-                                <ax:td label='column7' width="300px">
-                                    <input type="text"
-                                           class="form-control"
-                                           data-ax-path="column7"
-                                           name="column7"
-                                           id="column7"
-                                           form-bind-text='column7'
-                                           form-bind-type='text'/>
-                                </ax:td>
                             </ax:tr>
                         </ax:tbl>
                     </ax:form>
