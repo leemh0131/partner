@@ -119,7 +119,7 @@ var GET_NO = function(MODULE_CD, CLASS_CD){
     var no = '';
     axboot.ajax({
         type: "POST",
-        url: ['SYS00011','getNo'],
+        url: ['SysInformation08','getNo'],
         data: JSON.stringify({COMPANY_CD : SCRIPT_SESSION.cdCompany, MODULE_CD : MODULE_CD, CLASS_CD : CLASS_CD}),
         async: false,
         callback: function (res) {
