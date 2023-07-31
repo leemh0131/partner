@@ -1,0 +1,540 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ensys.qray.web.partner.PartnerMapper">
+
+	<select id="selectList" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*PartnerMapper.selectList*/
+		SELECT
+				A.COMPANY_CD  	AS "COMPANY_CD"
+			  , A.PARTNER_CD  	AS "PARTNER_CD"
+			  , A.PARTNER_NM  	AS "PARTNER_NM"
+			  , A.COMPANY_NO  	AS "COMPANY_NO"
+			  , A.CEO_NM  		AS "CEO_NM"
+			  , A.PARTNER_TP  	AS "PARTNER_TP"
+			  , A.POST_NO  		AS "POST_NO"
+			  , A.ADS_H  		AS "ADS_H"
+			  , A.ADS_D  		AS "ADS_D"
+			  , A.JOB_FIELD  	AS "JOB_FIELD"
+			  , A.JOB_EP  		AS "JOB_EP"
+			  , A.JOB_ZONE  	AS "JOB_ZONE"
+			  , A.YOUTUBE_LINK  AS "YOUTUBE_LINK"
+			  , A.COMPANY_INTRO AS "COMPANY_INTRO"
+			  , A.ITEM_INTRO  	AS "ITEM_INTRO"
+		FROM ES_PARTNER A
+		WHERE A.COMPANY_CD = #{COMPANY_CD}
+		<if test=' KEYWORD != null and KEYWORD != ""'>
+			AND
+			(  A.PARTNER_CD LIKE  '%' || #{KEYWORD} || '%'
+			OR A.PARTNER_NM LIKE  '%' || #{KEYWORD} || '%'
+			)
+		</if>
+		<if test=' PARTNER_CD != null and PARTNER_CD != ""'>
+			AND	A.PARTNER_CD = #{PARTNER_CD}
+		</if>
+	</select>
+
+	<select id="selectMList" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*PartnerMapper.selectMList*/
+		SELECT    A.PARTNER_CD        AS "PARTNER_CD"
+				, A.PTR_CD            AS "PTR_CD"
+				, A.PTR_NM            AS "PTR_NM"
+				, A.E_MAIL            AS "E_MAIL"
+				, A.TEL_NO            AS "TEL_NO"
+				, A.FAX_NO            AS "FAX_NO"
+				, A.DEPT_NM           AS "DEPT_NM"
+				, A.DUTY_RANK_NM      AS "DUTY_RANK_NM"
+				, A.DC_RMK            AS "DC_RMK"
+				, A.USE_YN            AS "USE_YN_M"
+				, A.MAIN_YN           AS "MAIN_YN_M"
+		FROM ES_PARTNER_PTR A
+		WHERE A.COMPANY_CD = #{COMPANY_CD}
+		AND	A.PARTNER_CD = #{PARTNER_CD}
+	</select>
+
+	<select id="selectDList" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*PartnerMapper.selectDList*/
+		SELECT     A.COMPANY_CD		AS "COMPANY_CD"
+			 	 , A.PARTNER_CD		AS "PARTNER_CD"
+			 	 , A.DEPOSIT_CD		AS "DEPOSIT_CD"
+			 	 , A.DEPOSIT_NO		AS "DEPOSIT_NO"
+			 	 , A.DEPOSIT_NM		AS "DEPOSIT_NM"
+			 	 , A.BANK_CD		AS "BANK_CD"
+			 	 , A.BANK_NM		AS "BANK_NM"
+			 	 , A.DEPOSIT_GB		AS "DEPOSIT_GB"
+			 	 , A.DC_RMK			AS "DC_RMK"
+			 	 , A.USE_YN			AS "USE_YN_D"
+			 	 , A.MAIN_YN		AS "MAIN_YN_D"
+		FROM ES_PARTNER_DEPOSIT A
+		WHERE A.COMPANY_CD = #{COMPANY_CD}
+		AND	A.PARTNER_CD = #{PARTNER_CD}
+	</select>
+
+	<insert id="partnerInsertUpdate" parameterType="hashmap" statementType="CALLABLE">
+		/*PartnerMapper.partnerInsertUpdate*/
+		INSERT INTO ES_PARTNER
+		(
+			  COMPANY_CD
+			, PARTNER_CD
+			, PARTNER_NM
+			, COMPANY_NO
+			, CEO_NM
+			, PARTNER_TP
+			, POST_NO
+			, ADS_H
+			, ADS_D
+			, JOB_FIELD
+			, JOB_EP
+			, JOB_ZONE
+			, YOUTUBE_LINK
+			, COMPANY_INTRO
+			, ITEM_INTRO
+			, USE_YN
+			, INSERT_ID
+			, INSERT_DTS
+			, UPDATE_ID
+			, UPDATE_DTS
+		) VALUES (
+				  #{COMPANY_CD}
+				, #{PARTNER_CD}
+				, #{PARTNER_NM}
+				, #{COMPANY_NO}
+				, #{CEO_NM}
+				, #{PARTNER_TP}
+				, #{POST_NO}
+				, #{ADS_H}
+				, #{ADS_D}
+				, #{JOB_FIELD}
+				, #{JOB_EP}
+				, #{JOB_ZONE}
+				, #{YOUTUBE_LINK}
+				, #{COMPANY_INTRO}
+				, #{ITEM_INTRO}
+				, 'Y'
+				, #{INSERT_ID}
+				, #{INSERT_DTS}
+				, #{UPDATE_ID}
+				, #{UPDATE_DTS}
+				 )
+			ON CONFLICT (COMPANY_CD, PARTNER_CD) DO UPDATE SET
+			  COMPANY_CD = #{COMPANY_CD}
+			, PARTNER_CD = #{PARTNER_CD}
+			, PARTNER_NM = #{PARTNER_NM}
+			, COMPANY_NO = #{COMPANY_NO}
+			, CEO_NM = #{CEO_NM}
+			, PARTNER_TP = #{PARTNER_TP}
+			, POST_NO = #{POST_NO}
+			, ADS_H = #{ADS_H}
+			, ADS_D = #{ADS_D}
+			, JOB_FIELD = #{JOB_FIELD}
+			, JOB_EP = #{JOB_EP}
+			, JOB_ZONE = #{JOB_ZONE}
+			, YOUTUBE_LINK = #{YOUTUBE_LINK}
+			, COMPANY_INTRO = #{COMPANY_INTRO}
+			, ITEM_INTRO = #{ITEM_INTRO}
+			, USE_YN = #{USE_YN}
+			, UPDATE_ID = #{UPDATE_ID}
+			, UPDATE_DTS = #{UPDATE_DTS}
+	</insert>
+
+	<delete id="partnerDeleteAll" parameterType="hashmap" statementType="CALLABLE">
+		/*PartnerMapper.partnerDeleteAll*/
+		WITH ES_PARTNER_AS AS
+		(
+			DELETE FROM ES_PARTNER
+			WHERE COMPANY_CD = #{COMPANY_CD}
+			AND   PARTNER_CD   = #{PARTNER_CD}
+		),
+		ES_PARTNER_PTR_AS AS
+		(
+			DELETE FROM ES_PARTNER_PTR
+			WHERE COMPANY_CD = #{COMPANY_CD}
+			AND   PARTNER_CD   = #{PARTNER_CD}
+		),
+		ES_PARTNER_DEPOSIT_AS AS
+		(
+			DELETE FROM ES_PARTNER_DEPOSIT
+			WHERE COMPANY_CD = #{COMPANY_CD}
+			AND   PARTNER_CD   = #{PARTNER_CD}
+		)
+		SELECT 'DELETE'
+	</delete>
+
+	<insert id="partnerMcreated" parameterType="hashmap" statementType="CALLABLE">
+		/*PartnerMapper.partnerMcreated*/
+		INSERT INTO ES_PARTNER_PTR
+		(
+		  COMPANY_CD
+		, PARTNER_CD
+		, PTR_CD
+		, PTR_NM
+		, E_MAIL
+		, TEL_NO
+		, FAX_NO
+		, DEPT_NM
+		, DUTY_RANK_NM
+		, DC_RMK
+		, USE_YN
+		, MAIN_YN
+		, INSERT_ID
+		, INSERT_DTS
+		, UPDATE_ID
+		, UPDATE_DTS
+		)
+		VALUES
+	   (
+		  #{COMPANY_CD}
+		, #{PARTNER_CD}
+		, (SELECT COALESCE(MAX(PTR_CD), 0) + 1
+		  FROM ES_PARTNER_PTR
+		  WHERE COMPANY_CD = #{COMPANY_CD}
+		  AND PARTNER_CD = #{PARTNER_CD})
+		, #{PTR_NM}
+		, #{E_MAIL}
+		, #{TEL_NO}
+		, #{FAX_NO}
+		, #{DEPT_NM}
+		, #{DUTY_RANK_NM}
+		, #{DC_RMK}
+		, #{USE_YN_M}
+		, #{MAIN_YN_M}
+		, #{INSERT_ID}
+		, #{INSERT_DTS}
+		, #{UPDATE_ID}
+		, #{UPDATE_DTS}
+		)
+	</insert>
+
+	<insert id="partnerDcreated" parameterType="hashmap" statementType="CALLABLE">
+		/*PartnerMapper.partnerDcreated*/
+		INSERT INTO ES_PARTNER_DEPOSIT
+		(
+			  COMPANY_CD
+			, PARTNER_CD
+			, DEPOSIT_CD
+			, DEPOSIT_NO
+			, DEPOSIT_NM
+			, BANK_CD
+			, BANK_NM
+			, DEPOSIT_GB
+			, DC_RMK
+			, USE_YN
+			, MAIN_YN
+			, INSERT_ID
+			, INSERT_DTS
+			, UPDATE_ID
+			, UPDATE_DTS
+		)
+		VALUES
+		(
+			  #{COMPANY_CD}
+			, #{PARTNER_CD}
+			 , (SELECT COALESCE(MAX(DEPOSIT_CD), 0) + 1
+			   FROM ES_PARTNER_DEPOSIT
+			   WHERE COMPANY_CD = #{COMPANY_CD}
+			   AND PARTNER_CD = #{PARTNER_CD})
+			, #{DEPOSIT_NO}
+			, #{DEPOSIT_NM}
+			, #{BANK_CD}
+			, #{BANK_NM}
+			, #{DEPOSIT_GB}
+			, #{DC_RMK}
+			, #{USE_YN_D}
+			, #{MAIN_YN_D}
+			, #{INSERT_ID}
+			, #{INSERT_DTS}
+			, #{UPDATE_ID}
+			, #{UPDATE_DTS}
+		)
+	</insert>
+
+	<delete id="partnerMdeleted" parameterType="hashmap" statementType="CALLABLE">
+		/*PartnerMapper.partnerMdeleted*/
+		DELETE FROM ES_PARTNER_PTR
+		WHERE COMPANY_CD = #{COMPANY_CD}
+		  AND PARTNER_CD   = #{PARTNER_CD}
+		  AND PTR_CD   = #{PTR_CD}
+	</delete>
+
+	<delete id="partnerDdeleted" parameterType="hashmap" statementType="CALLABLE">
+		/*PartnerMapper.partnerDdeleted*/
+		DELETE FROM ES_PARTNER_DEPOSIT
+		WHERE COMPANY_CD = #{COMPANY_CD}
+		  AND PARTNER_CD   = #{PARTNER_CD}
+		  AND DEPOSIT_CD   = #{DEPOSIT_CD}
+	</delete>
+
+	<update id="partnerMupdated" parameterType="hashmap" statementType="CALLABLE">
+		/*PartnerMapper.partnerMupdated*/
+		UPDATE ES_PARTNER_PTR
+		SET PTR_NM = #{PTR_NM}
+		  , E_MAIL = #{E_MAIL}
+		  , TEL_NO = #{TEL_NO}
+		  , FAX_NO = #{FAX_NO}
+		  , DEPT_NM = #{DEPT_NM}
+		  , DUTY_RANK_NM = #{DUTY_RANK_NM}
+		  , DC_RMK = #{DC_RMK}
+		  , USE_YN = #{USE_YN_M}
+		  , MAIN_YN = #{MAIN_YN_M}
+		  , UPDATE_ID = #{UPDATE_ID}
+		  , UPDATE_DTS = #{UPDATE_DTS}
+		WHERE COMPANY_CD  = #{COMPANY_CD}
+		AND PARTNER_CD = #{PARTNER_CD}
+		  AND PTR_CD = #{PTR_CD}
+	</update>
+
+	<update id="partnerDupdated" parameterType="hashmap" statementType="CALLABLE">
+		/*PartnerMapper.partnerDupdated*/
+		UPDATE ES_PARTNER_DEPOSIT
+		   SET    DEPOSIT_NO = #{DEPOSIT_NO}
+				, DEPOSIT_NM = #{DEPOSIT_NM}
+				, BANK_CD = #{BANK_CD}
+				, BANK_NM = #{BANK_NM}
+				, DEPOSIT_GB = #{DEPOSIT_GB}
+				, DC_RMK = #{DC_RMK}
+				, USE_YN = #{USE_YN_D}
+				, MAIN_YN = #{MAIN_YN_D}
+				, UPDATE_ID = #{UPDATE_ID}
+				, UPDATE_DTS = #{UPDATE_DTS}
+		WHERE COMPANY_CD  = #{COMPANY_CD}
+		AND PARTNER_CD = #{PARTNER_CD}
+		AND DEPOSIT_CD = #{DEPOSIT_CD}
+	</update>
+
+	<select id="selectContractList" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*PartnerMapper.selectContractList*/
+		SELECT    A.COMPANY_CD AS "COMPANY_CD"
+				, A.CONTRACT_CD AS "CONTRACT_CD"
+				, A.CONTRACT_NM AS "CONTRACT_NM"
+				, A.PARTNER_CD AS "PARTNER_CD"
+				, A.CONTRACT_ST AS "CONTRACT_ST"
+				, A.CONTRACT_START_DT AS "CONTRACT_START_DT"
+				, A.CONTRACT_END_DT AS "CONTRACT_END_DT"
+				, A.CONTRACT_DT AS "CONTRACT_DT"
+				, A.INSERT_ID AS "INSERT_ID"
+				, A.INSERT_DTS AS "INSERT_DTS"
+				, A.UPDATE_ID AS "UPDATE_ID"
+				, A.UPDATE_DTS AS "UPDATE_DTS"
+				, A.REMARK AS "REMARK"
+				, A.SPCONTR_CONT AS "SPCONTR_CONT"
+		FROM ES_CONTRACT A
+		WHERE A.COMPANY_CD = #{COMPANY_CD}
+		<if test=' CONTRACT_DT_S != null and CONTRACT_DT_S != ""'>
+			AND A.CONTRACT_DT BETWEEN #{CONTRACT_DT_S} AND #{CONTRACT_DT_D}
+		</if>
+		<if test=' CONTRACT_CD != null and CONTRACT_CD != ""'>
+			AND	A.CONTRACT_CD = #{CONTRACT_CD}
+		</if>
+	</select>
+
+	<select id="selectContractDList" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*PartnerMapper.selectContractDList*/
+		SELECT    A.COMPANY_CD  		AS "COMPANY_CD"
+				, A.PARTNER_CD  		AS "PARTNER_CD"
+				, A.CONTRACT_CD  		AS "CONTRACT_CD"
+				, A.DEPOSIT_MM  		AS "DEPOSIT_MM"
+				, A.AM_MM		  		AS "AM_MM"
+				, A.AM  				AS "AM"
+		     	, A.SEQ 				AS "SEQ"
+				, A.INSERT_ID  			AS "INSERT_ID"
+				, A.INSERT_DTS  		AS "INSERT_DTS"
+				, A.UPDATE_ID  			AS "UPDATE_ID"
+				, A.UPDATE_DTS  		AS "UPDATE_DTS"
+		FROM ES_CONTRACT_PACKAGE A
+		WHERE A.COMPANY_CD = #{COMPANY_CD}
+		  AND A.CONTRACT_CD = #{CONTRACT_CD}
+	</select>
+
+	<select id="selectContractMList" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*PartnerMapper.selectContractMList*/
+		SELECT    A.COMPANY_CD 	AS "COMPANY_CD"
+				, A.PARTNER_CD 	AS "PARTNER_CD"
+				, A.CONTRACT_CD AS "CONTRACT_CD"
+				, A.PACKAGE_CD 	AS "PACKAGE_CD"
+				, A.SEQ			AS "SEQ"
+				, A.INSERT_ID 	AS "INSERT_ID"
+				, A.INSERT_DTS 	AS "INSERT_DTS"
+				, A.UPDATE_ID 	AS "UPDATE_ID"
+				, A.UPDATE_DTS 	AS "UPDATE_DTS"
+		FROM ES_CONTRACT_PACKAGE A
+		WHERE A.COMPANY_CD = #{COMPANY_CD}
+		AND A.CONTRACT_CD = #{CONTRACT_CD}
+	</select>
+
+	<insert id="contractInsertUpdate" parameterType="hashmap" statementType="CALLABLE">
+		/*PartnerMapper.contractInsertUpdate*/
+		INSERT INTO ES_CONTRACT
+		(
+			  COMPANY_CD
+			, CONTRACT_CD
+			, CONTRACT_NM
+			, PARTNER_CD
+			, CONTRACT_ST
+			, CONTRACT_START_DT
+			, CONTRACT_END_DT
+			, CONTRACT_DT
+			, INSERT_ID
+			, INSERT_DTS
+			, UPDATE_ID
+			, UPDATE_DTS
+			, REMARK
+			, SPCONTR_CONT
+		) VALUES (
+		   #{COMPANY_CD}
+		 , #{CONTRACT_CD}
+		 , #{CONTRACT_NM}
+		 , #{PARTNER_CD}
+		 , #{CONTRACT_ST}
+		 , #{CONTRACT_START_DT}
+		 , #{CONTRACT_END_DT}
+		 , #{CONTRACT_DT}
+		 , #{INSERT_ID}
+		 , #{INSERT_DTS}
+		 , #{UPDATE_ID}
+		 , #{UPDATE_DTS}
+		 , #{REMARK}
+		 , #{SPCONTR_CONT}
+		 )  ON CONFLICT (COMPANY_CD, PARTNER_CD, CONTRACT_CD) DO UPDATE SET
+		    CONTRACT_NM = #{CONTRACT_NM}
+		  , CONTRACT_ST = #{CONTRACT_ST}
+		  , CONTRACT_START_DT = #{CONTRACT_START_DT}
+		  , CONTRACT_END_DT = #{CONTRACT_END_DT}
+		  , CONTRACT_DT = #{CONTRACT_DT}
+		  , UPDATE_ID = #{UPDATE_ID}
+		  , UPDATE_DTS = #{UPDATE_DTS}
+		  , REMARK = #{REMARK}
+		  , SPCONTR_CONT = #{SPCONTR_CONT}
+	</insert>
+
+	<insert id="contractMcreated" parameterType="hashmap" statementType="CALLABLE">
+		/*PartnerMapper.contractMcreated*/
+		INSERT INTO ES_CONTRACT_PACKAGE
+		(
+		  COMPANY_CD
+		, PARTNER_CD
+		, CONTRACT_CD
+		, PACKAGE_CD
+		, INSERT_ID
+		, INSERT_DTS
+		, UPDATE_ID
+		, SEQ
+		, UPDATE_DTS
+		)
+		VALUES
+		(
+		  #{COMPANY_CD}
+		, #{PARTNER_CD}
+		, #{CONTRACT_CD}
+		, #{PACKAGE_CD}
+		, #{INSERT_ID}
+		, #{INSERT_DTS}
+		, #{UPDATE_ID}
+		, #{UPDATE_DTS}
+		, (SELECT COALESCE(MAX(SEQ), 0) + 1
+		   FROM ES_CONTRACT_PACKAGE
+		   WHERE COMPANY_CD = #{COMPANY_CD}
+			 AND CONTRACT_CD = #{CONTRACT_CD})
+		)
+		)
+	</insert>
+
+	<insert id="contractDcreated" parameterType="hashmap" statementType="CALLABLE">
+		/*PartnerMapper.contractDcreated*/
+		INSERT INTO ES_CONTRACT_DEPOSIT
+		(
+		  COMPANY_CD
+		, PARTNER_CD
+		, CONTRACT_CD
+		, DEPOSIT_MM
+		, AM_MM
+		, AM
+		, INSERT_ID
+		, INSERT_DTS
+		, UPDATE_ID
+		, UPDATE_DTS
+		, SEQ
+		)
+		VALUES
+		(
+		  #{COMPANY_CD}
+		, #{PARTNER_CD}
+		, #{CONTRACT_CD}
+		, #{DEPOSIT_MM}
+		, #{AM_MM}
+		, #{AM}
+		, #{INSERT_ID}
+		, #{INSERT_DTS}
+		, #{UPDATE_ID}
+		, #{UPDATE_DTS}
+		, (SELECT COALESCE(MAX(SEQ), 0) + 1
+		   FROM ES_CONTRACT_DEPOSIT
+		   WHERE COMPANY_CD = #{COMPANY_CD}
+			 AND CONTRACT_CD = #{CONTRACT_CD})
+		)
+	</insert>
+
+	<update id="contractMupdated" parameterType="hashmap" statementType="CALLABLE">
+		/*PartnerMapper.contractMupdated*/
+		UPDATE ES_CONTRACT_PACKAGE
+		SET   PACKAGE_CD = #{PACKAGE_CD}
+		    , UPDATE_ID = #{UPDATE_ID}
+		    , UPDATE_DTS = #{UPDATE_DTS}
+		WHERE COMPANY_CD  = #{COMPANY_CD}
+		  AND CONTRACT_CD = #{CONTRACT_CD}
+		  AND SEQ = #{SEQ}
+	</update>
+
+	<update id="contractDupdated" parameterType="hashmap" statementType="CALLABLE">
+		/*PartnerMapper.contractDupdated*/
+		UPDATE ES_CONTRACT_DEPOSIT
+		SET   DEPOSIT_MM = #{DEPOSIT_MM}
+		    , AM_MM = #{AM_MM}
+		    , AM = #{AM}
+		    , UPDATE_ID = #{UPDATE_ID}
+		    , UPDATE_DTS = #{UPDATE_DTS}
+		WHERE COMPANY_CD  = #{COMPANY_CD}
+		  AND CONTRACT_CD = #{CONTRACT_CD}
+		  AND SEQ = #{SEQ}
+	</update>
+
+	<delete id="contractDdeleted" parameterType="hashmap" statementType="CALLABLE">
+		/*PartnerMapper.contractDdeleted*/
+		DELETE FROM ES_CONTRACT_DEPOSIT
+		WHERE COMPANY_CD = #{COMPANY_CD}
+		  AND CONTRACT_CD   = #{CONTRACT_CD}
+		  AND SEQ   = #{SEQ}
+	</delete>
+
+	<delete id="contractMdeleted" parameterType="hashmap" statementType="CALLABLE">
+		/*PartnerMapper.contractMdeleted*/
+		DELETE FROM ES_CONTRACT_PACKAGE
+		WHERE COMPANY_CD = #{COMPANY_CD}
+		  AND CONTRACT_CD   = #{CONTRACT_CD}
+		  AND SEQ   = #{SEQ}
+	</delete>
+
+	<delete id="contractDeleteAll" parameterType="hashmap" statementType="CALLABLE">
+		/*PartnerMapper.contractDeleteAll*/
+		WITH ES_CONTRACT_AS AS
+		(
+			DELETE FROM ES_CONTRACT
+			WHERE COMPANY_CD = #{COMPANY_CD}
+			  AND CONTRACT_CD   = #{CONTRACT_CD}
+		),
+		ES_CONTRACT_PACKAGE_AS AS
+		(
+			DELETE FROM ES_CONTRACT_PACKAGE
+			WHERE COMPANY_CD = #{COMPANY_CD}
+			  AND CONTRACT_CD   = #{CONTRACT_CD}
+		),
+		ES_PARTNER_DEPOSIT_AS AS
+		(
+			DELETE FROM ES_PARTNER_DEPOSIT
+			WHERE COMPANY_CD = #{COMPANY_CD}
+			  AND CONTRACT_CD   = #{CONTRACT_CD}
+		)
+		SELECT 'DELETE'
+	</delete>
+
+</mapper>

@@ -1,21 +1,8 @@
 package com.ensys.qray.file;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.net.URLEncoder;
-import java.nio.ByteBuffer;
-import java.nio.channels.GatheringByteChannel;
-import java.nio.channels.ScatteringByteChannel;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.chequer.axboot.core.api.response.ApiResponse;
+import com.chequer.axboot.core.api.response.Responses;
+import com.chequer.axboot.core.controllers.BaseController;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.xssf.usermodel.XSSFCell;
@@ -23,17 +10,19 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.chequer.axboot.core.api.response.ApiResponse;
-import com.chequer.axboot.core.api.response.Responses;
-import com.chequer.axboot.core.controllers.BaseController;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.net.URLEncoder;
+import java.nio.ByteBuffer;
+import java.nio.channels.GatheringByteChannel;
+import java.nio.channels.ScatteringByteChannel;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -46,6 +35,11 @@ public class FileController extends BaseController {
 	@RequestMapping(value = "search", method = RequestMethod.POST, produces = APPLICATION_JSON)
 	public Responses.ListResponse search(@RequestBody HashMap<String, Object> param) {
 		return Responses.ListResponse.of(fileService.search(param));
+	}
+
+	@RequestMapping(value = "searchIn", method = RequestMethod.POST, produces = APPLICATION_JSON)
+	public Responses.ListResponse searchIn(@RequestBody HashMap<String, Object> param) {
+		return Responses.ListResponse.of(fileService.searchIn(param));
 	}
 
 	@RequestMapping(value = "save", method = RequestMethod.POST, produces = APPLICATION_JSON)
@@ -70,20 +64,24 @@ public class FileController extends BaseController {
 	public void show(HttpServletRequest request, @RequestBody HashMap<String, Object> param) throws Exception {
 		String FILE_PATH = request.getSession().getServletContext().getRealPath("/file");
 
-		File chkFile = new File(FILE_PATH + File.separator + param.get("FILE_NAME") + "." + param.get("FILE_EXT"));
-		if (param.get("FILE_DIVISION") != null && (Integer) param.get("FILE_DIVISION") > 0) {
-			for (int i = 0 ; i < (Integer) param.get("FILE_DIVISION"); i++) {
-				File OrgnFile = new File(param.get("FILE_PATH") + File.separator + param.get("FILE_NAME") + "_" + i + ".png");
-				
+		/** jpg, png, gif, pdf 미리보기
+		 *  root/webapp 폴더안에 file 라는 폴더를 생성해 그 안에 이미지를 복사해서 보여준다.
+		 *
+		 */
+		if("jpg".equals(param.get("FILE_EXT")) || "png".equals(param.get("FILE_EXT")) || "gif".equals(param.get("FILE_EXT")) || "pdf".equals(param.get("FILE_EXT"))){
+			File chkFile = new File(FILE_PATH + File.separator + param.get("FILE_NAME") + "." + param.get("FILE_EXT"));
+			if (!chkFile.isFile()) {
+				File OrgnFile = new File(param.get("FILE_PATH") + File.separator + param.get("FILE_NAME") + "." + param.get("FILE_EXT"));
+
 				if (OrgnFile.isFile()) {
 					File copyFolder = new File(FILE_PATH);
 
 					if (!copyFolder.isDirectory()) {
 						copyFolder.mkdir();
 					}
-					
+
 					FileInputStream fis = new FileInputStream(OrgnFile); // 읽을파일
-					FileOutputStream fos = new FileOutputStream(FILE_PATH + File.separator + param.get("FILE_NAME") + "_" + i + ".png");
+					FileOutputStream fos = new FileOutputStream(FILE_PATH + File.separator + param.get("FILE_NAME") + "." + param.get("FILE_EXT")); // 복사할파일
 					ScatteringByteChannel sbc = fis.getChannel();
 					GatheringByteChannel gbc = fos.getChannel();
 
@@ -99,61 +97,10 @@ public class FileController extends BaseController {
 					fos.close();
 				}
 			}
-			File OrgnFile = new File(param.get("FILE_PATH") + File.separator + param.get("FILE_NAME") + ".pdf");
-			
-			if (OrgnFile.isFile()) {
-				File copyFolder = new File(FILE_PATH);
 
-				if (!copyFolder.isDirectory()) {
-					copyFolder.mkdir();
-				}
-				
-				FileInputStream fis = new FileInputStream(OrgnFile); // 읽을파일
-				FileOutputStream fos = new FileOutputStream(FILE_PATH + File.separator + param.get("FILE_NAME") + ".pdf");
-				ScatteringByteChannel sbc = fis.getChannel();
-				GatheringByteChannel gbc = fos.getChannel();
-
-				ByteBuffer bb = ByteBuffer.allocateDirect(1024);
-
-				while (sbc.read(bb) != -1) {
-					bb.flip();
-					gbc.write(bb);
-					bb.clear();
-				}
-
-				fis.close();
-				fos.close();
-			}
 		}
-		
-		if (!chkFile.isFile()) {
 
-			File OrgnFile = new File(param.get("FILE_PATH") + File.separator + param.get("FILE_NAME") + "." + param.get("FILE_EXT"));
 
-			if (OrgnFile.isFile()) {
-				File copyFolder = new File(FILE_PATH);
-
-				if (!copyFolder.isDirectory()) {
-					copyFolder.mkdir();
-				}
-				
-				FileInputStream fis = new FileInputStream(OrgnFile); // 읽을파일
-				FileOutputStream fos = new FileOutputStream(FILE_PATH + File.separator + param.get("FILE_NAME") + "." + param.get("FILE_EXT")); // 복사할파일
-				ScatteringByteChannel sbc = fis.getChannel();
-				GatheringByteChannel gbc = fos.getChannel();
-
-				ByteBuffer bb = ByteBuffer.allocateDirect(1024);
-
-				while (sbc.read(bb) != -1) {
-					bb.flip();
-					gbc.write(bb);
-					bb.clear();
-				}
-
-				fis.close();
-				fos.close();
-			}
-		}
 	}
 
 	@ResponseBody
@@ -362,4 +309,5 @@ public class FileController extends BaseController {
 			e.printStackTrace();
 		}
 	}
+
 }

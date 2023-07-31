@@ -1,31 +1,21 @@
 package com.ensys.qray.file;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.ByteBuffer;
-import java.nio.channels.GatheringByteChannel;
-import java.nio.channels.ScatteringByteChannel;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import javax.imageio.ImageIO;
-
+import com.ensys.qray.setting.base.BaseService;
+import com.ensys.qray.user.SessionUser;
 import com.ensys.qray.utils.HammerUtility;
+import com.ensys.qray.utils.SessionUtils;
+import com.lowagie.text.Font;
+import com.lowagie.text.Image;
+import com.lowagie.text.Rectangle;
+import com.lowagie.text.*;
+import com.lowagie.text.pdf.BaseFont;
+import com.lowagie.text.pdf.PdfPCell;
+import com.lowagie.text.pdf.PdfPTable;
+import com.lowagie.text.pdf.PdfWriter;
+import fr.opensagres.poi.xwpf.converter.pdf.PdfConverter;
+import fr.opensagres.poi.xwpf.converter.pdf.PdfOptions;
 import lombok.RequiredArgsConstructor;
+import org.apache.ibatis.io.Resources;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
@@ -51,22 +41,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.ensys.qray.setting.base.BaseService;
-import com.ensys.qray.user.SessionUser;
-import com.ensys.qray.utils.SessionUtils;
-import com.lowagie.text.Document;
-import com.lowagie.text.Font;
-import com.lowagie.text.Image;
-import com.lowagie.text.Paragraph;
-import com.lowagie.text.Phrase;
-import com.lowagie.text.Rectangle;
-import com.lowagie.text.pdf.BaseFont;
-import com.lowagie.text.pdf.PdfPCell;
-import com.lowagie.text.pdf.PdfPTable;
-import com.lowagie.text.pdf.PdfWriter;
-
-import fr.opensagres.poi.xwpf.converter.pdf.PdfConverter;
-import fr.opensagres.poi.xwpf.converter.pdf.PdfOptions;
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.channels.GatheringByteChannel;
+import java.nio.channels.ScatteringByteChannel;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.*;
 
 @Service
 @Transactional
@@ -81,6 +67,14 @@ public class FileService extends BaseService {
 		param.put("COMPANY_CD", user.getCompanyCd());
 
 		return fileMapper.search(param);
+	}
+
+	@Transactional(readOnly = true)
+	public List<HashMap<String, Object>> searchIn(HashMap<String, Object> param) {
+		SessionUser user = SessionUtils.getCurrentUser();
+		param.put("COMPANY_CD", user.getCompanyCd());
+
+		return fileMapper.searchIn(param);
 	}
 
 	public void save(HashMap<String, Object> param) {
@@ -113,13 +107,92 @@ public class FileService extends BaseService {
 		}
 	}
 
+	/** 메일보내드 첨부파일 업로드
+	 *  서버에 파일 저장 후 DB 저장
+	 *  return DB에 저장된 key List 반환
+	 */
+	public List<HashMap<String, Object>> mailUpload(MultipartFile[] mf, String tableId, String tableKey) throws Exception {
+
+		List<HashMap<String, Object>> result = new ArrayList<>();
+		SessionUser user = SessionUtils.getCurrentUser();
+		String strDate = HammerUtility.nowDate("yyyyMMddHHmmss");
+
+		try {
+			//파일경로
+			Reader reader = Resources.getResourceAsReader("axboot-local.properties");
+			Properties properties = new Properties();
+			properties.load(reader);
+			String filePath = "";
+			/* OS확인  */
+			String os = System.getProperty("os.name").toLowerCase();
+			if(os.contains("windows")){
+				filePath = properties.getProperty("FILE_DIRECTORY_PATH_WINDOWS");
+			}else if(os.contains("linux")){
+				filePath = properties.getProperty("FILE_DIRECTORY_PATH");
+			};
+
+			if (filePath != null && !"".equals(filePath) && !"null".equals(filePath)) {
+				File dir = new File(filePath);
+
+				/* 폴더가 없을 경우 생성 */
+				if (!dir.isDirectory()) {
+					dir.mkdir();
+				}
+			}
+
+			if(!"".equals(tableKey) && tableKey != null && !"null".equals(tableKey)){
+				int fileSeq = 0;
+				if (mf != null && mf.length > 0) {
+					for (int i = 0; i < mf.length; i++) {
+						HashMap<String, Object> map = new HashMap<>();
+						String savedFileNm = UUID.randomUUID().toString(); //서버에 저장될 파일 이름
+						String fileExtension = ext(mf[i].getOriginalFilename());
+						map.put("FILE_SEQ", fileSeq++);
+						map.put("TABLE_ID", tableId);
+						map.put("TABLE_KEY", tableKey);
+						map.put("FILE_NAME", savedFileNm);
+						map.put("ORGN_FILE_NAME", mf[i].getOriginalFilename());
+						map.put("FILE_PATH", filePath);
+						map.put("FILE_EXT", fileExtension);
+						map.put("FILE_BYTE", mf[i].getSize());
+						map.put("FILE_SIZE", String.valueOf(mf[i].getSize()));
+						map.put("FILE_DIVISION", 0);
+						map.put("COMPANY_CD", user.getCompanyCd());
+						map.put("INSERT_ID", user.getUserId());
+						map.put("INSERT_DTS", strDate);
+						map.put("UPDATE_ID", user.getUserId());
+						map.put("UPDATE_DTS", strDate);
+						map.put("SERVER_KEY", "ensys");
+						fileMapper.delete(map);
+						fileMapper.insert(map);
+						result.add(map);
+
+						File file = new File(filePath + "\\" + savedFileNm + "." + fileExtension);
+						mf[i].transferTo(file);
+					}
+				}
+			}
+		} catch (Exception e){
+			e.printStackTrace();
+		}
+
+		return result;
+	}
+
+	//파일뷰어업로드
 	public List<HashMap<Integer, Integer>> fileUpload(List<MultipartFile> mf, List<HashMap<String, Object>> fileName)
 			throws Exception {
 		SessionUser user = SessionUtils.getCurrentUser();
-		String path = "D:\\QRAY_TEMP";
+
+		//파일경로
+		Reader reader = Resources.getResourceAsReader("axboot-local.properties");
+		Properties properties = new Properties();
+		properties.load(reader);
+		String filePath = properties.getProperty("FILE_DIRECTORY_PATH_WINDOWS");
+
 		List<HashMap<Integer, Integer>> result = new ArrayList<>();
-		if (path != null) {
-			File dir = new File(path);
+		if (filePath != null) {
+			File dir = new File(filePath);
 
 			/* 폴더가 없을 경우 생성 */
 			if (!dir.isDirectory()) {
@@ -132,17 +205,26 @@ public class FileService extends BaseService {
 				String savedFileNm = (String) fileName.get(i).get("FILE_NAME");
 				String fileExtension = (String) fileName.get(i).get("FILE_EXT");
 
-				File file = new File(path + "\\" + savedFileNm + "." + fileExtension);
+				File file = new File(filePath + "\\" + savedFileNm + "." + fileExtension);
 				mf.get(i).transferTo(file);
 
-				int divisionCnt = msFileToImage(file, savedFileNm, path);
+				//int divisionCnt = msFileToImage(file, savedFileNm, filePath);
 				HashMap<Integer, Integer> resultMap = new HashMap<>();
-				resultMap.put(Integer.parseInt((String) fileName.get(i).get("FILE_SEQ")), divisionCnt);
+				resultMap.put(Integer.parseInt((String) fileName.get(i).get("FILE_SEQ")), 0);
 				result.add(resultMap);
 
 			}
 		}
 		return result;
+	}
+
+	private static String ext(String fileName) {
+		int fileNameExtensionIndex = fileName.lastIndexOf('.') + 1;
+		if (fileNameExtensionIndex == 0) {
+			return "";
+		}
+		String fileNameExtension = fileName.toLowerCase().substring(fileNameExtensionIndex, fileName.length());
+		return fileNameExtension;
 	}
 	
 	public static void main(String[] args) {
@@ -154,6 +236,7 @@ public class FileService extends BaseService {
 			e.printStackTrace();
 		}
 	}
+
 	public static int msFileToImage(File savefile, String fileName, String path) throws Exception {
 		InputStream docFile = new FileInputStream(savefile);
 		String PDFFILE = path + "\\" + fileName + ".pdf";

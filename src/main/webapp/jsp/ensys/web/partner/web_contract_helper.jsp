@@ -8,22 +8,17 @@
 <ax:layout name="base">
 <jsp:attribute name="script">
 <ax:script-lang key="ax.script"/>
-<style>
-    .required {
-        background: #ffe0cf !important;
-    }
-    .btn-close {
-        background: #db5d43 !important;
-        border-color: #db5d43 !important;
-    }
-</style>
 <script type="text/javascript">
     var fnObj = {}, CODE = {};
     fnObj.popView = {};
     var param = ax5.util.param(ax5.info.urlUtil().param);
     var sendData = eval("parent." + param.modalName + ".modalConfig.sendData()");
     var initData = (nvl(sendData['initData']) == '') ? {} : sendData.initData;
-    let attachment = new FormData(); //첨부파일변수
+
+    var ES_CODES = $.SELECT_COMMON_ARRAY_CODE("ES_Q0135");
+    var ES_Q0135 = $.SELECT_COMMON_GET_CODE(ES_CODES, 'ES_Q0135', false);        /** 계약상태*/
+
+    $("#CONTRACT_ST").ax5select({options: ES_Q0135});
 
     var ACTIONS = axboot.actionExtend(fnObj, {
         //닫기
@@ -31,20 +26,69 @@
             /* parent.modal.close(); */
             if (param.modalName) {
                 eval("parent." + param.modalName + ".close()");
+                parent[param.callBack]();
                 return;
             }
             parent.modal.close();
         },
         //조회
         PAGE_SEARCH: function(caller, act, data) {
-            $('.QRAY_FORM').FormClear();
+
+            axboot.ajax({
+                type: "POST",
+                url: ["/api/web/partner", "selectContractAll"],
+                data: JSON.stringify({
+                    CONTRACT_CD : initData.CONTRACT_CD
+                }),
+                callback: function (res) {
+                    let data = res.map;
+                    $('.QRAY_FORM').setFormData(data.contract[0]);
+                    fnObj.gridView01.setData(data.contractM);
+                    fnObj.gridView02.setData(data.contractD);
+
+                    $("#FILE").clear();
+                    $("#FILE").setTableKey(initData.CONTRACT_CD);
+                    $("#FILE").read();
+
+                },
+                options: {
+                    onError: function(err){
+                        qray.alert(err.message);
+                        return;
+                    }
+                }
+            });
 
         },
         //저장
         PAGE_SAVE: function(caller, act, data) {
-            let item = $('.QRAY_FORM').getElementData();
 
-            let fileData = fnObj.gridViewTab1.target.getDirtyData();
+            let contract = $('.QRAY_FORM').getElementData();
+            let contractM = fnObj.gridView01.target.getDirtyData();
+            let contractD = fnObj.gridView02.target.getDirtyData();
+            let fileData = $("#FILE").saveData(); // 파일 링크 정보
+
+            axboot.ajax({
+                type: "POST",
+                url: ["/api/web/partner", "contractSave"],
+                data: JSON.stringify({
+                    contract : contract,
+                    contractM : contractM,
+                    contractD : contractD,
+                    fileData : fileData,
+                }),
+                callback: function () {
+                    qray.alert("저장 되었습니다.").then(function() {
+                        ACTIONS.dispatch(ACTIONS.PAGE_CLOSE);
+                    });
+                },
+                options: {
+                    onError: function(err){
+                        qray.alert(err.message);
+                        return;
+                    }
+                }
+            });
 
 
         },
@@ -52,16 +96,6 @@
         PAGE_DEL: function(caller, act, data) {
 
             let item = $('.QRAY_FORM').getElementData();
-
-            /*if (!initData.duplicates) {
-                qray.alert('차수가 변경된 거래처정보입니다. <br> 최종버전에서 다시 진행해주세요');
-                return;
-            }*/
-
-            if (item.CTRT_ST == '03') {
-                qray.alert('이미 검토완료된 계약입니다. <br> 검토완료 이전에 삭제가 가능합니다.');
-                return;
-            }
 
             qray.confirm({
                 msg: "삭제하시겠습니까?"
@@ -84,8 +118,16 @@
 
     fnObj.pageStart = function () {
         this.pageButtonView.initView();
+        this.gridView01.initView();
+        this.gridView02.initView();
 
-        ACTIONS.dispatch(ACTIONS.PAGE_SEARCH);
+        if(nvl(initData) == 'NEW'){
+            //신규추가채번
+            $('#CONTRACT_CD').val(GET_NO('SA', '09'));
+        } else {
+            ACTIONS.dispatch(ACTIONS.PAGE_SEARCH);
+        }
+
     };
 
     fnObj.pageButtonView = axboot.viewExtend({
@@ -107,186 +149,149 @@
         }
     });
 
-    $(document).ready(function () {
-        $("#popup-close").click(function () {
-            qray.confirm({
-                msg: "창을 닫으시겠습니까?"
-            }, function () {
-                if(this.key == "ok") {
-                    fnObj.popView.close.call(parent[window.param.modalName]);
+    fnObj.gridView01 = axboot.viewExtend(axboot.gridView, {
+        initView: function () {
+            this.target = axboot.gridBuilder({
+                frozenColumnIndex: 0,
+                target: $('[data-ax5grid="grid-view-01"]'),
+                columns: [
+                    { key: "PACKAGE_CD",        label: "패키지 코드", width: 120, align: "left", editor: false, sortable: true},
+                    { key: "PACKAGE_NM",           label: "패키지 명", width: 120, align: "left", editor: false, sortable: true}
+                ],
+                body: {
+                    onClick: function () {
+
+                    },
+                    onDataChanged: function () {
+
+                    }
                 }
             });
-        });
+            axboot.buttonClick(this, "data-grid-view-01-btn", {
+                "add": function () {
+                    fnObj.gridView01.addRow();
 
-        // 파일추가 버튼
-        $("#file_add").click( () => {
-            $("#file_add_input").val("");//파일초기화
-            $("#file_add_input").click();
-        });
+                    var lastIdx = nvl(fnObj.gridView01.target.list.length, fnObj.gridView01.lastRow());
+                    fnObj.gridView01.target.setValue(lastIdx - 1, "PARTNER_CD", $('#PARTNER_CD').val());
+                    fnObj.gridView01.target.setValue(lastIdx - 1, "USE_YN_M", "Y");
+                    fnObj.gridView01.target.setValue(lastIdx - 1, "MAIN_YN_M", "N");
+                    fnObj.gridView01.target.select(lastIdx - 1);
 
-        //파일 삭제버튼 클릭
-        $(document).on('click', '.status', function(){
-            var id = this.id;
-            let formData = new FormData();
-            let fileList = [];
-            let fileName = JSON.parse(attachment.get('fileName'));
+                },
+                "delete": function () {
+                    var beforeIdx = this.target.selectedDataIndexs[0];
+                    var dataLen = this.target.getList().length;
 
-            for(let i = 0; i < attachment.getAll('files').length; i++){
-                if(attachment.getAll('files')[i].uuid != id){
-                    formData.append('files', attachment.getAll('files')[i]);
+                    if ((beforeIdx + 1) == dataLen) {
+                        beforeIdx = beforeIdx - 1;
+                    }
+                    fnObj.gridView01.delRow('selected');
+                    if (beforeIdx > 0 || beforeIdx == 0) {
+                        this.target.select(beforeIdx);
+                    }
                 }
-            }
+            });
+        },
+        addRow: function () {
+            this.target.addRow({__created__: true}, "last");
+        },
+        lastRow: function () {
+            return ($("div [data-ax5grid='grid-view-01']").find("div [data-ax5grid-panel='body'] table tr").length)
+        }
+    });
 
-            for(let i = 0; i < fileName.length; i++){
-                if(fileName[i].FILE_NAME != id){
+    fnObj.gridView02 = axboot.viewExtend(axboot.gridView, {
+        initView: function () {
+            this.target = axboot.gridBuilder({
+                frozenColumnIndex: 0,
+                target: $('[data-ax5grid="grid-view-02"]'),
+                columns: [
+                    { key: "DEPOSIT_MM",        label: "입금 월", width: 120, align: "center", sortable: true,
+                        editor: {
+                            type: "text",
+                            attributes: {
+                                'maxlength': 3,
+                            }
+                        },
+                    },
+                    {key: "AM_MM", label: "월입금 금액", width: 150, align: "right", sortable: true,
+                        editor : {
+                            type: "number",
+                        },
+                        formatter:function(){
+                            if (nvl(this.item.AM_MM) == '') {
+                                this.item.AM_MM = 0;
+                            }
+                            this.item.AM_MM = Math.floor(Number(this.item.AM_MM));
+                            return ax5.util.number(Math.floor(this.item.AM_MM), {"money": true});
+                        }
+                    },
+                    {key: "AM", label: "실입금 금액", width: 150, align: "right", sortable: true,
+                        editor : {
+                            type: "number",
+                        },
+                        formatter:function(){
+                            if (nvl(this.item.AM) == '') {
+                                this.item.AM = 0;
+                            }
+                            this.item.AM = Math.floor(Number(this.item.AM));
+                            return ax5.util.number(Math.floor(this.item.AM), {"money": true});
+                        }
+                    },
+                ],
+                body: {
+                    onClick: function () {
+                        var idx = this.dindex;
+                        var data = fnObj.gridView02.target.list[idx];
+                        this.self.select(idx);
 
-                    fileList.push(fileName[i]);
+                    },
+                    onDataChanged: function () {
+
+                    }
                 }
-            }
+            });
+            axboot.buttonClick(this, "data-grid-view-02-btn", {
+                "add": function () {
+                    fnObj.gridView02.addRow();
 
-            formData.set("fileName", JSON.stringify(fileList));
-            attachment = new FormData();
-            attachment = formData;
+                    var lastIdx = nvl(fnObj.gridView02.target.list.length, fnObj.gridView02.lastRow());
+                    fnObj.gridView02.target.setValue(lastIdx - 1, "PARTNER_CD", $('#PARTNER_CD').val());
+                    fnObj.gridView02.target.setValue(lastIdx - 1, "USE_YN_M", "Y");
+                    fnObj.gridView02.target.setValue(lastIdx - 1, "MAIN_YN_M", "N");
+                    fnObj.gridView02.target.select(lastIdx - 1);
 
-            $("#fileIndex" + id).remove();//  파일리스트 중 해당 인덱스 삭제
-            if ($("#fileList").children().length == 0){
-                $("#write_drag_here").show();
-            }
+                },
+                "delete": function () {
+                    var beforeIdx = this.target.selectedDataIndexs[0];
+                    var dataLen = this.target.getList().length;
 
-        });
+                    if ((beforeIdx + 1) == dataLen) {
+                        beforeIdx = beforeIdx - 1;
+                    }
 
+                    fnObj.gridView02.delRow('selected');
+                    if (beforeIdx > 0 || beforeIdx == 0) {
+                        this.target.select(beforeIdx);
+                    }
+                }
+            });
+        },
+        addRow: function () {
+            this.target.addRow({__created__: true}, "last");
+        },
+        lastRow: function () {
+            return ($("div [data-ax5grid='grid-view-02']").find("div [data-ax5grid-panel='body'] table tr").length)
+        }
+    });
+
+    $(document).ready(function () {
         changesize();
     });
+
     $(window).resize(function () {
         changesize();
     });
-
-    // 파일추가 버튼 콜백
-    function fileUploadInput(e){
-        Upload(e.files);
-    }
-
-    //전체파일 한번에 업로드
-    function Upload(files) {
-        let tableId = 'ES_DRAFT_M';
-        let Upload = attachment;
-        let formData = new FormData();
-        let fileList = [];
-
-        if(nvl(Upload.get('fileName')) != ''){
-            formData = Upload;
-            fileList = JSON.parse(Upload.get('fileName'));
-        }
-
-        if(nvl(files) != ''){
-            for(let i = 0; i < files.length; i++){
-                let fileName = getUUID();
-                let fileExt = validation(files[i].name);
-                files[i].uuid = fileName;
-                let obj = {
-                    TABLE_ID : tableId,
-                    TABLE_KEY : $("#DRAFT_NO").val(),
-                    FILE_NAME : fileName,
-                    ORGN_FILE_NAME : files[i].name,
-                    FILE_PATH : "D:/NEW_QRAY_TEMP/",
-                    FILE_BYTE : files[i].size,
-                    FILE_SIZE : ax5.util.number(files[i].size, {"byte": true}),
-                    FILE_EXT : fileExt,
-                }
-                fileList.push(obj);
-                formData.append('files', files[i]);
-            }
-        }
-
-        formData.set("fileName", JSON.stringify(fileList));
-
-        //fnObj.gridView01.target.setValue(selected.__index, 'formData', formData);
-        attachment = formData;
-
-        $("#write_drag_here").hide();
-        $("#fileList").empty();
-        for(let i = 0; i < fileList.length; i++){
-            $("#fileList").append(
-                '<li id="fileIndex'+fileList[i].FILE_NAME+'">' +
-                '<span class="file_name">' +
-                '<label for="upld_file_'+fileList[i].FILE_NAME+'">' +
-                '<span class="fic fic_png"></span>' +
-                fileList[i].ORGN_FILE_NAME +
-                '</label>' +
-                '</span>' +
-                '<span class="file_size">' +
-                fileList[i].FILE_SIZE +
-                '</span>' +
-                '<span class="status" id="'+fileList[i].FILE_NAME+'" style="cursor:pointer;">' +
-                '삭제' +
-                '</span>' +
-                '</li>');
-        }
-
-    }
-
-    function validation(fileName) {
-        fileName = fileName + "";
-        var fileNameExtensionIndex = fileName.lastIndexOf('.') + 1;
-        var fileNameExtension = fileName.toLowerCase().substring(
-            fileNameExtensionIndex, fileName.length);
-
-        return fileNameExtension;
-    }
-
-    //첨부파일 드롭다운
-    let $drop = $("#drop");
-    $drop.on("dragenter", function(e) { //드래그 요소가 들어왔을떄
-        $(this).addClass('drag-over');
-
-    }).on("dragleave", function(e) { //드래그 요소가 나갔을때
-        $(this).removeClass('drag-over');
-
-    }).on("dragover", function(e) {
-        e.stopPropagation();
-        e.preventDefault();
-
-    }).on('drop', function(e) {
-        e.preventDefault();
-
-        $(this).removeClass('drag-over');
-
-        let files = e.originalEvent.dataTransfer.files;
-        Upload(files);
-    });
-
-    //랜덤값 채번
-    function getUUID() {
-        function s4() {
-            return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
-        }
-
-        return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
-            s4() + '-' + s4() + s4() + s4();
-    }
-
-    function setDisabled(isEditor){
-        let qrayForm = $('.QRAY_FORM');
-        if(isEditor){
-            // $('#addDel').css('display', 'block');
-            qrayForm.find('input').removeAttr("disabled");
-            qrayForm.find('a').removeAttr("disabled");
-            $('[data-ax5select="CTRT_ST"]').ax5select("disable");
-            qrayForm.find('codepicker').setDisabled(false);
-            $("#SPCONTR_CONT").prop('readonly', false);
-            $("#ETC_CONT").removeAttr('readonly');
-        } else {
-            // $('#addDel').css('display', 'none');
-            qrayForm.find('input').attr("disabled","disabled");
-            qrayForm.find('a').attr("disabled","disabled");
-            $('[data-ax5select="CTRT_ST"]').ax5select("disable");
-            qrayForm.find('codepicker').setDisabled(true);
-            $("#SPCONTR_CONT").prop('readonly', true);
-            $("#ETC_CONT").attr('readonly', 'readonly');
-        }
-        //계약서 상태 상관없이 계약서류 수정
-        $('.QRAY_FORM').find('[data-ax5grid="grid-view-tab1"] input').removeAttr("disabled");
-    }
 
     function changesize() {
         //전체영역높이
@@ -302,8 +307,10 @@
         //데이터가 들어갈 실제높이
         var datarealheight = $("#ax-base-root").height();
 
-        $("#left_area").css('height', (datarealheight)/ 100 * 65);
-        $("#left_area").css('overflow', 'auto');
+        $("#top_area").css('height', (datarealheight)/ 100 * 49);
+        $("#bottom_area").css('height', (datarealheight)/ 100 * 49);
+        $("#left_grid").css("height",(datarealheight) /100 * 40);
+        $("#right_grid").css("height",(datarealheight) /100 * 40);
     }
 
 </script>
@@ -322,7 +329,7 @@
         </div>
         <div style="width:100%;">
             <div style="width:100%;float:left;">
-                <div id="left_area">
+                <div id="top_area">
                     <div class="ax-button-group">
                         <div class="left">
                             <h2>
@@ -332,124 +339,114 @@
                     </div>
                     <div class="QRAY_FORM">
                         <ax:form name="binder-form">
-                        <ax:tbl clazz="ax-search-tb2" minWidth="700px" style=" text-align-last:left;">
-                        <ax:tr>
-                            <ax:td label='계약번호' width="49%">
-                                <input readonly type="text" class="form-control" data-ax-path="CTRT_NO" name="CTRT_NO" id="CTRT_NO"
-                                       form-bind-text='CTRT_NO' form-bind-type='text' style="width: 70%;" />
-                            </ax:td>
-                            <ax:td label="<span style='color:red'>*</span> 계약명" width="49%">
-                                <input type="text" class="form-control required" data-ax-path="CTRT_NM" name="CTRT_NM" id="CTRT_NM"
-                                       form-bind-text='CTRT_NM' form-bind-type='text' style="width: 70%;" />
-                            </ax:td>
-                        </ax:tr>
-                        <ax:tr>
-                            <ax:td label='계약상태' width='49%'>
-                                <div id="CTRT_ST" name="CTRT_ST" data-ax5select="CTRT_ST" data-ax5select-config='{}'
-                                     form-bind-text='CTRT_ST' form-bind-type="selectBox" style="width: 63%;"></div>
-                            </ax:td>
-                            <ax:td label="<span style='color:red'>*</span> 계약매체" width="49%;">
-                                <div id="CTRT_METHOD" class="required" name="CTRT_METHOD" data-ax5select="CTRT_METHOD" data-ax5select-config='{}'
-                                     form-bind-text='CTRT_METHOD' form-bind-type="selectBox" style="width: 63%;"></div>
-                            </ax:td>
-                        </ax:tr>
-                        <ax:tr>
-                            <ax:td label='계약당사자(갑)' width="49%">
-                                <input type="hidden" class="form-control" data-ax-path="MAIN_CTRT_AGENT_CD" name="MAIN_CTRT_AGENT_CD" id="MAIN_CTRT_AGENT_CD"
-                                       form-bind-text='MAIN_CTRT_AGENT_CD' form-bind-type='text' style="width: 70%;" />
-                                <input readonly type="text" class="form-control" data-ax-path="MAIN_CTRT_AGENT_NM" name="MAIN_CTRT_AGENT_NM" id="MAIN_CTRT_AGENT_NM"
-                                       form-bind-text='MAIN_CTRT_AGENT_NM' form-bind-type='text' style="width: 70%;" />
-                            </ax:td>
+                            <ax:tbl clazz="ax-search-tb2" minWidth="700px" style=" text-align-last:left;">
+                                <ax:tr>
+                                    <ax:td label='계약번호' width="33%">
+                                        <input readonly type="text" class="form-control" data-ax-path="CONTRACT_CD" name="CONTRACT_CD" id="CONTRACT_CD"
+                                               form-bind-text='CONTRACT_CD' form-bind-type='text' style="width: 70%;" />
+                                    </ax:td>
+                                    <ax:td label="계약명" width="33%">
+                                        <input type="text" class="form-control" data-ax-path="CONTRACT_NM" name="CONTRACT_NM" id="CONTRACT_NM"
+                                               form-bind-text='CONTRACT_NM' form-bind-type='text' style="width: 70%;" />
+                                    </ax:td>
+                                    <ax:td label='계약상태' width='32%'>
+                                        <div id="CONTRACT_ST" name="CONTRACT_ST" data-ax5select="CONTRACT_ST" data-ax5select-config='{}'
+                                             form-bind-text='CONTRACT_ST' form-bind-type="selectBox" style="width: 63%;"></div>
+                                    </ax:td>
+                                </ax:tr>
+                                <ax:tr>
+                                    <ax:td label="계약일자" width="33%">
+                                        <datepicker mode="date" id="CONTRACT_DT" form-bind-code="CONTRACT_DT" form-bind-text='CONTRACT_DT' form-bind-type="datepicker">
+                                    </ax:td>
 
-                            <ax:td label='거래처명(을)' width="49%">
-                                <input type="hidden" class="form-control" data-ax-path="CTRT_AGENT_CD" name="CTRT_AGENT_CD" id="CTRT_AGENT_CD"
-                                       form-bind-text='CTRT_AGENT_CD' form-bind-type='text' style="width: 70%;" />
-                                <input readonly type="text" class="form-control" data-ax-path="CTRT_AGENT_NM" name="CTRT_AGENT_NM" id="CTRT_AGENT_NM"
-                                       form-bind-text='CTRT_AGENT_NM' form-bind-type='text' style="width: 70%;" />
-                            </ax:td>
-                        </ax:tr>
-                        <ax:tr>
-                            <ax:td label="<span style='color:red'>*</span> 계약구분" width="49%;">
-                                <div id="CTRT_SP" class="required" name="CTRT_SP" data-ax5select="CTRT_SP" data-ax5select-config='{}' style="width: 63%;"
-                                     form-bind-text='CTRT_SP' form-bind-type="selectBox" ></div>
-                            </ax:td>
-                            <ax:td label="<span style='color:red'>*</span> 계약종류" width="49%">
-                                <div id="CTRT_TP" class="required" name="CTRT_TP" data-ax5select="CTRT_TP" data-ax5select-config='{}' style="width: 63%;"
-                                     form-bind-text='CTRT_TP' form-bind-type="selectBox" ></div>
-                            </ax:td>
-                        </ax:tr>
-                        <ax:tr>
-                        <ax:td label="<span style='color:red'>*</span> 계약일자" width="33%">
-                        <datepicker class="required" mode="date" id="CTRT_DT" form-bind-code="CTRT_DT" form-bind-text='CTRT_DT' form-bind-type="datepicker">
-                            </ax:td>
-                            <ax:td label="<span style='color:red'>*</span> 계약기간" width="33%">
-                            <period-datepicker class="required" id="CTRT_DTS" form-bind-type="period-datepicker" date-start-column="CTRT_START_DT" date-end-column="CTRT_END_DT" > </period-datepicker>
-                            </ax:td>
-                            <ax:td label="<span style='color:red'>*</span> 계약형태" width="33%">
-                            <div id="CTRT_TC" class="required" name="CTRT_TC" data-ax5select="CTRT_TC" data-ax5select-config='{}' style="width: 63%; background: #ffe0cf;"
-                                 form-bind-text='CTRT_TC' form-bind-type="selectBox">
-                            </div>
-                            </ax:td>
-                            </ax:tr>
-                            <ax:tr>
-                            <ax:td label='특약사항' width="92.3%">
-                            <textarea type="text"
-                                      style="height: 110px;"
-                                      class="form-control"
-                                      data-ax-path="SPCONTR_CONT"
-                                      form-bind-text='SPCONTR_CONT'
-                                      form-bind-type='text'
-                                      name="SPCONTR_CONT"
-                                      id="SPCONTR_CONT"
-                                      maxlength="1000">
-                                </textarea>
-                            </ax:td>
-                            </ax:tr>
-                            <ax:tr>
-                            <ax:td label='비고' width="92.3%">
-                            <textarea type="text"
-                                      style="height: 110px;"
-                                      class="form-control"
-                                      data-ax-path="REMARK"
-                                      form-bind-text='REMARK'
-                                      form-bind-type='text'
-                                      name="REMARK"
-                                      id="REMARK"
-                                      maxlength="1000">
-                                </textarea>
-                            </ax:td>
-                            </ax:tr>
+                                    <%--<ax:td label="계약기간" width="33%">
+                                        <period-datepicker id="CONTRACT_DTS" form-bind-type="period-datepicker" date-start-column="CONTRACT_START_DT" date-end-column="CONTRACT_END_DT" > </period-datepicker>
+                                    </ax:td>--%>
+                                    <ax:td label='첨부파일' width="33%">
+                                        <filemodal id="FILE" TABLE_ID="contract" MODE="1" READONLY />
+                                    </ax:td>
+                                </ax:tr>
+                                <ax:tr>
+                                    <ax:td label='특약사항' width="98%">
+                                        <textarea type="text"
+                                                  style="height: 110px;"
+                                                  class="form-control"
+                                                  data-ax-path="SPCONTR_CONT"
+                                                  form-bind-text='SPCONTR_CONT'
+                                                  form-bind-type='text'
+                                                  name="SPCONTR_CONT"
+                                                  id="SPCONTR_CONT"
+                                                  maxlength="1000">
+                                        </textarea>
+                                    </ax:td>
+                                </ax:tr>
+                                <ax:tr>
+                                    <ax:td label='비고' width="98%">
+                                        <textarea type="text"
+                                                  style="height: 110px;"
+                                                  class="form-control"
+                                                  data-ax-path="REMARK"
+                                                  form-bind-text='REMARK'
+                                                  form-bind-type='text'
+                                                  name="REMARK"
+                                                  id="REMARK"
+                                                  maxlength="1000">
+                                        </textarea>
+                                    </ax:td>
+                                </ax:tr>
                             </ax:tbl>
-                            </ax:form>
+                        </ax:form>
                     </div>
                 </div>
             </div>
-        </div>
-        <div style="width:100%;float:right;overflow:hidden;padding-top:3px;">
-            <div class="ax-button-group">
-                <div class="left">
-                    <h2>
-                        <i class="icon_list"></i> 계약서류 첨부파일
-                    </h2>
+            <div style="width:100%;overflow:hidden" id="bottom_area">
+                <div style="width:49%;float:left;">
+                    <!-- 목록 -->
+                    <div class="ax-button-group" data-fit-height-aside="grid-view-01" id="left_title" name="왼쪽영역제목부분">
+                        <div class="left">
+                            <h2>
+                                <i class="icon_list"></i> 광고패키지관리
+                            </h2>
+                        </div>
+                        <div class="right">
+                            <button type="button" class="btn btn-small" data-grid-view-01-btn="add" style="width:80px;"><i
+                                    class="icon_add"></i>
+                                <ax:lang id="ax.admin.add"/></button>
+                            <button type="button" class="btn btn-small" data-grid-view-01-btn="delete" style="width:80px;">
+                                <i
+                                        class="icon_del"></i> <ax:lang id="ax.admin.delete"/></button>
+                        </div>
+                    </div>
+                    <div data-ax5grid="grid-view-01"
+                         data-ax5grid-config="{  showLineNumber: true,showRowSelector: false, multipleSelect: false,lineNumberColumnWidth: 40,rowSelectorColumnWidth: 27, }"
+                         id="left_grid"
+                         name="왼쪽그리드"
+                    ></div>
                 </div>
-                <div class="right">
-                    <button id="file_add" type="button" class="btn btn-default"><i class="cqc-download"></i> 추가</button>
-                    <input id="file_add_input" onchange="fileUploadInput(this)" style="display: none;" type="file" multiple class="form-control"/>
+                <div style="width:49%;float:right">
+                    <!-- 목록 -->
+                    <div class="ax-button-group" data-fit-height-aside="grid-view-02" id="right_title" name="오른쪽타이틀">
+                        <div class="left">
+                            <h2>
+                                <i class="icon_list"></i> 입금관리
+                            </h2>
+                        </div>
+                        <div class="right">
+                            <button type="button" class="btn btn-small" data-grid-view-02-btn="add" style="width:80px;"><i
+                                    class="icon_add"></i>
+                                <ax:lang id="ax.admin.add"/></button>
+                            <button type="button" class="btn btn-small" data-grid-view-02-btn="delete" style="width:80px;">
+                                <i class="icon_del"></i> <ax:lang id="ax.admin.delete"/></button>
+                        </div>
+                    </div>
+                    <div data-ax5grid="grid-view-02"
+                         data-ax5grid-config="{  showLineNumber: true,showRowSelector: false, multipleSelect: false,lineNumberColumnWidth: 40,rowSelectorColumnWidth: 27, }"
+                         id="right_grid"
+                         name="오른쪽그리드"
+                    ></div>
                 </div>
             </div>
-            <div id="writeUploader5" class="uploader5" style="display: block;">
-                <div class="upld_header">
-                    <span class="file_name">파일명</span>
-                    <span class="file_size">용량</span>
-                    <span class="status"></span>
-                </div>
-                <div id="drop" class="upld_flist">
-                    <ul id="fileList" class=""></ul>
-                    <p id="write_drag_here" style="display: block; cursor:pointer;text-align: center;line-height: 88px;color: #999;">
-                        <span class="icon_attach axi axi-file-add"></span>마우스로 파일을 끌어오세요.
-                    </p>
-                </div>
-            </div>
         </div>
+
     </jsp:body>
 </ax:layout>

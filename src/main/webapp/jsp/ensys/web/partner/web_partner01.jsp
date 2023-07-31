@@ -14,18 +14,54 @@
 			var selectRow2 = 0;
 			var userCallBack;
 
+			var ES_CODES = $.SELECT_COMMON_ARRAY_CODE("ES_Q0001", "ES_Q0033");
+
+			var ES_Q0001 = $.SELECT_COMMON_GET_CODE(ES_CODES, 'ES_Q0001', true);        /** Y, N*/
+			var ES_Q0033 = $.SELECT_COMMON_GET_CODE(ES_CODES, 'ES_Q0033', false);        /** 거래처구분*/
+
 			var fnObj = {}, CODE = {};
 			var ACTIONS = axboot.actionExtend(fnObj, {
+				//조회
 				PAGE_SEARCH: function (caller, act, data) {
 
-				},
-				ITEM_CLICK: function (caller, act, data){
+					fnObj.gridView01.clear();
+					fnObj.gridView02.clear();
+					fnObj.gridView01.target.dirtyClear();
+					fnObj.gridView02.target.dirtyClear();
 
+					fnObj.gridView01.target.read().done(function(res){
+						caller.gridView01.setData(res);
+						if (res.list.length <= selectRow) {
+							selectRow = 0
+						}
+						caller.gridView01.target.focus(selectRow);
+						caller.gridView01.target.select(selectRow);
+						ACTIONS.dispatch(ACTIONS.ITEM_CLICK);
+					}).fail(function(err){
+						qray.alert(err.message);
+					}).always(function(){
+						qray.loading.hide();
+					});
+				},
+				ITEM_CLICK : function(caller, act, data){
+					fnObj.gridView02.clear();
+					fnObj.gridView02.target.read().done(function(res){
+						fnObj.gridView02.setData(res);
+					}).fail(function(err){
+						qray.alert(err.message);
+					}).always(function(){
+						qray.loading.hide();
+					});
 				},
 				PAGE_SAVE: function (caller, act, data) {
 
 				},
+				//거래처 추가
 				ITEM_ADD: function(caller, act, data){
+
+					userCallBack = function (e){
+						ACTIONS.dispatch(ACTIONS.PAGE_SEARCH);
+					}
 
 					$.openCommonPopup("/jsp/ensys/web/partner/web_partner_helper.jsp", "userCallBack",  '', '', 'NEW', $(".ax-body").width(), $(".ax-body").height(), null, null, false);
 
@@ -33,7 +69,12 @@
 				ITEM_DEL: function(caller, act, data){
 
 				},
+				//계약 추가
 				ITEM_ADD2: function(caller, act, data){
+
+					userCallBack = function (e){
+						ACTIONS.dispatch(ACTIONS.PAGE_SEARCH);
+					}
 
 					$.openCommonPopup("/jsp/ensys/web/partner/web_contract_helper.jsp", "userCallBack",  '', '', 'NEW', $(".ax-body").width(), $(".ax-body").height(), null, null, false);
 
@@ -71,13 +112,12 @@
 						target: $('[data-ax5grid="grid-view-01"]'),
 						childGrid : [fnObj.gridView01],
 						type : "POST",
-						classUrl : "",
-						methodUrl :  "",
+						classUrl : "/api/web/partner",
+						methodUrl :  "selectList",
 						async : false,
 						param : function(){
 							var param = {
-								KEYWORD: nvl($("#KEYWORD").val()),
-								DOCU_CD: nvl($("select[name='DOCU_CD']").val())
+								KEYWORD: nvl($("#KEYWORD").val())
 							};
 							return JSON.stringify(param);
 						},
@@ -97,33 +137,16 @@
 									return returnValue;
 								}
 							},
-							{ key: "PARTNER_FG", label: "거래처구분", width: 120, align: "left", editor: false, sortable: true,
+							{ key: "PARTNER_TP", label: "거래처구분", width: 120, align: "left", editor: false, sortable: true,
 								formatter: function () {
-									return $.changeTextValue(dl_PARTNER_FG, this.value)
+									return $.changeTextValue(ES_Q0033, this.value)
 								},
 							},
-							{ key: "PARTNER_CLS", label: "거래처분류", width: 120, align: "left", editor: false, sortable: true,
-								formatter: function () {
-									return $.changeTextValue(dl_PARTNER_CLS, this.value)
-								},
-							},
-
-							{ key: "PARTNER_TP", label: "거래처타입", width: 120, align: "left", editor: false, sortable: true,
-								formatter: function () {
-									return $.changeTextValue(dl_PARTNER_TP, this.value)
-								},
-							},
-							{ key: "JOB_CLS", label: "업종", width: 120, align: "left", editor: false, sortable: true, },
-							{ key: "JOB_TP", label: "업태", width: 120, align: "left", editor: false, sortable: true, },
 							{ key: "CEO_NM", label: "대표자", width: 120, align: "left", editor: false, sortable: true, },
-							{ key: "TEL_NO", label: "전화번호", width: 120, align: "left", editor: false, sortable: true, },
-							{ key: "POST_NO", label: "우편번호", width: 120, align: "center", editor: false, sortable: true, },
-							{ key: "ADS_H", label: "본사주소", width: 120, align: "left", editor: false, sortable: true, },
-							{ key: "ADS_D", label: "본사주소(상세)", width: 120, align: "left", editor: false, sortable: true, },
-							{ key: "USE_YN", label: "사용여부", width: 120, align: "center", editor: false, sortable: true, },
-							{ key: "FILE", label: "파일", width: 120, align: "left", editor: false, sortable: true, hidden:true },
-							{ key: "ORGN_FILE_NAME", label: "파일", width: 120, align: "left", editor: false, sortable: true, },
-
+							{ key: "JOB_FIELD", label: "전문분야", width: 120, align: "left", editor: false, sortable: true, },
+							{ key: "JOB_EP", label: "보유장비", width: 120, align: "left", editor: false, sortable: true, },
+							{ key: "JOB_ZONE", label: "업무지역", width: 120, align: "left", editor: false, sortable: true, },
+							{ key: "YOUTUBE_LINK", label: "유튜트링크", width: 120, align: "left", editor: false, sortable: true, },
 						],
 						body: {
 							onClick: function () {
@@ -140,9 +163,8 @@
 								ACTIONS.dispatch(ACTIONS.ITEM_CLICK);
 
 							},
-							onPageChange: function (pageNumber) {
-								_this.setPageData({pageNumber: pageNumber});
-								ACTIONS.dispatch(ACTIONS.PAGE_SEARCH);
+							onDBLClick: function(){
+								$.openCommonPopup("/jsp/ensys/web/partner/web_partner_helper.jsp", "userCallBack",  '', '', this.item, $(".ax-body").width(), $(".ax-body").height(), null, null, false);
 							}
 						}
 					});
@@ -152,7 +174,6 @@
 						},
 						"delete": function () {
 							ACTIONS.dispatch(ACTIONS.ITEM_DEL);
-
 						}
 					});
 				},
@@ -179,11 +200,16 @@
 						frozenColumnIndex: 0,
 						parentGrid : fnObj.gridView01,
 						type : "POST",
-						classUrl : "",
-						methodUrl :  "",
+						classUrl : "/api/web/partner",
+						methodUrl :  "selectContractList",
 						async : false,
 						param : function(){
 							let selected = nvl(fnObj.gridView01.target.getList('selected')[0], {});
+							if(nvl(fnObj.gridView01.target.getList('selected')[0]) != ''){
+								selected.CONTRACT_DT = $('#CONTRACT_DATE').getStartDate();
+								selected.CONTRACT_DT_S = $('#CONTRACT_DATE').getStartDate();
+								selected.CONTRACT_DT_D = $('#CONTRACT_DATE').getEndDate();
+							}
 							return JSON.stringify(selected);
 						},
 						callback : function(res){
@@ -289,12 +315,28 @@
 						style="width:80px;">
 					<i class="icon_reload"></i></button>
 				<button type="button" class="btn btn-info" data-page-btn="search" style="width:80px;"><i
-						class="icon_search"></i>조회
+						class="icon_search" TRIGGER_NAME="SEARCH" ></i>조회
 				</button>
 				<%--<button type="button" class="btn btn-info" data-page-btn="save" style="width:80px;"><i
 						class="icon_save"></i>저장
 				</button>--%>
 			</div>
+		</div>
+
+		<div role="page-header" id="pageheader">
+			<ax:form name="searchView0">
+				<ax:tbl clazz="ax-search-tbl" minWidth="500px">
+					<ax:tr>
+						<ax:td label='거래처 검색' width="400px">
+							<input type="text" class="form-control" name="KEYWORD"  id="KEYWORD" TRIGGER_TARGET="SEARCH"/>
+						</ax:td>
+						<ax:td label='계약일자' width="450px">
+							<period-datepicker mode="date" id="CONTRACT_DATE" > </period-datepicker>
+						</ax:td>
+					</ax:tr>
+				</ax:tbl>
+			</ax:form>
+			<div class="H10"></div>
 		</div>
 
 		<div style="width:100%;overflow:hidden">
@@ -309,8 +351,8 @@
 					<div class="right">
 						<button type="button" class="btn btn-small" data-grid-view-01-btn="add" style="width:80px;"><i class="icon_add"></i>
 							<ax:lang id="ax.admin.add"/></button>
-						<button type="button" class="btn btn-small" data-grid-view-01-btn="delete" style="width:80px;">
-							<i class="icon_del"></i> <ax:lang id="ax.admin.delete"/></button>
+						<%--<button type="button" class="btn btn-small" data-grid-view-01-btn="delete" style="width:80px;">
+							<i class="icon_del"></i> <ax:lang id="ax.admin.delete"/></button>--%>
 					</div>
 				</div>
 				<div data-ax5grid="grid-view-01"
@@ -331,8 +373,8 @@
 						<button type="button" class="btn btn-small" data-grid-view-02-btn="add" style="width:80px;"><i
 								class="icon_add"></i>
 							<ax:lang id="ax.admin.add"/></button>
-						<button type="button" class="btn btn-small" data-grid-view-02-btn="delete" style="width:80px;">
-							<i class="icon_del"></i> <ax:lang id="ax.admin.delete"/></button>
+						<%--<button type="button" class="btn btn-small" data-grid-view-02-btn="delete" style="width:80px;">
+							<i class="icon_del"></i> <ax:lang id="ax.admin.delete"/></button>--%>
 					</div>
 				</div>
 				<div data-ax5grid="grid-view-02"
