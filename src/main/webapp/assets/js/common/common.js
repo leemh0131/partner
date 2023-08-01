@@ -3608,7 +3608,6 @@ $(document).ready(function () {
                         }else if(cot == 'codepicker'){
                             var textKey = $(co).attr('form-bind-text');
                             var codeKey = $(co).attr('form-bind-code');
-
                             $('#'+Object.keys(d)[i]).attr({code: d[codeKey], text: d[textKey]});
                             $('#'+Object.keys(d)[i]).val(d[textKey]);
                             $('#' + Object.keys(d)[i]).setPicker({code: d[codeKey], text: d[textKey]});
@@ -3724,10 +3723,10 @@ $(document).ready(function () {
                     }else if(cot == 'period-datepicker') {
                         var startKey = $(co).attr('date-start-column');
                         var endKey = $(co).attr('date-end-column');
-                        var parentId = $('#'+co.id).attr('parent-id');
+                        var parentId = $('#'+co.id);
 
-                        reObj[startKey] = $('#'+parentId).getStartDate();
-                        reObj[endKey] = $('#'+parentId).getEndDate();
+                        reObj[startKey] = $('#'+co.id).getStartDate();
+                        reObj[endKey] = $('#'+co.id).getEndDate();
                     }else if(cot == 'datepicker') {
                         reObj[co.id] = $('#'+co.id).getDate();
                     }else if(cot == 'money') {

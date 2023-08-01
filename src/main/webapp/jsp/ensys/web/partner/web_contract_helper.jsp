@@ -14,6 +14,8 @@
     var param = ax5.util.param(ax5.info.urlUtil().param);
     var sendData = eval("parent." + param.modalName + ".modalConfig.sendData()");
     var initData = (nvl(sendData['initData']) == '') ? {} : sendData.initData;
+    let selectRow = 0;
+    let selectRow2 = 0;
 
     var ES_CODES = $.SELECT_COMMON_ARRAY_CODE("ES_Q0135");
     var ES_Q0135 = $.SELECT_COMMON_GET_CODE(ES_CODES, 'ES_Q0135', false);        /** 계약상태*/
@@ -114,6 +116,76 @@
                 }
             });
         },
+        //광고추가
+        ITEM_ADD: function(caller, act, data) {
+
+            // 그리드 추가
+            fnObj.gridView01.addRow();
+
+            //마지막 인덱스를 구하는 로직
+            var lastIdx = nvl(caller.gridView01.target.list.length, caller.gridView01.lastRow());
+            selectRow = lastIdx - 1;
+
+            //그리드row 포커스
+            fnObj.gridView01.target.select(selectRow);
+            fnObj.gridView01.target.focus(selectRow);
+            fnObj.gridView01.target.setValue(lastIdx - 1, "PARTNER_CD", $('#PARTNER_CD').val());
+            fnObj.gridView01.target.setValue(lastIdx - 1, "CONTRACT_CD", $('#CONTRACT_CD').val());
+
+        },
+        //광고삭제
+        ITEM_DEL: function(caller, act, data) {
+
+            var beforeIdx = fnObj.gridView01.target.selectedDataIndexs[0];
+            var dataLen = fnObj.gridView01.target.getList().length;
+
+            if ((beforeIdx + 1) == dataLen) {
+                beforeIdx = beforeIdx - 1;
+            }
+            selectRow = beforeIdx;
+            fnObj.gridView01.delRow('selected');
+            if (beforeIdx > 0 || beforeIdx == 0) {
+                fnObj.gridView01.target.select(selectRow);
+                fnObj.gridView01.target.focus(selectRow);
+            }
+
+
+        },
+        //입금추가
+        ITEM_ADD2: function(caller, act, data) {
+
+            // 그리드 추가
+            fnObj.gridView02.addRow();
+
+            //마지막 인덱스를 구하는 로직
+            var lastIdx = nvl(caller.gridView02.target.list.length, caller.gridView02.lastRow());
+            selectRow2 = lastIdx - 1;
+
+            //그리드row 포커스
+            fnObj.gridView02.target.select(selectRow2);
+            fnObj.gridView02.target.focus(selectRow2);
+            fnObj.gridView02.target.setValue(lastIdx - 1, "PARTNER_CD", $('#PARTNER_CD').val());
+            fnObj.gridView02.target.setValue(lastIdx - 1, "CONTRACT_CD", $('#CONTRACT_CD').val());
+
+        },
+        //입금삭제
+        ITEM_DEL2: function(caller, act, data) {
+
+            var beforeIdx = fnObj.gridView02.target.selectedDataIndexs[0];
+            var dataLen = fnObj.gridView02.target.getList().length;
+
+            if ((beforeIdx + 1) == dataLen) {
+                beforeIdx = beforeIdx - 1;
+            }
+            selectRow2 = beforeIdx;
+            fnObj.gridView02.delRow('selected');
+            if (beforeIdx > 0 || beforeIdx == 0) {
+                fnObj.gridView02.target.select(selectRow2);
+                fnObj.gridView02.target.focus(selectRow2);
+            }
+
+
+        },
     });
 
     fnObj.pageStart = function () {
@@ -121,9 +193,12 @@
         this.gridView01.initView();
         this.gridView02.initView();
 
-        if(nvl(initData) == 'NEW'){
+        if(nvl(initData.NEW, false)){
             //신규추가채번
             $('#CONTRACT_CD').val(GET_NO('SA', '09'));
+            $('#PARTNER_CD').val(initData.partner.PARTNER_CD);
+            $('#PARTNER_NM').val(initData.partner.PARTNER_NM);
+            $('[data-ax5select="CONTRACT_ST"]').ax5select("setValue", "01");
         } else {
             ACTIONS.dispatch(ACTIONS.PAGE_SEARCH);
         }
@@ -155,11 +230,15 @@
                 frozenColumnIndex: 0,
                 target: $('[data-ax5grid="grid-view-01"]'),
                 columns: [
-                    { key: "PACKAGE_CD",        label: "패키지 코드", width: 120, align: "left", editor: false, sortable: true},
-                    { key: "PACKAGE_NM",           label: "패키지 명", width: 120, align: "left", editor: false, sortable: true}
+                    { key: "PACKAGE_CD", label: "패키지 코드", width: 120, align: "left", sortable: true, editor: "text"},
+                    { key: "PACKAGE_NM", label: "패키지 명", width: 120, align: "left", sortable: true, editor: "text"}
                 ],
                 body: {
                     onClick: function () {
+                        var idx = this.dindex;
+                        selectRow = idx;
+                        this.self.select(selectRow);
+                        this.self.focus(selectRow);
 
                     },
                     onDataChanged: function () {
@@ -169,26 +248,10 @@
             });
             axboot.buttonClick(this, "data-grid-view-01-btn", {
                 "add": function () {
-                    fnObj.gridView01.addRow();
-
-                    var lastIdx = nvl(fnObj.gridView01.target.list.length, fnObj.gridView01.lastRow());
-                    fnObj.gridView01.target.setValue(lastIdx - 1, "PARTNER_CD", $('#PARTNER_CD').val());
-                    fnObj.gridView01.target.setValue(lastIdx - 1, "USE_YN_M", "Y");
-                    fnObj.gridView01.target.setValue(lastIdx - 1, "MAIN_YN_M", "N");
-                    fnObj.gridView01.target.select(lastIdx - 1);
-
+                    ACTIONS.dispatch(ACTIONS.ITEM_ADD);
                 },
                 "delete": function () {
-                    var beforeIdx = this.target.selectedDataIndexs[0];
-                    var dataLen = this.target.getList().length;
-
-                    if ((beforeIdx + 1) == dataLen) {
-                        beforeIdx = beforeIdx - 1;
-                    }
-                    fnObj.gridView01.delRow('selected');
-                    if (beforeIdx > 0 || beforeIdx == 0) {
-                        this.target.select(beforeIdx);
-                    }
+                    ACTIONS.dispatch(ACTIONS.ITEM_DEL);
                 }
             });
         },
@@ -207,12 +270,16 @@
                 target: $('[data-ax5grid="grid-view-02"]'),
                 columns: [
                     { key: "DEPOSIT_MM",        label: "입금 월", width: 120, align: "center", sortable: true,
-                        editor: {
-                            type: "text",
-                            attributes: {
-                                'maxlength': 3,
-                            }
+                        editor : {
+                            type: "number",
                         },
+                        formatter:function(){
+                            if (nvl(this.item.DEPOSIT_MM) == '') {
+                                this.item.DEPOSIT_MM = 0;
+                            }
+                            this.item.DEPOSIT_MM = Math.floor(Number(this.item.DEPOSIT_MM));
+                            return ax5.util.number(Math.floor(this.item.DEPOSIT_MM));
+                        }
                     },
                     {key: "AM_MM", label: "월입금 금액", width: 150, align: "right", sortable: true,
                         editor : {
@@ -242,8 +309,9 @@
                 body: {
                     onClick: function () {
                         var idx = this.dindex;
-                        var data = fnObj.gridView02.target.list[idx];
-                        this.self.select(idx);
+                        selectRow2 = idx;
+                        this.self.select(selectRow2);
+                        this.self.focus(selectRow2);
 
                     },
                     onDataChanged: function () {
@@ -253,27 +321,10 @@
             });
             axboot.buttonClick(this, "data-grid-view-02-btn", {
                 "add": function () {
-                    fnObj.gridView02.addRow();
-
-                    var lastIdx = nvl(fnObj.gridView02.target.list.length, fnObj.gridView02.lastRow());
-                    fnObj.gridView02.target.setValue(lastIdx - 1, "PARTNER_CD", $('#PARTNER_CD').val());
-                    fnObj.gridView02.target.setValue(lastIdx - 1, "USE_YN_M", "Y");
-                    fnObj.gridView02.target.setValue(lastIdx - 1, "MAIN_YN_M", "N");
-                    fnObj.gridView02.target.select(lastIdx - 1);
-
+                    ACTIONS.dispatch(ACTIONS.ITEM_ADD2);
                 },
                 "delete": function () {
-                    var beforeIdx = this.target.selectedDataIndexs[0];
-                    var dataLen = this.target.getList().length;
-
-                    if ((beforeIdx + 1) == dataLen) {
-                        beforeIdx = beforeIdx - 1;
-                    }
-
-                    fnObj.gridView02.delRow('selected');
-                    if (beforeIdx > 0 || beforeIdx == 0) {
-                        this.target.select(beforeIdx);
-                    }
+                    ACTIONS.dispatch(ACTIONS.ITEM_DEL2);
                 }
             });
         },
@@ -309,8 +360,8 @@
 
         $("#top_area").css('height', (datarealheight)/ 100 * 49);
         $("#bottom_area").css('height', (datarealheight)/ 100 * 49);
-        $("#left_grid").css("height",(datarealheight) /100 * 40);
-        $("#right_grid").css("height",(datarealheight) /100 * 40);
+        $("#left_grid").css("height",(datarealheight) /100 * 30);
+        $("#right_grid").css("height",(datarealheight) /100 * 30);
     }
 
 </script>
@@ -341,6 +392,16 @@
                         <ax:form name="binder-form">
                             <ax:tbl clazz="ax-search-tb2" minWidth="700px" style=" text-align-last:left;">
                                 <ax:tr>
+                                    <ax:td label='거래처코드' width="33%">
+                                        <input readonly type="text" class="form-control" data-ax-path="PARTNER_CD" name="PARTNER_CD" id="PARTNER_CD"
+                                               form-bind-text='PARTNER_CD' form-bind-type='text' style="width: 70%;" />
+                                    </ax:td>
+                                    <ax:td label='거래처명' width="33%">
+                                        <input readonly type="text" class="form-control" data-ax-path="PARTNER_NM" name="PARTNER_NM" id="PARTNER_NM"
+                                               form-bind-text='PARTNER_NM' form-bind-type='text' style="width: 70%;" />
+                                    </ax:td>
+                                </ax:tr>
+                                <ax:tr>
                                     <ax:td label='계약번호' width="33%">
                                         <input readonly type="text" class="form-control" data-ax-path="CONTRACT_CD" name="CONTRACT_CD" id="CONTRACT_CD"
                                                form-bind-text='CONTRACT_CD' form-bind-type='text' style="width: 70%;" />
@@ -349,21 +410,22 @@
                                         <input type="text" class="form-control" data-ax-path="CONTRACT_NM" name="CONTRACT_NM" id="CONTRACT_NM"
                                                form-bind-text='CONTRACT_NM' form-bind-type='text' style="width: 70%;" />
                                     </ax:td>
-                                    <ax:td label='계약상태' width='32%'>
+                                </ax:tr>
+                                <ax:tr>
+                                    <ax:td label='계약상태' width='33%'>
                                         <div id="CONTRACT_ST" name="CONTRACT_ST" data-ax5select="CONTRACT_ST" data-ax5select-config='{}'
                                              form-bind-text='CONTRACT_ST' form-bind-type="selectBox" style="width: 63%;"></div>
                                     </ax:td>
-                                </ax:tr>
-                                <ax:tr>
-                                    <ax:td label="계약일자" width="33%">
-                                        <datepicker mode="date" id="CONTRACT_DT" form-bind-code="CONTRACT_DT" form-bind-text='CONTRACT_DT' form-bind-type="datepicker">
-                                    </ax:td>
-
-                                    <%--<ax:td label="계약기간" width="33%">
-                                        <period-datepicker id="CONTRACT_DTS" form-bind-type="period-datepicker" date-start-column="CONTRACT_START_DT" date-end-column="CONTRACT_END_DT" > </period-datepicker>
-                                    </ax:td>--%>
                                     <ax:td label='첨부파일' width="33%">
                                         <filemodal id="FILE" TABLE_ID="contract" MODE="1" READONLY />
+                                    </ax:td>
+                                </ax:tr>
+                                <ax:tr>
+                                    <ax:td label="계약일자" width="49%">
+                                        <datepicker mode="date" id="CONTRACT_DT" form-bind-code="CONTRACT_DT" form-bind-text='CONTRACT_DT' form-bind-type="datepicker">
+                                    </ax:td>
+                                    <ax:td label="계약기간" width="49%">
+                                        <period-datepicker id="CONTRACT_DTS" form-bind-type="period-datepicker" date-start-column="CONTRACT_START_DT" date-end-column="CONTRACT_END_DT" > </period-datepicker>
                                     </ax:td>
                                 </ax:tr>
                                 <ax:tr>

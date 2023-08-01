@@ -14,10 +14,11 @@
 			var selectRow2 = 0;
 			var userCallBack;
 
-			var ES_CODES = $.SELECT_COMMON_ARRAY_CODE("ES_Q0001", "ES_Q0033");
+			var ES_CODES = $.SELECT_COMMON_ARRAY_CODE("ES_Q0001", "ES_Q0033", "ES_Q0135");
 
 			var ES_Q0001 = $.SELECT_COMMON_GET_CODE(ES_CODES, 'ES_Q0001', true);        /** Y, N*/
 			var ES_Q0033 = $.SELECT_COMMON_GET_CODE(ES_CODES, 'ES_Q0033', false);        /** 거래처구분*/
+			var ES_Q0135 = $.SELECT_COMMON_GET_CODE(ES_CODES, 'ES_Q0135', false);        /** 계약상태*/
 
 			var fnObj = {}, CODE = {};
 			var ACTIONS = axboot.actionExtend(fnObj, {
@@ -76,7 +77,14 @@
 						ACTIONS.dispatch(ACTIONS.PAGE_SEARCH);
 					}
 
-					$.openCommonPopup("/jsp/ensys/web/partner/web_contract_helper.jsp", "userCallBack",  '', '', 'NEW', $(".ax-body").width(), $(".ax-body").height(), null, null, false);
+					let selected = fnObj.gridView01.target.getList('selected')[0];
+
+					if(nvl(selected) == ''){
+						qray.alert("거래처를 선택해주세요.");
+						return;
+					}
+
+					$.openCommonPopup("/jsp/ensys/web/partner/web_contract_helper.jsp", "userCallBack",  '', '', {NEW : true, partner : selected}, $(".ax-body").width(), $(".ax-body").height(), null, null, false);
 
 
 				},
@@ -126,8 +134,8 @@
 						},
 						columns: [
 							{ key: "PARTNER_CD", label: "거래처코드", width: 120, align: "center", editor: false, sortable: true, },
-							{ key: "PARTNER_NM", label: "거래처명", width: 120, align: "left", editor: false, sortable: true, },
-							{ key: "COMPANY_NO", label: "사업자번호", width: 120, align: "center", editor: false, sortable: true,
+							{ key: "PARTNER_NM", label: "거래처명", width: 150, align: "left", editor: false, sortable: true, },
+							{ key: "COMPANY_NO", label: "사업자번호", width: 130, align: "center", editor: false, sortable: true,
 								formatter: function () {
 									var returnValue = this.item.COMPANY_NO;
 									if (nvl(this.item.COMPANY_NO, '') != '') {
@@ -137,16 +145,16 @@
 									return returnValue;
 								}
 							},
-							{ key: "PARTNER_TP", label: "거래처구분", width: 120, align: "left", editor: false, sortable: true,
+							{ key: "PARTNER_TP", label: "거래처구분", width: 100, align: "left", editor: false, sortable: true,
 								formatter: function () {
-									return $.changeTextValue(ES_Q0033, this.value)
+									return $.changeTextValue(ES_Q0033, this.value);
 								},
 							},
-							{ key: "CEO_NM", label: "대표자", width: 120, align: "left", editor: false, sortable: true, },
+							{ key: "CEO_NM", label: "대표자", width: 100, align: "left", editor: false, sortable: true, },
 							{ key: "JOB_FIELD", label: "전문분야", width: 120, align: "left", editor: false, sortable: true, },
 							{ key: "JOB_EP", label: "보유장비", width: 120, align: "left", editor: false, sortable: true, },
 							{ key: "JOB_ZONE", label: "업무지역", width: 120, align: "left", editor: false, sortable: true, },
-							{ key: "YOUTUBE_LINK", label: "유튜트링크", width: 120, align: "left", editor: false, sortable: true, },
+							{ key: "YOUTUBE_LINK", label: "유튜트링크", width: 200, align: "left", editor: false, sortable: true, },
 						],
 						body: {
 							onClick: function () {
@@ -164,6 +172,9 @@
 
 							},
 							onDBLClick: function(){
+								userCallBack = function (e){
+									ACTIONS.dispatch(ACTIONS.PAGE_SEARCH);
+								}
 								$.openCommonPopup("/jsp/ensys/web/partner/web_partner_helper.jsp", "userCallBack",  '', '', this.item, $(".ax-body").width(), $(".ax-body").height(), null, null, false);
 							}
 						}
@@ -217,8 +228,28 @@
 						},
 						target: $('[data-ax5grid="grid-view-02"]'),
 						columns: [
-							{key: "USER_ID", label: "사용자아이디", width: '*', align: "center", sortable: true, editor: false},
-							{key: "IP_ADDRESS_ACCESS", label: "IP 주소", width: '*', align: "center", sortable: true, editor: false},
+							{key: "CONTRACT_CD", label: "계약번호", width: 120, align: "left", sortable: true, editor: false},
+							{key: "CONTRACT_NM", label: "계약명", width: 130, align: "left", sortable: true, editor: false},
+							{key: "CONTRACT_ST", label: "계약상태", width: 90, align: "left", sortable: true, editor: false,
+								formatter: function () {
+									return $.changeTextValue(ES_Q0135, this.value);
+								},
+							},
+							{key: "CONTRACT_DT", label: "계약일자", width: 120, align: "center", sortable: true, editor: false,
+								formatter: function () {
+									return $.changeDataFormat(this.value, 'YYYYMMDD');
+								},
+							},
+							{key: "CONTRACT_START_DT", label: "계약시작날짜", width: 120, align: "center", sortable: true, editor: false,
+								formatter: function () {
+									return $.changeDataFormat(this.value, 'YYYYMMDD');
+								},
+							},
+							{key: "CONTRACT_END_DT", label: "계약종료날짜", width: 120, align: "center", sortable: true, editor: false,
+								formatter: function () {
+									return $.changeDataFormat(this.value, 'YYYYMMDD');
+								},
+							},
 						],
 						body: {
 							onClick: function () {
@@ -226,6 +257,12 @@
 							},
 							onDataChanged: function () {
 
+							},
+							onDBLClick: function(){
+								userCallBack = function (e){
+									ACTIONS.dispatch(ACTIONS.PAGE_SEARCH);
+								}
+								$.openCommonPopup("/jsp/ensys/web/partner/web_contract_helper.jsp", "userCallBack",  '', '', this.item, $(".ax-body").width(), $(".ax-body").height(), null, null, false);
 							}
 						}
 					});

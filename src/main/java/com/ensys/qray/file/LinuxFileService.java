@@ -132,9 +132,9 @@ public class LinuxFileService extends BaseService {
                 File file = new File(path + "/" + savedFileNm + "." + fileExtension);
                 mf.get(i).transferTo(file);
 
-                int divisionCnt = msFileToImage(file, savedFileNm, path);
+                //int divisionCnt = msFileToImage(file, savedFileNm, path);
                 HashMap<Integer, Integer> resultMap = new HashMap<>();
-                resultMap.put(Integer.parseInt((String) fileName.get(i).get("FILE_SEQ")), divisionCnt);
+                resultMap.put(Integer.parseInt((String) fileName.get(i).get("FILE_SEQ")), 0);
                 result.add(resultMap);
             }
         }
