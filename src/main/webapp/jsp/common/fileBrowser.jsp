@@ -180,11 +180,7 @@
                             success: function (result) {
                                 for (var i = 0; i < caller.gridView01.target.list.length; i++) {
                                     caller.gridView01.target.setValue(i, 'YN_UPLOAD', 'Y');
-                                    if(window.location.hostname != 'qray.co.kr'){
-                                        caller.gridView01.target.setValue(i, 'FILE_PATH', "C:\\NEW_QRAY_TEMP");
-                                    }else {
-                                        caller.gridView01.target.setValue(i, 'FILE_PATH', "C:\\NEW_QRAY_TEMP");
-                                    }
+                                    caller.gridView01.target.setValue(i, 'FILE_PATH', result[1].FILE_PATH);
 
                                     if (nvl(result) != ''){
                                         for (var j = 0 ; j < result.length ; j++){

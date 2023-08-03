@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ensys.qray.web.api.apiMapper">
+
+    <select id="partnerDetail" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+        /*apiMapper.partnerDetail*/
+        SELECT A.PARTNER_NM AS "PARTNER_NM"
+             , FORMAT('%s-%s-%s', SUBSTRING(A.COMPANY_NO FROM 1 FOR 3), SUBSTRING(A.COMPANY_NO FROM 4 FOR 2), SUBSTRING(A.COMPANY_NO FROM 6)) AS "COMPANY_NO"
+             , B.E_MAIL AS "E_MAIL"
+             , B.TEL_NO AS "TEL_NO"
+             , A.YOUTUBE_LINK AS "YOUTUBE_LINK"
+             , A.COMPANY_INTRO AS "COMPANY_INTRO"
+             , F_ES_CATEGORY_NM(A.COMPANY_CD, A.JOB_FIELD) AS "JOB_FIELD"
+             , F_ES_CATEGORY_NM(A.COMPANY_CD, A.JOB_EP) AS "JOB_EP"
+             , F_ES_CATEGORY_NM(A.COMPANY_CD, A.JOB_ZONE) AS "JOB_ZONE"
+             , A.ITEM_INTRO AS "ITEM_INTRO"
+        FROM ES_PARTNER A
+        LEFT JOIN ES_PARTNER_PTR B
+        ON A.COMPANY_CD = B.COMPANY_CD
+        AND A.PARTNER_CD = B.PARTNER_CD
+        AND B.MAIN_YN = 'Y'
+        WHERE A.COMPANY_CD = #{COMPANY_CD}
+          AND A.PARTNER_CD = #{PARTNER_CD}
+    </select>
+
+</mapper>

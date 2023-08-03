@@ -90,4 +90,50 @@ public class CommonHelpService extends BaseService {
 
 		return commonHelpMapper.HELP_BLURB(param);
 	}
+
+	public List<HashMap<String, Object>> HELP_CATEGORY(HashMap<String, Object> param) {
+		SessionUser sessionUser = SessionUtils.getCurrentUser();
+		HashMap<String, Object> map = new HashMap<>();
+		map.put("COMPANY_CD", sessionUser.getCompanyCd());
+
+		if(param.get("PARTNER_TP") == null || "".equals(param.get("PARTNER_TP")) || "".equals(param.get("CODE")) || null == param.get("CODE")){
+			throw new RuntimeException("도움창 오류");
+		}
+
+		//카테고리 도움창 하드코딩
+		if("01".equals(param.get("PARTNER_TP"))){ // 탐정
+
+			if("1".equals(param.get("CODE"))){ // 전문분야
+				map.put("PARENT_CD", "04");
+			} else if ("2".equals(param.get("CODE"))){ //보유장비
+				map.put("PARENT_CD", "10");
+			} else if ("3".equals(param.get("CODE"))){ //업무가능기역
+				map.put("PARENT_CD", "07");
+			}
+
+			
+		} else if("02".equals(param.get("PARTNER_TP"))){ // 행정사
+
+			if("1".equals(param.get("CODE"))){ // 전문분야
+				map.put("PARENT_CD", "05");
+			} else if ("2".equals(param.get("CODE"))){ //보유장비
+				map.put("PARENT_CD", "11");
+			} else if ("3".equals(param.get("CODE"))){ //업무가능기역
+				map.put("PARENT_CD", "08");
+			}
+			
+		} else if("03".equals(param.get("PARTNER_TP"))){ //디지털 업체
+
+			if("1".equals(param.get("CODE"))){ // 전문분야
+				map.put("PARENT_CD", "06");
+			} else if ("2".equals(param.get("CODE"))){ //보유장비
+				map.put("PARENT_CD", "12");
+			} else if ("3".equals(param.get("CODE"))){ //업무가능기역
+				map.put("PARENT_CD", "09");
+			}
+			
+		}
+
+		return commonHelpMapper.HELP_CATEGORY(map);
+	}
 }

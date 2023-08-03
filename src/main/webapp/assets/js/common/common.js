@@ -2295,9 +2295,13 @@ $(document).ready(function () {
             if(e) {
                 self.find("#multi a").attr("disabled", "disabled");
                 self.find("#multi i").attr("disabled", "disabled");
+                self.find("#multi i").css("cursor", "no-drop");
+                self.attr("HELP_DISABLED", 'true')
             }else {
                 self.find("#multi a").removeAttr("disabled");
                 self.find("#multi i").removeAttr("disabled");
+                self.find("#multi i").css("cursor", "inherit");
+                self.removeAttr("HELP_DISABLED")
             }
 
         }else {
@@ -3611,6 +3615,33 @@ $(document).ready(function () {
                             $('#'+Object.keys(d)[i]).attr({code: d[codeKey], text: d[textKey]});
                             $('#'+Object.keys(d)[i]).val(d[textKey]);
                             $('#' + Object.keys(d)[i]).setPicker({code: d[codeKey], text: d[textKey]});
+                        }else if(cot == 'multipicker') {
+                            var textKey = $(co).attr('form-bind-text');
+                            var codeKey = $(co).attr('form-bind-code');
+                            let code = nvl(d[codeKey]);
+                            let text = nvl(d[textKey]);
+                            if (code != "" && text != "") {
+                                let option = [];
+                                let arrCode = code.split("|");
+                                let arrText = text.split("|");
+                                for(let i = 0; i < arrCode.length; i++){
+                                    if(nvl(arrCode[i]) != ''){
+                                        option.push({
+                                            code : arrCode[i],
+                                            value : arrCode[i],
+                                            text : arrText[i]
+                                        });
+                                    }
+                                }
+                                $('#' + $(co).attr('id') ).find("[data-ax5select='multi']").ax5select({
+                                    options: option
+                                });
+                                $('#' + $(co).attr('id') ).find("[data-ax5select='multi']").ax5select("setValue", arrCode, true);
+                            } else {
+                                $('#' + $(co).attr('id') ).setClear();
+                            }
+
+
                         }else if(cot == 'period-datepicker'){
                             var startKey = $(co).attr('date-start-column');
                             var endKey = $(co).attr('date-end-column');
@@ -3720,7 +3751,15 @@ $(document).ready(function () {
                         reObj[textKey] = $('#'+co.id).attr('text');
                         reObj[codeKey] = $('#'+co.id).attr('code');
                         reObj[co.id] = $('#'+co.id).attr('code');
-                    }else if(cot == 'period-datepicker') {
+                    }else if(cot == 'multipicker') {
+                        var textKey = $(co).attr('form-bind-text');
+                        var codeKey = $(co).attr('form-bind-code');
+
+
+                        reObj[textKey] = nvl($('#'+co.id).getText());
+                        reObj[codeKey] = nvl($('#'+co.id).getCode());
+
+                    } else if(cot == 'period-datepicker') {
                         var startKey = $(co).attr('date-start-column');
                         var endKey = $(co).attr('date-end-column');
                         var parentId = $('#'+co.id);

@@ -106,14 +106,14 @@ public class LinuxFileService extends BaseService {
         }
     }
 
-    public List<HashMap<Integer, Integer>> fileUpload(List<MultipartFile> mf, List<HashMap<String, Object>> fileName)
+    public List<HashMap<Object, Object>> fileUpload(List<MultipartFile> mf, List<HashMap<String, Object>> fileName)
             throws Exception {
         Reader reader = Resources.getResourceAsReader("axboot-local.properties");
         Properties properties = new Properties();
         properties.load(reader);
         String path = properties.getProperty("FILE_DIRECTORY_PATH");
 
-        List<HashMap<Integer, Integer>> result = new ArrayList<>();
+        List<HashMap<Object, Object>> result = new ArrayList<>();
         if (path != null) {
             File dir = new File(path);
 
@@ -133,11 +133,15 @@ public class LinuxFileService extends BaseService {
                 mf.get(i).transferTo(file);
 
                 //int divisionCnt = msFileToImage(file, savedFileNm, path);
-                HashMap<Integer, Integer> resultMap = new HashMap<>();
+                HashMap<Object, Object> resultMap = new HashMap<>();
                 resultMap.put(Integer.parseInt((String) fileName.get(i).get("FILE_SEQ")), 0);
                 result.add(resultMap);
             }
         }
+        HashMap<Object, Object> item = new HashMap<>();
+        item.put("FILE_PATH", path);
+        result.add(item);
+
         return result;
     }
 

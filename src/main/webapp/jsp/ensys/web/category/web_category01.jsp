@@ -1,7 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="ax" tagdir="/WEB-INF/tags" %>
-<ax:set key="title" value="카테코리 설정"/>
+<ax:set key="title" value="카테고리 설정"/>
 <ax:set key="page_desc" value="${pageRemark}"/>
 <ax:set key="page_auto_height" value="true"/>
 <ax:layout name="base">
@@ -206,6 +206,11 @@
                 },
                 columns: [
                     {key: "CATEGORY_NM", label: "카테고리 이름", width: 150, align: "left", editor: {type: "text"}, sortable: true},
+                    {key: "USE_YN", label: "사용여부", width: 150, align: "center", sortable: true,
+                        editor: {
+                            type: "checkbox", config: {height: 17, trueValue: 'Y', falseValue: 'N'}
+                        }
+                    },
                 ],
                 body: {
                     onClick: function () {
@@ -266,6 +271,11 @@
                 },
                 columns: [
                     {key: "CATEGORY_NM", label: "카테고리 이름", width: 150, align: "left", editor: {type: "text"}, sortable: true},
+                    {key: "USE_YN", label: "사용여부", width: 150, align: "center", sortable: true,
+                        editor: {
+                            type: "checkbox", config: {height: 17, trueValue: 'Y', falseValue: 'N'}
+                        }
+                    },
                 ],
                 body: {
                     onClick: function () {
@@ -366,10 +376,10 @@
                         </h2>
                     </div>
                     <div class="right">
-                        <button type="button" class="btn btn-small" data-grid-view-01-btn="add" style="width:80px;"><i class="icon_add"></i>
+                        <%--<button type="button" class="btn btn-small" data-grid-view-01-btn="add" style="width:80px;"><i class="icon_add"></i>
                             <ax:lang id="ax.admin.add"/></button>
                         <button type="button" class="btn btn-small" data-grid-view-01-btn="delete" style="width:80px;">
-                            <i class="icon_del"></i> <ax:lang id="ax.admin.delete"/></button>
+                            <i class="icon_del"></i> <ax:lang id="ax.admin.delete"/></button>--%>
                     </div>
                 </div>
                 <div data-ax5grid="grid-view-01"

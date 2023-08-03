@@ -81,7 +81,7 @@ public class RequestLogAspect {
         }finally {
             stopwatch.stop();
             logAspect.setExecutionTime(stopwatch.getTotalTimeMillis() + "ms");
-            logAspect.setId(getSequence(logAspect));
+            //logAspect.setId(getSequence(logAspect));
             repository.save(logAspect);
         }
         return proceed;

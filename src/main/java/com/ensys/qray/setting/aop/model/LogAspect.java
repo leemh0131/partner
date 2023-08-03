@@ -26,7 +26,8 @@ public class LogAspect {
 
     @Id
     @Column(name = "id")
-    private String id;
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private Long id;
     @Id
     @Column(name = "company_cd")
     private String companyCd;
@@ -67,12 +68,21 @@ public class LogAspect {
 
     public LogAspect create(ProceedingJoinPoint joinPoint) {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-        SessionUser user = (SessionUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        SessionUser user = null;
 
-        this.companyCd = user.getCompanyCd();
-        this.userId = user.getUserId();
-        this.userName = user.getEmpNm();
-        this.userGroup = user.getGroupCd();
+        if(request.getSession().getAttribute("token") == null || SecurityContextHolder.getContext().getAuthentication() == null){
+            this.companyCd = "java";
+            this.userId = "noSession";
+            this.userName = "noSession";
+            this.userGroup = "no";
+        } else {
+            user = (SessionUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+            this.companyCd = user.getCompanyCd();
+            this.userId = user.getUserId();
+            this.userName = user.getEmpNm();
+            this.userGroup = user.getGroupCd();
+        }
+
         this.deskTopId = getClientDeskTopId();
         this.browser = getClientBrowser(request);
         this.requestURI = request.getRequestURI();

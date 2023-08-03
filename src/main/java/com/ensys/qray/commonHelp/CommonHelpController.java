@@ -72,10 +72,16 @@ public class CommonHelpController extends BaseController {
 		return Responses.ListResponse.of(commonHelpService.HELP_CODEDTL(param));
 	}
 
-	// 공통코드
+	// 광고도움창
 	@RequestMapping(value = "HELP_BLURB", method = RequestMethod.POST, produces = APPLICATION_JSON)
 	public Responses.ListResponse HELP_BLURB(@RequestBody HashMap<String, Object> param) {
 		return Responses.ListResponse.of(commonHelpService.HELP_BLURB(param));
+	}
+
+	// 카테고리 도움창
+	@RequestMapping(value = "HELP_CATEGORY", method = RequestMethod.POST, produces = APPLICATION_JSON)
+	public Responses.ListResponse HELP_CATEGORY(@RequestBody HashMap<String, Object> param) {
+		return Responses.ListResponse.of(commonHelpService.HELP_CATEGORY(param));
 	}
 
 }

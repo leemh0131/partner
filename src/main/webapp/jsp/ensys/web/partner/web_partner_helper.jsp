@@ -54,6 +54,7 @@
                     $('.QRAY_FORM0').setFormData(data.partner[0]);
                     ACTIONS.dispatch(ACTIONS.ITEM_CLICK1);
                     ACTIONS.dispatch(ACTIONS.ITEM_CLICK2);
+                    setCategory(nvl(data.partner[0].PARTNER_TP));
 
                     $("#FILE").clear();
                     $("#FILE").setTableKey(initData.PARTNER_CD);
@@ -344,11 +345,94 @@
             MODE    : 'SINGLE',
         });
 
+        $('.CATEGORY_PICKER').setDisabled(true);
+        $('.CATEGORY_PICKER').setClear();
+
+        $("#PARTNER_TP").change(function (e) {
+            let value = nvl($('select[name="PARTNER_TP"]').val())
+            setCategory(value);
+            $('.CATEGORY_PICKER').setClear();
+        });
+
+        $('.CATEGORY_PICKER').click(function (){
+
+            if(nvl($('select[name="PARTNER_TP"]').val()) == ''){
+                qray.alert("거래처구분을 선택해주세요.");
+                return;
+            }
+
+        });
+
     });
 
     $(window).resize(function () {
         changeSize();
     });
+
+    //카테고리 도움창 세팅
+    function setCategory(value){
+
+        if(value == ''){
+            $('.CATEGORY_PICKER').setDisabled(true);
+            $('.CATEGORY_PICKER').setClear();
+
+        } else if(value == '01'){ //탐정
+            $('.CATEGORY_PICKER').setDisabled(false);
+            //$('.CATEGORY_PICKER').setClear();
+
+            $('#JOB_FIELD').setParam({
+                PARTNER_TP : value,
+                CODE : '1' //전문분야
+            });
+
+            $('#JOB_EP').setParam({
+                PARTNER_TP : value,
+                CODE : '2' //보유장비
+            });
+
+            $('#JOB_ZONE').setParam({
+                PARTNER_TP : value,
+                CODE : '3' //디지털업체
+            });
+
+        } else if(value == '02'){ //행정사
+            $('.CATEGORY_PICKER').setDisabled(false);
+            //$('.CATEGORY_PICKER').setClear();
+            $('#JOB_FIELD').setParam({
+                PARTNER_TP : value,
+                CODE : '1' //전문분야
+            });
+
+            $('#JOB_EP').setParam({
+                PARTNER_TP : value,
+                CODE : '2' //보유장비
+            });
+
+            $('#JOB_ZONE').setParam({
+                PARTNER_TP : value,
+                CODE : '3' //디지털업체
+            });
+
+        } else if(value == '03'){ //디지털업체
+            $('.CATEGORY_PICKER').setDisabled(false);
+            //$('.CATEGORY_PICKER').setClear();
+            $('#JOB_FIELD').setParam({
+                PARTNER_TP : value,
+                CODE : '1' //전문분야
+            });
+
+            $('#JOB_EP').setParam({
+                PARTNER_TP : value,
+                CODE : '2' //보유장비
+            });
+
+            $('#JOB_ZONE').setParam({
+                PARTNER_TP : value,
+                CODE : '3' //디지털업체
+            });
+        }
+
+    }
 
     function changeSize() {
         //전체영역높이
@@ -533,16 +617,40 @@
                                 </ax:tr>
                                 <ax:tr>
                                     <ax:td label="전문분야" width="32%">
-                                        <input type="text" class="form-control" data-ax-path="JOB_FIELD" name="JOB_FIELD"
-                                               id="JOB_FIELD" form-bind-text='JOB_FIELD' form-bind-type='text' maxlength="200"/>
+                                        <multipicker id="JOB_FIELD"
+                                                     class="CATEGORY_PICKER"
+                                                     HELP_ACTION="HELP_CATEGORY"
+                                                     HELP_URL="/jsp/ensys/web/category/categoryHelper.jsp"
+                                                     BIND-CODE="CATEGORY_CD"
+                                                     BIND-TEXT="CATEGORY_NM"
+                                                     form-bind-type="multipicker"
+                                                     form-bind-code="JOB_FIELD"
+                                                     form-bind-text="JOB_FIELD_NM"
+                                        />
                                     </ax:td>
                                     <ax:td label="보유장비" width="32%">
-                                        <input type="text" class="form-control" data-ax-path="JOB_EP" name="JOB_EP"
-                                               id="JOB_EP" form-bind-text='JOB_EP' form-bind-type='text' maxlength="200"/>
+                                        <multipicker id="JOB_EP"
+                                                     class="CATEGORY_PICKER"
+                                                     HELP_ACTION="HELP_CATEGORY"
+                                                     HELP_URL="/jsp/ensys/web/category/categoryHelper.jsp"
+                                                     BIND-CODE="CATEGORY_CD"
+                                                     BIND-TEXT="CATEGORY_NM"
+                                                     form-bind-type="multipicker"
+                                                     form-bind-code="JOB_EP"
+                                                     form-bind-text="JOB_EP_NM"
+                                        />
                                     </ax:td>
                                     <ax:td label="업무가능지역" width="32%">
-                                        <input type="text" class="form-control" data-ax-path="JOB_ZONE" name="JOB_ZONE"
-                                               id="JOB_ZONE" form-bind-text='JOB_ZONE' form-bind-type='text' maxlength="200"/>
+                                        <multipicker id="JOB_ZONE"
+                                                     class="CATEGORY_PICKER"
+                                                     HELP_ACTION="HELP_CATEGORY"
+                                                     HELP_URL="/jsp/ensys/web/category/categoryHelper.jsp"
+                                                     BIND-CODE="CATEGORY_CD"
+                                                     BIND-TEXT="CATEGORY_NM"
+                                                     form-bind-type="multipicker"
+                                                     form-bind-code="JOB_ZONE"
+                                                     form-bind-text="JOB_ZONE_NM"
+                                        />
                                     </ax:td>
                                 </ax:tr>
                                 <ax:tr>

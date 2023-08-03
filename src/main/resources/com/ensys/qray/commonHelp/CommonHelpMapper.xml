@@ -247,5 +247,24 @@
 		</if>
 	</select>
 
+	<select id="HELP_CATEGORY" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*CommonHelpMapper.HELP_CATEGORY*/
+		SELECT    A.COMPANY_CD AS "COMPANY_CD"
+				, A.CATEGORY_CD AS "CATEGORY_CD"
+				, A.CATEGORY_NM AS "CATEGORY_NM"
+				, A.PARENT_CD AS "PARENT_CD"
+		FROM ES_CATEGORY A
+		WHERE 1=1
+		  AND A.COMPANY_CD = #{COMPANY_CD}
+		  AND A.PARENT_CD = #{PARENT_CD}
+		  AND A.USE_YN = 'Y'
+		<if test=' KEYWORD != null and KEYWORD != ""'>
+			AND
+			(  A.CATEGORY_CD LIKE  '%' || #{KEYWORD} || '%'
+			OR A.CATEGORY_NM LIKE  '%' || #{KEYWORD} || '%'
+			)
+		</if>
+	</select>
+
 
 </mapper>

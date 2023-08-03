@@ -50,7 +50,7 @@ public class FileController extends BaseController {
 
 	@ResponseBody
 	@RequestMapping(value = "fileUpload", method = { RequestMethod.POST }, produces = APPLICATION_JSON)
-	public List<HashMap<Integer, Integer>> save(@RequestPart("files") List<MultipartFile> images,
+	public List<HashMap<Object, Object>> save(@RequestPart("files") List<MultipartFile> images,
 			@RequestPart("fileName") List<HashMap<String, Object>> fileName) throws Exception {
 		String os = System.getProperty("os.name").toLowerCase();
 		if(os.contains("win")) {

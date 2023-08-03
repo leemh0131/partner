@@ -55,6 +55,7 @@ public class AXBootSecurityConfig extends WebSecurityConfigurerAdapter {
             "/jsp/joinUser.jsp",
             "/jsp/loginTest.jsp",
             "/api/users/*",
+            "/api/web/v1/**",
             "/login/**",
             "/logout/**",
             "/sso/*",
@@ -86,7 +87,7 @@ public class AXBootSecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .authorizeRequests().anyRequest().hasRole(ROLE)
                 .antMatchers(HttpMethod.POST, LOGIN_API).permitAll()
-                .antMatchers(LOGIN_PAGE).permitAll()
+                .antMatchers(LOGIN_PAGE, "/api/web/v1/**").permitAll()
                 .antMatchers("/modelExtractor**").permitAll()
                 .and()
 

@@ -10,6 +10,7 @@
                 , A.CATEGORY_CD AS "CATEGORY_CD"
                 , A.CATEGORY_NM AS "CATEGORY_NM"
                 , A.PARENT_CD AS "PARENT_CD"
+                , A.USE_YN AS "USE_YN"
         FROM ES_CATEGORY A
         WHERE A.COMPANY_CD = #{COMPANY_CD}
         AND A.PARENT_CD = #{PARENT_CD}
@@ -23,6 +24,7 @@
             , CATEGORY_CD
             , CATEGORY_NM
             , PARENT_CD
+            , USE_YN
             , INSERT_ID
             , INSERT_DTS
             , UPDATE_ID
@@ -37,6 +39,7 @@
                )
             , #{CATEGORY_NM}
             , #{PARENT_CD}
+            , #{USE_YN}
             , #{INSERT_ID}
             , #{INSERT_DTS}
             , #{UPDATE_ID}
@@ -47,6 +50,7 @@
     <update id="updated" parameterType="hashmap" statementType="CALLABLE">
         UPDATE ES_CATEGORY
         SET CATEGORY_NM  =   #{CATEGORY_NM}
+          ,	USE_YN  =   #{USE_YN}
           ,	UPDATE_ID  =   #{UPDATE_ID}
           ,	UPDATE_DTS =   #{UPDATE_DTS}
         WHERE COMPANY_CD = #{COMPANY_CD}

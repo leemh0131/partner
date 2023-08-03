@@ -180,7 +180,7 @@ public class FileService extends BaseService {
 	}
 
 	//파일뷰어업로드
-	public List<HashMap<Integer, Integer>> fileUpload(List<MultipartFile> mf, List<HashMap<String, Object>> fileName)
+	public List<HashMap<Object, Object>> fileUpload(List<MultipartFile> mf, List<HashMap<String, Object>> fileName)
 			throws Exception {
 		SessionUser user = SessionUtils.getCurrentUser();
 
@@ -190,7 +190,7 @@ public class FileService extends BaseService {
 		properties.load(reader);
 		String filePath = properties.getProperty("FILE_DIRECTORY_PATH_WINDOWS");
 
-		List<HashMap<Integer, Integer>> result = new ArrayList<>();
+		List<HashMap<Object, Object>> result = new ArrayList<>();
 		if (filePath != null) {
 			File dir = new File(filePath);
 
@@ -209,12 +209,15 @@ public class FileService extends BaseService {
 				mf.get(i).transferTo(file);
 
 				//int divisionCnt = msFileToImage(file, savedFileNm, filePath);
-				HashMap<Integer, Integer> resultMap = new HashMap<>();
+				HashMap<Object, Object> resultMap = new HashMap<>();
 				resultMap.put(Integer.parseInt((String) fileName.get(i).get("FILE_SEQ")), 0);
 				result.add(resultMap);
 
 			}
 		}
+		HashMap<Object, Object> item = new HashMap<>();
+		item.put("FILE_PATH", filePath);
+		result.add(item);
 		return result;
 	}
 
