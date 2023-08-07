@@ -20,4 +20,6 @@ public interface FileMapper extends MyBatisMapper {
 	int deleteAll(HashMap<String, Object> param);
 
 	int searchCount(HashMap<String, Object> param);
+
+	void updated(HashMap<String, Object> item);
 }

@@ -17,6 +17,7 @@
 		,		FILE_BYTE       AS "FILE_BYTE"
 		,		FILE_SIZE       AS "FILE_SIZE"
 		,		FILE_DIVISION   AS "FILE_DIVISION"
+		,		MAIN_YN   		AS "MAIN_YN"
 		,		INSERT_ID       AS "INSERT_ID"
 		,		INSERT_DTS      AS "INSERT_DTS"
 		,		UPDATE_ID       AS "UPDATE_ID"
@@ -48,7 +49,8 @@
 		, FILE_BYTE     
 		, FILE_SIZE
 		, FILE_DIVISION     
-		, INSERT_ID     
+		, MAIN_YN
+		, INSERT_ID
 		, INSERT_DTS    
 		, UPDATE_ID     
 		, UPDATE_DTS
@@ -66,7 +68,8 @@
 		, #{FILE_BYTE}     
 		, #{FILE_SIZE} 
 		, #{FILE_DIVISION}   
-		, #{INSERT_ID}     
+		, #{MAIN_YN}
+		, #{INSERT_ID}
 		, #{INSERT_DTS}    
 		, #{UPDATE_ID}     
 		, #{UPDATE_DTS}
@@ -81,4 +84,18 @@
 		AND   TABLE_KEY  = cast(#{TABLE_KEY} as text)
 		AND   FILE_SEQ   = #{FILE_SEQ}
     </delete>
+
+	<update id="updated" parameterType="hashmap" statementType="CALLABLE">
+		/*FileMapper.updated*/
+		update ES_FILE
+		SET MAIN_YN      =   #{MAIN_YN}
+		  ,	UPDATE_ID 	 =   #{UPDATE_ID}
+		  ,	UPDATE_DTS 	 =   #{UPDATE_DTS}
+		WHERE COMPANY_CD = #{COMPANY_CD}
+		  AND   TABLE_ID   = #{TABLE_ID}
+		  AND   FILE_SEQ   = #{FILE_SEQ}
+		  AND   TABLE_KEY  = cast(#{TABLE_KEY} as text)
+		  AND   FILE_SEQ   = #{FILE_SEQ}
+	</update>
+
 </mapper>

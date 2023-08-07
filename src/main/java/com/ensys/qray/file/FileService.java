@@ -107,6 +107,24 @@ public class FileService extends BaseService {
 		}
 	}
 
+	public void update(HashMap<String, Object> param) {
+		SessionUser user = SessionUtils.getCurrentUser();
+		String strDate = HammerUtility.nowDate("yyyyMMddHHmmss");
+
+		HashMap<String, Object> saveData = (HashMap<String, Object>) param.get("saveData");
+
+		for(HashMap<String, Object> item : (List<HashMap<String, Object>>)saveData.get("updated")) {
+			item.put("COMPANY_CD", user.getCompanyCd());
+			item.put("INSERT_ID", user.getUserId());
+			item.put("UPDATE_ID", user.getUserId());
+			item.put("INSERT_DTS", strDate);
+			item.put("UPDATE_DTS", strDate);
+			fileMapper.updated(item);
+		}
+
+
+	}
+
 	/** 메일보내드 첨부파일 업로드
 	 *  서버에 파일 저장 후 DB 저장
 	 *  return DB에 저장된 key List 반환

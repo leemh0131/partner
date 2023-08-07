@@ -138,7 +138,9 @@
 
                     deleteArr = deleteArr.concat(caller.gridView01.getData("deleted"));
 
-                    if (nvl(deleteArr) == '' && Object.keys(files).length == 0) {
+                    let saveData = fnObj.gridView01.target.getDirtyData();
+
+                    if (nvl(deleteArr) == '' && Object.keys(files).length == 0 && saveData.count == 0) {
                         qray.alert('변경된 내용이 없습니다.');
                         return false;
                     }
@@ -166,56 +168,75 @@
                     }
                     formData.append("fileName", new Blob([JSON.stringify(FILE_ARR)], {type: "application/json"}));
 
-                    qray.loading.show('파일 저장 중입니다.').then(function(){
-                        $.ajax({
-                            type: 'POST',
-                            async: false,
-                            enctype: 'multipart/form-data',
-                            processData: false,
-                            contentType: false,
-                            cache: false,
-                            timeout: 600000,
-                            url: '/api/file/fileUpload',
-                            data: formData,
-                            success: function (result) {
-                                for (var i = 0; i < caller.gridView01.target.list.length; i++) {
-                                    caller.gridView01.target.setValue(i, 'YN_UPLOAD', 'Y');
-                                    caller.gridView01.target.setValue(i, 'FILE_PATH', result[1].FILE_PATH);
+                    if(formData.get('files') != null){
 
-                                    if (nvl(result) != ''){
-                                        for (var j = 0 ; j < result.length ; j++){
-                                            for (var seq in result[j]){
-                                                if (caller.gridView01.target.list[i].FILE_SEQ == seq) {
-                                                    caller.gridView01.target.setValue(i, 'FILE_DIVISION', result[j][seq]);
+
+                        qray.loading.show('파일 저장 중입니다.').then(function(){
+                            $.ajax({
+                                type: 'POST',
+                                async: false,
+                                enctype: 'multipart/form-data',
+                                processData: false,
+                                contentType: false,
+                                cache: false,
+                                timeout: 600000,
+                                url: '/api/file/fileUpload',
+                                data: formData,
+                                success: function (result) {
+                                    for (var i = 0; i < caller.gridView01.target.list.length; i++) {
+                                        caller.gridView01.target.setValue(i, 'YN_UPLOAD', 'Y');
+                                        caller.gridView01.target.setValue(i, 'FILE_PATH', result[1].FILE_PATH);
+
+                                        if (nvl(result) != ''){
+                                            for (var j = 0 ; j < result.length ; j++){
+                                                for (var seq in result[j]){
+                                                    if (caller.gridView01.target.list[i].FILE_SEQ == seq) {
+                                                        caller.gridView01.target.setValue(i, 'FILE_DIVISION', result[j][seq]);
+                                                    }
                                                 }
                                             }
                                         }
                                     }
+
+                                    files = []; //  초기화
+
+                                    var imsi = {};
+                                    imsi.gridData = fnObj.gridView01.target.list;
+                                    imsi.delete = arr;
+
+                                    qray.loading.hide();
+
+                                    if (param.viewName) {
+                                        parent.document.getElementsByName(param.viewName)[0].contentWindow[param.callBack](imsi);
+                                        return;
+                                    }
+                                    parent[param.callBack](imsi);
+                                    initData["imsiFile"] = imsi;
+
+                                    ACTIONS.dispatch(ACTIONS.ITEM_CLICK);
+                                    eval("parent." + param.modalName + ".close()");
+                                },
+                                error: function(error){
+                                    qray.loading.hide();
                                 }
-
-                                files = []; //  초기화
-
-                                var imsi = {};
-                                imsi.gridData = fnObj.gridView01.target.list;
-                                imsi.delete = arr;
-
-                                qray.loading.hide();
-
-                                if (param.viewName) {
-                                    parent.document.getElementsByName(param.viewName)[0].contentWindow[param.callBack](imsi);
-                                    return;
-                                }
-                                parent[param.callBack](imsi);
-                                initData["imsiFile"] = imsi;
-
-                                ACTIONS.dispatch(ACTIONS.ITEM_CLICK);
-                                eval("parent." + param.modalName + ".close()");
-                            },
-                            error: function(error){
-                                qray.loading.hide();
-                            }
+                            });
                         });
-                    });
+
+                    } else {
+                        if(saveData.count > 0){
+                            axboot.ajax({
+                                type: "POST",
+                                url: ["file", 'update'],
+                                data: JSON.stringify({saveData : saveData}),
+                                callback: function (res) {
+                                    qray.loading.hide();
+                                    eval("parent." + param.modalName + ".close()");
+                                }
+                            });
+                        }
+                    }
+
+
                 }
             }
         );
@@ -343,6 +364,11 @@
                         {key: "FILE_EXT", label: "파일확장자", width: 90, align: "center", editor: false},
                         {key: "FILE_BYTE", label: "파일바이트", width: 90, align: "center", editor: false},
                         {key: "FILE_SIZE", label: "파일사이즈", width: 90, align: "center", editor: false},
+                        {key: "MAIN_YN", label: "메인여부", width: 90, align: "center",
+                            editor: {
+                                type: "checkbox", config: {height: 17, trueValue: 'Y', falseValue: 'N'}
+                            }
+                        },
                         {key: "YN_UPLOAD", label: "파일업로드여부", width: 90, align: "center", editor: false, hidden: true}
 
                     ],
@@ -361,7 +387,24 @@
 
                             this.self.select(idx);
                             ACTIONS.dispatch(ACTIONS.ITEM_CLICK);
-                        }
+                        },
+                        onDataChanged: function () {
+                            var idx = this.dindex;
+                            var data = this.item;
+                            var column = this.key;
+
+                            if (column == 'MAIN_YN'){
+                                if (this.value == 'Y'){
+                                    for (var i = 0 ; i < this.list.length ; i ++){
+                                        if (this.list[i].__index != idx){
+                                            if (this.list[i].MAIN_YN == this.value){
+                                                this.self.setValue(this.list[i].__index, this.key, 'N', true);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
                     },
                     onPageChange: function (pageNumber) {
                         _this.setPageData({pageNumber: pageNumber});

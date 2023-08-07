@@ -60,6 +60,12 @@ public class FileController extends BaseController {
 		}
 	}
 
+	@RequestMapping(value = "update", method = RequestMethod.POST, produces = APPLICATION_JSON)
+	public ApiResponse update(@RequestBody HashMap<String, Object> param) {
+		fileService.update(param);
+		return ok();
+	}
+
 	@RequestMapping(value = "show", method = RequestMethod.POST, produces = APPLICATION_JSON)
 	public void show(HttpServletRequest request, @RequestBody HashMap<String, Object> param) throws Exception {
 		String FILE_PATH = request.getSession().getServletContext().getRealPath("/file");
