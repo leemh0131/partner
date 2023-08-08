@@ -108,6 +108,7 @@
                 },
                 //그리드1 추가
                 ITEM_ADD1: function(caller, act, data){
+                    caller.gridView02.clear();
                     fnObj.gridView01.addRow();
                     var lastIdx = nvl(fnObj.gridView01.target.list.length, fnObj.gridView01.lastRow());
                     selectRow = lastIdx - 1;
@@ -141,6 +142,7 @@
                     var selected = caller.gridView01.target.getList('selected')[0];
 
                     caller.gridView02.addRow();
+                    var PKG_CD = caller.gridView01.target.getList('selected')[0].PKG_CD;
 
                     var lastIdx = nvl(caller.gridView02.target.list.length, caller.gridView02.lastRow());
                     selectRow = lastIdx - 1;
@@ -149,6 +151,7 @@
                     caller.gridView02.target.focus(lastIdx - 1);
 
                     // caller.gridView02.target.setValue(lastIdx - 1, 'COMPANY_CD', selected.COMPANY_CD);
+                    caller.gridView02.target.setValue(lastIdx - 1, 'PKG_CD', PKG_CD);
                     caller.gridView02.target.setValue(lastIdx - 1, 'SEQ', 0);
                     caller.gridView02.target.setValue(lastIdx - 1, 'AM', 0);
                     caller.gridView02.target.setValue(lastIdx - 1, 'SALE_RT', 0);
