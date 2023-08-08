@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ensys.qray.web.blurb02.blurb02Mapper">
+
+	<select id="select" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*blurb02Mapper.select*/
+		SELECT 	A.COMPANY_CD 	AS "COMPANY_CD"
+			 , 	A.PKG_CD		AS "PKG_CD"
+			 , 	A.PKG_NM		AS "PKG_NM"
+			 , 	A.USE_YN		AS "USE_YN"
+			 , 	A.CREATE_DT		AS "CREATE_DT"
+			 , 	A.INSERT_ID		AS "INSERT_ID"
+			 , 	A.INSERT_DTS	AS "INSERT_DTS"
+			 , 	A.UPDATE_ID		AS "UPDATE_ID"
+			 , 	A.UPDATE_DTS	AS "UPDATE_DTS"
+		FROM ES_BLURB_PKG_M A
+		WHERE A.COMPANY_CD = #{COMPANY_CD}
+	</select>
+
+	<insert id="created" parameterType="hashmap" statementType="CALLABLE">
+		/*blurb02Mapper.created*/
+		INSERT INTO ES_BLURB_PKG_M
+		(
+			COMPANY_CD
+		, PKG_CD
+		, PKG_NM
+		, USE_YN
+		, CREATE_DT
+		, INSERT_ID
+		, INSERT_DTS
+		, UPDATE_ID
+		, UPDATE_DTS
+		)
+		VALUES
+		(
+			#{COMPANY_CD}
+		, #{PKG_CD}
+		, #{PKG_NM}
+		, #{USE_YN}
+		, #{CREATE_DT}
+		, #{INSERT_ID}
+		, #{INSERT_DTS}
+		, #{UPDATE_ID}
+		, #{UPDATE_DTS}
+		)
+
+	</insert>
+
+	<update id="update" parameterType="hashmap" statementType="CALLABLE">
+		UPDATE ES_BLURB_PKG_M
+		SET USE_YN = #{USE_YN}
+		  ,	PKG_NM = #{PKG_NM}
+		  ,	UPDATE_ID = #{UPDATE_ID}
+		  ,	UPDATE_DTS = #{UPDATE_DTS}
+		WHERE COMPANY_CD = #{COMPANY_CD}
+		  AND   PKG_CD = #{PKG_CD}
+		  AND   CREATE_DT = #{CREATE_DT}
+	</update>
+
+	<delete id="delete" parameterType="hashmap" statementType="CALLABLE">
+		DELETE FROM ES_BLURB_PKG_M
+		WHERE COMPANY_CD = #{COMPANY_CD}
+		  AND   PKG_CD = #{PKG_CD}
+	</delete>
+
+</mapper>

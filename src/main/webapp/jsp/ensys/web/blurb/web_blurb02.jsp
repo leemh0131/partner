@@ -28,28 +28,55 @@
             var ACTIONS = axboot.actionExtend(fnObj, {
                 //조회
                 PAGE_SEARCH: function (caller, act, data) {
-                    /*axboot.ajax({
-                        type: "POST",
-                        url: ["web_blurb_02", "searchMst"],
-                        data: JSON.stringify({
 
-                            // PARTNER_TP : nvl($("select[name='S_PARTNER_TP']").val()),
-                            // KEYWORD: $("#KEYWORD").val()
-                        }),
-                        callback: function (res) {
-                            caller.gridView01.setData(res);
+                    fnObj.gridView01.clear();
+                    fnObj.gridView02.clear();
+                    fnObj.gridView01.target.dirtyClear();
+                    fnObj.gridView02.target.dirtyClear();
 
-                            if (res.list.length <= selectRow) {
-                                selectRow = 0
-                            }
-
-                            caller.gridView01.target.focus(selectRow);
-                            caller.gridView01.target.select(selectRow);
-
-                            ACTIONS.dispatch(ACTIONS.ITEM_CLICK);
-
+                    fnObj.gridView01.target.read().done(function(res){
+                        caller.gridView01.setData(res);
+                        if (res.list.length <= selectRow) {
+                            selectRow = 0
                         }
-                    });*/
+                        caller.gridView01.target.focus(selectRow);
+                        caller.gridView01.target.select(selectRow);
+                        ACTIONS.dispatch(ACTIONS.ITEM_CLICK);
+                    }).fail(function(err){
+                        qray.alert(err.message);
+                    }).always(function(){
+                        qray.loading.hide();
+                    });
+
+
+                    // axboot.ajax({
+                    //     type: "POST",
+                    //     url: ["/api/web/blurb02", "select"],
+                    //     data: JSON.stringify({
+                    //
+                    //
+                    //     }),
+                    //     // res 전역변수같은것
+                    //     callback: function(res) {
+                    //
+                    //         if(nvl(res) != '' && nvl(res.list) != ''){
+                    //             fnObj.gridView01.setData(res);
+                    //             fnObj.gridView01.target.focus(selectRow);
+                    //             fnObj.gridView01.target.select(selectRow);
+                    //             //ACTIONS.dispatch(ACTIONS.ITEM_CLICK);
+                    //         }
+                    //
+                    //
+                    //     },
+                    //     options : {
+                    //         onError : function(err){
+                    //             qray.alert(err.message);
+                    //             return;
+                    //
+                    //         }
+                    //     }
+                    // });
+
                 },
                 //저장
                 PAGE_SAVE: function (caller, act, data) {
@@ -87,9 +114,11 @@
                     fnObj.gridView01.target.focus(lastIdx - 1);
                     fnObj.gridView01.target.select(lastIdx - 1);
 
-                    fnObj.gridView01.target.setValue(lastIdx - 1, "PACKAGE_CD", GET_NO('MA', '23'));
+                    fnObj.gridView01.target.setValue(lastIdx - 1, "PKG_CD", GET_NO('MA', '23'))
+                    fnObj.gridView01.target.setValue(lastIdx - 1, "PKG_NM", '')
                     fnObj.gridView01.target.setValue(lastIdx - 1, "USE_YN", 'Y');
-                    ACTIONS.dispatch(ACTIONS.ITEM_CLICK);
+                    fnObj.gridView01.target.setValue(lastIdx - 1, "CREATE_DT", '')
+                    //ACTIONS.dispatch(ACTIONS.ITEM_CLICK);
                 },
                 //그리드1 삭제
                 ITEM_DEL: function(caller, act, data){
@@ -109,26 +138,20 @@
                 //그리드2 추가
                 ITEM_ADD2: function(caller, act, data){
 
-                    userCallBack = function (e){
+                    var selected = caller.gridView01.target.getList('selected')[0];
 
-                        if(e.length > 0){
-                            for(let i = 0; i < e.length; i++){
+                    caller.gridView02.addRow();
 
-                                fnObj.gridView02.addRow();
+                    var lastIdx = nvl(caller.gridView02.target.list.length, caller.gridView02.lastRow());
+                    selectRow = lastIdx - 1;
 
-                                var lastIdx = nvl(fnObj.gridView02.target.list.length, fnObj.gridView02.lastRow());
+                    caller.gridView02.target.select(lastIdx - 1);
+                    caller.gridView02.target.focus(lastIdx - 1);
 
-                                /*fnObj.gridView02.target.setValue(lastIdx - 1, "ACCT_CD", e[i].ACCT_CD);
-                                fnObj.gridView02.target.setValue(lastIdx - 1, "ACCT_NM", e[i].ACCT_NM);
-                                fnObj.gridView02.target.setValue(lastIdx - 1, "BGACCT_CD", BGACCT_CD_);*/
-
-                            }
-
-                        }
-
-                    }
-
-                    $.openCommonPopup("/jsp/ensys/help/blurbHelper.jsp", 'userCallBack',  'HELP_BLURB', '', '',900, 600);
+                    // caller.gridView02.target.setValue(lastIdx - 1, 'COMPANY_CD', selected.COMPANY_CD);
+                    caller.gridView02.target.setValue(lastIdx - 1, 'SEQ', 0);
+                    caller.gridView02.target.setValue(lastIdx - 1, 'AM', 0);
+                    caller.gridView02.target.setValue(lastIdx - 1, 'SALE_RT', 0);
 
                 },
                 //그리드2 삭제
@@ -194,7 +217,7 @@
                         },
                         columns: [
                             {
-                                key: "PACKAGE_CD", label: "패키지코드", width: 80, align: "left", editor: {
+                                key: "PKG_CD", label: "패키지코드", width: 150, align: "left", editor: {
                                     type: false,
                                     disabled: function () {
                                         var created = fnObj.gridView01.target.getList('selected')[0].__created__;
@@ -208,9 +231,9 @@
                                 }, sortable: true,
                             },
                             {
-                                key: "PACKAGE_NM",
+                                key: "PKG_NM",
                                 label: "패키지명",
-                                width: '100',
+                                width: '150',
                                 align: "left",
                                 editor: {type: "text"},
                                 sortable: true,
@@ -231,7 +254,7 @@
                                 sortable: true,
                             },
 
-                            {key: "PRODUCE_DT", label: "생성일자", width: 150, align: "center", sortable: true,
+                            {key: "CREATE_DT", label: "생성일자", width: 100, align: "center", sortable: true,
                                 editor: {
                                     type: "date", config: {
                                         content: {
@@ -277,7 +300,7 @@
                                 if(sameSelected) return;
 
                                 this.self.select(this.dindex);
-                                ACTIONS.dispatch(ACTIONS.ITEM_CLICK, this.item);
+                                //ACTIONS.dispatch(ACTIONS.ITEM_CLICK, this.item);
                             },
                             onDataChanged: function () {
 
@@ -335,14 +358,30 @@
                                 }
                             },
                             {
-                                key: "PACKAGE_CD",
+                                key: "PKG_CD",
                                 label: "패키지코드",
                                 width: 80,
                                 align: "left",
                                 editor: false,
                                 hidden: true, sortable: true,
                             },
-                            {key: "ADVERTISE_CD", label: "광고코드", width: 80, sortable: true, align: "left",editor: false},
+                            {key: "ADV_CD", label: "광고코드", width: 100, align: "left", sortable: true,editor: false,
+                                picker: {
+                                    top: _pop_top,
+                                    width: 600,
+                                    height: _pop_height,
+                                    url: "/jsp/ensys/help/blurbHelper.jsp",
+                                    action: ["commonHelp", "HELP_BLURB"],
+                                    param: function () {
+                                        return {
+                                            MODE   : 'SINGLE'
+                                        }
+                                    },
+                                    callback: function (e) {
+                                        fnObj.gridView02.target.setValue(this.dindex, "ADV_CD", e[0].ADV_CD);
+                                    },
+                                }
+                            },
                             {key: "SEQ", label: "순번", width: 60, align: "left", sortable: true, editor: false},
                             {key: "AM", label: "금액", width: 100, sortable: true, align: "left",editor: {type: "number"}},
                             {key: "SALE_RT", label: "할인율", width: 80, align: "left", sortable: true, editor: {type: "number"}}
@@ -359,7 +398,13 @@
                                         // fnObj.gridView02.target.setValue(this.dindex, "NM_PACKAGE", '');
                                     }
                                 }
-                            }
+                            },
+                            // onDBLClick: function(){
+                            //     userCallBack = function (e){
+                            //         ACTIONS.dispatch(ACTIONS.PAGE_SEARCH);
+                            //     }
+                            //     $.openCommonPopup("/jsp/ensys/help/blurbHelper.jsp", "userCallBack",  '', '', this.item, $(".ax-body").width(), $(".ax-body").height(), null, null, false);
+                            // }
                         }
                     });
 
