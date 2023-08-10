@@ -4,8 +4,8 @@
 
 <mapper namespace="com.ensys.qray.web.blurb02.blurb02Mapper">
 
-	<select id="select" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
-		/*blurb02Mapper.select*/
+	<select id="packageHeader" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*blurb02Mapper.packageHeader*/
 		SELECT 	A.COMPANY_CD 	AS "COMPANY_CD"
 			 , 	A.PKG_CD		AS "PKG_CD"
 			 , 	A.PKG_NM		AS "PKG_NM"
@@ -17,6 +17,23 @@
 			 , 	A.UPDATE_DTS	AS "UPDATE_DTS"
 		FROM ES_BLURB_PKG_M A
 		WHERE A.COMPANY_CD = #{COMPANY_CD}
+	</select>
+
+	<select id="packageDetail" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*blurb02Mapper.packageDetail*/
+		SELECT 	A.COMPANY_CD	 AS "COMPANY_CD"
+			  , A.PKG_CD		 AS "PKG_CD"
+			  , A.ADV_CD		 AS "ADV_CD"
+              , A.SEQ	AS "SEQ"
+              , A.AM	AS "AM"
+              , A.SALE_RT	AS "SALE_RT"
+              , A.INSERT_ID	AS "INSERT_ID"
+              , A.INSERT_DTS	AS "INSERT_DTS"
+              , A.UPDATE_ID	AS "UPDATE_ID"
+              , A.UPDATE_DTS	AS "UPDATE_DTS"
+		FROM ES_BLURB_PKG_D A
+		WHERE A.COMPANY_CD = #{COMPANY_CD}
+		AND A.PKG_CD = #{PKG_CD}
 	</select>
 
 	<insert id="created" parameterType="hashmap" statementType="CALLABLE">

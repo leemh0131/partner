@@ -21,10 +21,17 @@ public class blurb02Controller extends BaseController {
 	private final blurb02Service blurb02service;
 
 	@ResponseBody
-	@RequestMapping(value = "select", method = RequestMethod.POST, produces = APPLICATION_JSON)
-	public Responses.ListResponse select(@RequestBody HashMap<String, Object> request) {
-		return Responses.ListResponse.of(blurb02service.select(request));
+	@RequestMapping(value = "packageHeader", method = RequestMethod.POST, produces = APPLICATION_JSON)
+	public Responses.ListResponse packageHeader(@RequestBody HashMap<String, Object> request) {
+		return Responses.ListResponse.of(blurb02service.packageHeader(request));
 	}
+
+	@ResponseBody
+	@RequestMapping(value = "packageDetail", method = RequestMethod.POST, produces = APPLICATION_JSON)
+	public Responses.ListResponse packageDetail(@RequestBody HashMap<String, Object> request) {
+		return Responses.ListResponse.of(blurb02service.packageDetail(request));
+	}
+
 	@ResponseBody
 	@RequestMapping(value = "save", method = {RequestMethod.POST}, produces = APPLICATION_JSON)
 	public ApiResponse save(@RequestBody HashMap<String, Object> param) throws Exception {

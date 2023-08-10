@@ -9,7 +9,9 @@ import java.util.List;
 @Repository
 public interface blurb02Mapper extends MyBatisMapper {
 
-	List<HashMap<String, Object>> select(HashMap<String, Object> param);
+	List<HashMap<String, Object>> packageHeader(HashMap<String, Object> param);
+
+	List<HashMap<String, Object>> packageDetail(HashMap<String, Object> param);
 
 	void created(HashMap<String, Object> item);
 

@@ -19,6 +19,7 @@
 
         <script type="text/javascript">
             var selectRow = 0;
+            var selectRow2 = 0;
             var userCallBack;
 
             var ES_CODES = $.SELECT_COMMON_ARRAY_CODE('ES_Q0001');
@@ -49,42 +50,15 @@
                     });
 
 
-                    // axboot.ajax({
-                    //     type: "POST",
-                    //     url: ["/api/web/blurb02", "select"],
-                    //     data: JSON.stringify({
-                    //
-                    //
-                    //     }),
-                    //     // res 전역변수같은것
-                    //     callback: function(res) {
-                    //
-                    //         if(nvl(res) != '' && nvl(res.list) != ''){
-                    //             fnObj.gridView01.setData(res);
-                    //             fnObj.gridView01.target.focus(selectRow);
-                    //             fnObj.gridView01.target.select(selectRow);
-                    //             //ACTIONS.dispatch(ACTIONS.ITEM_CLICK);
-                    //         }
-                    //
-                    //
-                    //     },
-                    //     options : {
-                    //         onError : function(err){
-                    //             qray.alert(err.message);
-                    //             return;
-                    //
-                    //         }
-                    //     }
-                    // });
-
                 },
                 //저장
                 PAGE_SAVE: function (caller, act, data) {
-                    var gridView01 = fnObj.gridView01.target.getDirtyData();
 
+                    var gridView01 = fnObj.gridView01.target.getDirtyData();
                     var gridView02 = fnObj.gridView02.target.getDirtyData();
 
-                    debugger;
+                    //fnObj.gridView01.target.getDirtyData().verify[0]
+
 
                     qray.confirm({
                         msg: "저장하시겠습니까?"
@@ -92,10 +66,10 @@
                         if (this.key == "ok") {
                             axboot.ajax({
                                 type: "POST",
-                                url: ["web_blurb_02", "save"],
+                                url: ["/api/web/blurb02", "save"],
                                 data: JSON.stringify({
-                                    saveDataH : saveDataH,
-                                    saveDataD : saveDataD
+                                    gridView01 : gridView01,
+                                    gridView02 : gridView02
                                 }),
                                 callback: function (res) {
                                     qray.alert('저장되었습니다.').then(function(){
@@ -106,8 +80,19 @@
                         }
                     });
                 },
+                ITEM_CLICK : function(caller, act, data){
+
+                    fnObj.gridView02.clear();
+                    fnObj.gridView02.target.read().done(function(res){
+                        fnObj.gridView02.setData(res);
+                    }).fail(function(err){
+                        qray.alert(err.message);
+                    }).always(function(){
+                        qray.loading.hide();
+                    });
+                },
                 //그리드1 추가
-                ITEM_ADD1: function(caller, act, data){
+                ITEM_ADD: function(caller, act, data){
                     caller.gridView02.clear();
                     fnObj.gridView01.addRow();
                     var lastIdx = nvl(fnObj.gridView01.target.list.length, fnObj.gridView01.lastRow());
@@ -119,22 +104,24 @@
                     fnObj.gridView01.target.setValue(lastIdx - 1, "PKG_NM", '')
                     fnObj.gridView01.target.setValue(lastIdx - 1, "USE_YN", 'Y');
                     fnObj.gridView01.target.setValue(lastIdx - 1, "CREATE_DT", '')
-                    //ACTIONS.dispatch(ACTIONS.ITEM_CLICK);
+                    ACTIONS.dispatch(ACTIONS.ITEM_CLICK);
                 },
                 //그리드1 삭제
                 ITEM_DEL: function(caller, act, data){
 
-                    if (isChecked(fnObj.gridView01.target.list).length == 0) {
-                        qray.alert('체크된 데이터가 없습니다.');
-                        return false;
-                    }
+                    var beforeIdx = fnObj.gridView01.target.selectedDataIndexs[0];
+                    var dataLen = fnObj.gridView01.target.getList().length;
 
-                    var grid = caller.gridView01.target.list;
-                    var i = grid.length;
-                    while (i--) {
-                        caller.gridView01.delRow(i);
+                    if ((beforeIdx + 1) == dataLen) {
+                        beforeIdx = beforeIdx - 1;
                     }
-                    i = null;
+                    selectRow = beforeIdx;
+                    fnObj.gridView01.delRow('selected');
+                    if (beforeIdx > 0 || beforeIdx == 0) {
+                        fnObj.gridView01.target.select(selectRow);
+                        fnObj.gridView01.target.focus(selectRow);
+                    }
+                    ACTIONS.dispatch(ACTIONS.ITEM_CLICK);
                 },
                 //그리드2 추가
                 ITEM_ADD2: function(caller, act, data){
@@ -160,19 +147,18 @@
                 //그리드2 삭제
                 ITEM_DEL2: function(caller, act, data){
 
-                    if (isChecked(fnObj.gridView02.target.list).length == 0) {
-                        qray.alert('체크된 데이터가 없습니다.');
-                        return false;
-                    }
+                    var beforeIdx = fnObj.gridView02.target.selectedDataIndexs[0];
+                    var dataLen = fnObj.gridView02.target.getList().length;
 
-                    var grid = caller.gridView02.target.list;
-                    var i = grid.length;
-                    while (i--) {
-                        if (grid[i].CHK == 'Y') {
-                            caller.gridView02.delRow(i);
-                        }
+                    if ((beforeIdx + 1) == dataLen) {
+                        beforeIdx = beforeIdx - 1;
                     }
-                    i = null;
+                    selectRow2 = beforeIdx;
+                    fnObj.gridView02.delRow('selected');
+                    if (beforeIdx > 0 || beforeIdx == 0) {
+                        fnObj.gridView02.target.select(selectRow2);
+                        fnObj.gridView02.target.focus(selectRow2);
+                    }
                 },
             });
 
@@ -209,7 +195,7 @@
                         target: $('[data-ax5grid="grid-view-01"]'),
                         childGrid : [fnObj.gridView02],
                         type : "POST",
-                        classUrl : "Webblurb02",
+                        classUrl : "/api/web/blurb02",
                         methodUrl :  "packageHeader",
                         async : false,
                         param : function(){
@@ -272,38 +258,14 @@
                         ],
                         body: {
                             onClick: function () {
-                                var chekVal;
-                                var sameSelected;
-                                var idx;
-                                idx = this.dindex;
+                                var idx = this.dindex;
+                                var data = fnObj.gridView01.target.list[idx];
 
-                                $(this.list).each(function (i, e) {
-                                    if(e.__created__) {
-                                        if(i != idx) {
-                                            chekVal = true;
-                                        }
-                                    }
 
-                                    if(e.__selected__) {
-                                        if(i == idx) {
-                                            sameSelected = true;
-                                        }
-                                    }
-                                });
-
-                                if(sameSelected == false && chekVal == false) {
-                                    $(fnObj.gridView02.target.list).each(function (i, e) {
-                                        if(e.__modified__) {
-                                            chekVal = true;
-                                            return false;
-                                        }
-                                    });
-                                }
-
-                                if(sameSelected) return;
-
-                                this.self.select(this.dindex);
-                                //ACTIONS.dispatch(ACTIONS.ITEM_CLICK, this.item);
+                                selectRow = idx;
+                                this.self.focus(idx);
+                                this.self.select(idx);
+                                ACTIONS.dispatch(ACTIONS.ITEM_CLICK);
                             },
                             onDataChanged: function () {
 
@@ -313,10 +275,10 @@
 
                     axboot.buttonClick(this, "data-grid-view-01-btn", {
                         "add": function () {
-                            ACTIONS.dispatch(ACTIONS.ITEM_ADD1);
+                            ACTIONS.dispatch(ACTIONS.ITEM_ADD);
                         },
                         "delete": function () {
-                            ACTIONS.dispatch(ACTIONS.ITEM_DEL1);
+                            ACTIONS.dispatch(ACTIONS.ITEM_DEL);
                         }
                     });
                 },
@@ -344,7 +306,7 @@
                         target: $('[data-ax5grid="grid-view-02"]'),
                         parentGrid : fnObj.gridView01,
                         type : "POST",
-                        classUrl : "Webblurb02",
+                        classUrl : "/api/web/blurb02",
                         methodUrl :  "packageDetail",
                         async : false,
                         param : function(){
@@ -352,14 +314,6 @@
                             return JSON.stringify($.extend({}, selected));
                         },
                         columns: [
-                            {
-                                key: "CHK", label: "", width: 40, align: "center", dirty: false,
-                                label:
-                                    '<div id="headerBox" data-ax5grid-editor="checkbox" data-ax5grid-checked="false" data-ax5grid-column-selected="true" style="height:17px;width:17px;margin-top:2px;  onclick="javascript:alert(1);"></div>',
-                                editor: {
-                                    type: "checkbox", config: {height: 17, trueValue: "Y", falseValue: "N"}
-                                }
-                            },
                             {
                                 key: "PKG_CD",
                                 label: "패키지코드",
@@ -393,7 +347,8 @@
                         body: {
                             onClick: function () {
                                 this.self.select(this.dindex);
-                                selectRow = this.dindex;
+                                this.self.focus(this.dindex);
+                                selectRow2 = this.dindex;
                             },
                             onDataChanged: function () {
                                 if(this.key == 'PACKAGE_CD') {

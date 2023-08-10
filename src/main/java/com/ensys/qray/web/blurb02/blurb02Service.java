@@ -20,46 +20,28 @@ public class blurb02Service extends BaseService {
 	private final blurb02Mapper blurb02mapper;
 
 	@Transactional(readOnly = true)
-	public List<HashMap<String, Object>> select(HashMap<String, Object> param) {
+	public List<HashMap<String, Object>> packageHeader(HashMap<String, Object> param) {
 		SessionUser user = SessionUtils.getCurrentUser();
 		param.put("COMPANY_CD", user.getCompanyCd());
 
-		return blurb02mapper.select(param);
+		return blurb02mapper.packageHeader(param);
+	}
+
+	@Transactional(readOnly = true)
+	public List<HashMap<String, Object>> packageDetail(HashMap<String, Object> param) {
+		SessionUser user = SessionUtils.getCurrentUser();
+		param.put("COMPANY_CD", user.getCompanyCd());
+
+		return blurb02mapper.packageDetail(param);
 	}
 
 	public void save(HashMap<String, Object> param) throws Exception {
 		SessionUser user = SessionUtils.getCurrentUser();
 		String strDate = HammerUtility.nowDate("yyyyMMddHHmmss");
 
-		HashMap<String, Object> saveData = (HashMap<String, Object>) param.get("saveData");
+		HashMap<String, Object> gridView01 = (HashMap<String, Object>) param.get("gridView01");
 
-
-		/*for(HashMap<String, Object> item : (List<HashMap<String, Object>>)saveData.get("deleted")) {
-
-			item.put("COMPANY_CD", user.getCompanyCd());
-			item.put("LOGIN_ID", user.getEmpNo());
-			item.put("DAY", toDay);
-			blurb01mapper.deleted(item);
-
-		}*/
-
-		for(HashMap<String, Object> item : (List<HashMap<String, Object>>)saveData.get("created")) {
-			item.put("COMPANY_CD", user.getCompanyCd());
-			item.put("INSERT_ID", user.getUserId());
-			item.put("INSERT_DTS", strDate);
-			item.put("UPDATE_ID", user.getUserId());
-			item.put("UPDATE_DTS", strDate);
-
-			blurb02mapper.created(item);
-		}
-
-		/*for(HashMap<String, Object> item : (List<HashMap<String, Object>>)saveData.get("updated")) {
-			item.put("COMPANY_CD", user.getCompanyCd());
-			item.put("LOGIN_ID", user.getEmpNo());
-			item.put("DAY", toDay);
-			blurb01mapper.updated(item);
-		}*/
-
+		HashMap<String, Object> gridView02 = (HashMap<String, Object>) param.get("gridView02");
 
 	}
 
