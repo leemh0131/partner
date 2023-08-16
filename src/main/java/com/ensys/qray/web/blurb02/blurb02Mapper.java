@@ -13,10 +13,23 @@ public interface blurb02Mapper extends MyBatisMapper {
 
 	List<HashMap<String, Object>> packageDetail(HashMap<String, Object> param);
 
-	void created(HashMap<String, Object> item);
+	void packageHdeleted(HashMap<String, Object> item);
 
-	void update(HashMap<String, Object> param);
+	void packageHcreated(HashMap<String, Object> item);
 
-	void delete(HashMap<String, Object> param);
+	void packageHupdated(HashMap<String, Object> item);
+
+	void packageDdeleted(HashMap<String, Object> item);
+
+	void packageDcreated(HashMap<String, Object> item);
+
+	void packageDupdated(HashMap<String, Object> item);
+//
+//
+//	void created(HashMap<String, Object> item);
+//
+//	void update(HashMap<String, Object> param);
+//
+//	void delete(HashMap<String, Object> param);
 
 }

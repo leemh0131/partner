@@ -85,6 +85,7 @@
                     fnObj.gridView02.clear();
                     fnObj.gridView02.target.read().done(function(res){
                         fnObj.gridView02.setData(res);
+                        fnObj.gridView02.setData(res);
                     }).fail(function(err){
                         qray.alert(err.message);
                     }).always(function(){
@@ -139,6 +140,8 @@
 
                     // caller.gridView02.target.setValue(lastIdx - 1, 'COMPANY_CD', selected.COMPANY_CD);
                     caller.gridView02.target.setValue(lastIdx - 1, 'PKG_CD', PKG_CD);
+                    caller.gridView02.target.setValue(lastIdx - 1, 'ADV_CD', "");
+                    caller.gridView02.target.setValue(lastIdx - 1, 'ADV_NM', "");
                     caller.gridView02.target.setValue(lastIdx - 1, 'SEQ', 0);
                     caller.gridView02.target.setValue(lastIdx - 1, 'AM', 0);
                     caller.gridView02.target.setValue(lastIdx - 1, 'SALE_RT', 0);
@@ -336,8 +339,34 @@
                                     },
                                     callback: function (e) {
                                         fnObj.gridView02.target.setValue(this.dindex, "ADV_CD", e[0].ADV_CD);
+                                        fnObj.gridView02.target.setValue(this.dindex, "ADV_NM", e[0].ADV_NM);
                                     },
                                 }
+                            },
+                            // {key: "ADV_NM", label: "광고명", width: 100, align: "left", sortable: true,editor: false,
+                            //     picker: {
+                            //         top: _pop_top,
+                            //         width: 600,
+                            //         height: _pop_height,
+                            //         url: "/jsp/ensys/help/blurbHelper.jsp",
+                            //         action: ["commonHelp", "HELP_BLURB"],
+                            //         param: function () {
+                            //             return {
+                            //                 MODE   : 'SINGLE'
+                            //             }
+                            //         },
+                            //         callback: function (e) {
+                            //             fnObj.gridView02.target.setValue(this.dindex, "ADV_CD", e[0].ADV_CD);
+                            //         },
+                            //     }
+                            // },
+                            {
+                                key: "ADV_NM",
+                                label: "광고명",
+                                width: '100',
+                                align: "left",
+                                editor: {type: "text"},
+                                sortable: true,
                             },
                             {key: "SEQ", label: "순번", width: 60, align: "left", sortable: true, editor: false},
                             {key: "AM", label: "금액", width: 100, sortable: true, align: "left",editor: {type: "number"}},
@@ -351,7 +380,7 @@
                                 selectRow2 = this.dindex;
                             },
                             onDataChanged: function () {
-                                if(this.key == 'PACKAGE_CD') {
+                                if(this.key == 'PKG_CD') {
                                     if(this.value == '') {
                                         // fnObj.gridView02.target.setValue(this.dindex, "NM_PACKAGE", '');
                                     }

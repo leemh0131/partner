@@ -43,6 +43,55 @@ public class blurb02Service extends BaseService {
 
 		HashMap<String, Object> gridView02 = (HashMap<String, Object>) param.get("gridView02");
 
+		//패키지 헤더 시작
+		for(HashMap<String, Object> item : (List<HashMap<String, Object>>)gridView01.get("deleted")) {
+			item.put("COMPANY_CD", user.getCompanyCd());
+			blurb02mapper.packageHdeleted(item);
+		}
+
+		for(HashMap<String, Object> item : (List<HashMap<String, Object>>)gridView01.get("created")) {
+			item.put("COMPANY_CD", user.getCompanyCd());
+			item.put("INSERT_ID", user.getUserId());
+			item.put("INSERT_DTS", strDate);
+			item.put("UPDATE_ID", user.getUserId());
+			item.put("UPDATE_DTS", strDate);
+
+			blurb02mapper.packageHcreated(item);
+		}
+
+		for(HashMap<String, Object> item : (List<HashMap<String, Object>>)gridView01.get("updated")) {
+			item.put("COMPANY_CD", user.getCompanyCd());
+			item.put("UPDATE_ID", user.getUserId());
+			item.put("UPDATE_DTS", strDate);
+			blurb02mapper.packageHupdated(item);
+		}
+		//패키지 헤더 끝
+
+		//패키지 디테일 시작
+		for(HashMap<String, Object> item : (List<HashMap<String, Object>>)gridView02.get("deleted")) {
+			item.put("COMPANY_CD", user.getCompanyCd());
+			blurb02mapper.packageDdeleted(item);
+		}
+
+		for(HashMap<String, Object> item : (List<HashMap<String, Object>>)gridView02.get("created")) {
+			item.put("COMPANY_CD", user.getCompanyCd());
+			item.put("INSERT_ID", user.getUserId());
+			item.put("INSERT_DTS", strDate);
+			item.put("UPDATE_ID", user.getUserId());
+			item.put("UPDATE_DTS", strDate);
+
+			blurb02mapper.packageDcreated(item);
+		}
+
+		for(HashMap<String, Object> item : (List<HashMap<String, Object>>)gridView02.get("updated")) {
+			item.put("COMPANY_CD", user.getCompanyCd());
+			item.put("UPDATE_ID", user.getUserId());
+			item.put("UPDATE_DTS", strDate);
+			blurb02mapper.packageDupdated(item);
+		}
+		//패키지 디테일 끝
+
+
 	}
 
 

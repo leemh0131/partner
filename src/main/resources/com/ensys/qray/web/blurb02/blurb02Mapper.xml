@@ -24,19 +24,23 @@
 		SELECT 	A.COMPANY_CD	 AS "COMPANY_CD"
 			  , A.PKG_CD		 AS "PKG_CD"
 			  , A.ADV_CD		 AS "ADV_CD"
-              , A.SEQ	AS "SEQ"
-              , A.AM	AS "AM"
-              , A.SALE_RT	AS "SALE_RT"
-              , A.INSERT_ID	AS "INSERT_ID"
-              , A.INSERT_DTS	AS "INSERT_DTS"
-              , A.UPDATE_ID	AS "UPDATE_ID"
-              , A.UPDATE_DTS	AS "UPDATE_DTS"
+		      , B.ADV_NM		 AS "ADV_NM"
+			  , A.SEQ			 AS "SEQ"
+              , A.AM			 AS "AM"
+              , A.SALE_RT		 AS "SALE_RT"
+              , A.INSERT_ID		 AS "INSERT_ID"
+              , A.INSERT_DTS	 AS "INSERT_DTS"
+              , A.UPDATE_ID		 AS "UPDATE_ID"
+              , A.UPDATE_DTS	 AS "UPDATE_DTS"
 		FROM ES_BLURB_PKG_D A
+		LEFT JOIN ES_BLURB_MASTER B
+		   	ON A.COMPANY_CD = B.COMPANY_CD
+			AND A.ADV_CD = B.ADV_CD
 		WHERE A.COMPANY_CD = #{COMPANY_CD}
 		AND A.PKG_CD = #{PKG_CD}
 	</select>
 
-	<insert id="created" parameterType="hashmap" statementType="CALLABLE">
+	<insert id="packageHcreated" parameterType="hashmap" statementType="CALLABLE">
 		/*blurb02Mapper.created*/
 		INSERT INTO ES_BLURB_PKG_M
 		(
@@ -65,7 +69,43 @@
 
 	</insert>
 
-	<update id="update" parameterType="hashmap" statementType="CALLABLE">
+	<insert id="packageDcreated" parameterType="hashmap" statementType="CALLABLE">
+		/*blurb02Mapper.created*/
+		INSERT INTO ES_BLURB_PKG_D
+		(
+			COMPANY_CD
+		, PKG_CD
+		, ADV_CD
+		, SEQ
+		, AM
+		, SALE_RT
+		, INSERT_ID
+		, INSERT_DTS
+		, UPDATE_ID
+		, UPDATE_DTS
+		)
+		VALUES
+			(
+				#{COMPANY_CD}
+			, #{PKG_CD}
+			, #{ADV_CD}
+-- 			, #{SEQ}
+			, (SELECT COALESCE(MAX(SEQ), 0) + 1
+			   FROM ES_BLURB_PKG_D
+			   WHERE COMPANY_CD = #{COMPANY_CD}
+				 AND PKG_CD = #{PKG_CD}
+				 AND ADV_CD = #{ADV_CD})
+			, #{AM}
+			, #{SALE_RT}
+			, #{INSERT_ID}
+			, #{INSERT_DTS}
+			, #{UPDATE_ID}
+			, #{UPDATE_DTS}
+			)
+
+	</insert>
+
+	<update id="packageHupdated" parameterType="hashmap" statementType="CALLABLE">
 		UPDATE ES_BLURB_PKG_M
 		SET USE_YN = #{USE_YN}
 		  ,	PKG_NM = #{PKG_NM}
@@ -76,10 +116,30 @@
 		  AND   CREATE_DT = #{CREATE_DT}
 	</update>
 
-	<delete id="delete" parameterType="hashmap" statementType="CALLABLE">
+	<update id="packageDupdated" parameterType="hashmap" statementType="CALLABLE">
+		UPDATE ES_BLURB_PKG_D
+		SET AM = #{AM}
+		  ,	SALE_RT = #{SALE_RT}
+		  ,	UPDATE_ID = #{UPDATE_ID}
+		  ,	UPDATE_DTS = #{UPDATE_DTS}
+		WHERE COMPANY_CD = #{COMPANY_CD}
+		  AND   PKG_CD = #{PKG_CD}
+		  AND   ADV_CD = #{ADV_CD}
+		  AND   SEQ = #{SEQ}
+	</update>
+
+	<delete id="packageHdeleted" parameterType="hashmap" statementType="CALLABLE">
 		DELETE FROM ES_BLURB_PKG_M
 		WHERE COMPANY_CD = #{COMPANY_CD}
 		  AND   PKG_CD = #{PKG_CD}
+	</delete>
+
+	<delete id="packageDdeleted" parameterType="hashmap" statementType="CALLABLE">
+		DELETE FROM ES_BLURB_PKG_D
+		WHERE COMPANY_CD = #{COMPANY_CD}
+		  AND   PKG_CD = #{PKG_CD}
+		  AND   ADV_CD = #{ADV_CD}
+		  AND   SEQ = #{SEQ}
 	</delete>
 
 </mapper>
