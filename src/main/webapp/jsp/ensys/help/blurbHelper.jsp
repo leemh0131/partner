@@ -38,7 +38,7 @@
                     }
                     parent.modal.close();
                 },
-                PAGE_SEARCH: function (caller, act, data) {
+                PAGE_SEARCH: function (caller, act, data) {ㅋ
                     var temp = isChecked(fnObj.gridView01.target.getList());
 
                     if(initData && initData['initData'] && nvl(initData['initData']['DEFAULT_VALUE']) != ''){
