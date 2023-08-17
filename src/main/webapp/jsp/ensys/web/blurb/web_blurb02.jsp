@@ -225,7 +225,7 @@
                             {
                                 key: "PKG_NM",
                                 label: "패키지명",
-                                width: '150',
+                                width: 150,
                                 align: "left",
                                 editor: {type: "text"},
                                 sortable: true,
@@ -233,7 +233,7 @@
                             {
                                 key: "USE_YN",
                                 label: "사용여부",
-                                width: '60',
+                                width: 80,
                                 align: "left",
                                 editor: {
                                     type: "select", config: {
