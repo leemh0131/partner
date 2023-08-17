@@ -654,9 +654,15 @@
                                     </ax:td>
                                 </ax:tr>
                                 <ax:tr>
+                                    <ax:td label='홈페이지' width="98%">
+                                        <input type="text" class="form-control" data-ax-path="HOME_PAGE" name="HOME_PAGE"
+                                               id="HOME_PAGE" form-bind-text='HOME_PAGE' form-bind-type='text' maxlength="200"/>
+                                    </ax:td>
+                                </ax:tr>
+                                <ax:tr>
                                     <ax:td label='유튜브 링크' width="98%">
                                         <input type="text" class="form-control" data-ax-path="YOUTUBE_LINK" name="YOUTUBE_LINK"
-                                               id="YOUTUBE_LINK" form-bind-text='YOUTUBE_LINK' form-bind-type='text' maxlength="100"/>
+                                               id="YOUTUBE_LINK" form-bind-text='YOUTUBE_LINK' form-bind-type='text' maxlength="200"/>
                                     </ax:td>
                                 </ax:tr>
                                 <ax:tr>

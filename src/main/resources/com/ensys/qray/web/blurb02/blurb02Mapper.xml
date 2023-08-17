@@ -27,6 +27,7 @@
 		      , B.ADV_NM		 AS "ADV_NM"
 			  , A.SEQ			 AS "SEQ"
               , A.AM			 AS "AM"
+              , B.BLURB_AM		 AS "BLURB_AM"
               , A.SALE_RT		 AS "SALE_RT"
               , A.INSERT_ID		 AS "INSERT_ID"
               , A.INSERT_DTS	 AS "INSERT_DTS"
@@ -41,7 +42,7 @@
 	</select>
 
 	<insert id="packageHcreated" parameterType="hashmap" statementType="CALLABLE">
-		/*blurb02Mapper.created*/
+		/*blurb02Mapper.packageHcreated*/
 		INSERT INTO ES_BLURB_PKG_M
 		(
 			COMPANY_CD
@@ -70,7 +71,7 @@
 	</insert>
 
 	<insert id="packageDcreated" parameterType="hashmap" statementType="CALLABLE">
-		/*blurb02Mapper.created*/
+		/*blurb02Mapper.packageDcreated*/
 		INSERT INTO ES_BLURB_PKG_D
 		(
 			COMPANY_CD
@@ -104,6 +105,7 @@
 	</insert>
 
 	<update id="packageHupdated" parameterType="hashmap" statementType="CALLABLE">
+		/*blurb02Mapper.packageHupdated*/
 		UPDATE ES_BLURB_PKG_M
 		SET USE_YN = #{USE_YN}
 		  ,	PKG_NM = #{PKG_NM}
@@ -111,10 +113,10 @@
 		  ,	UPDATE_DTS = #{UPDATE_DTS}
 		WHERE COMPANY_CD = #{COMPANY_CD}
 		  AND   PKG_CD = #{PKG_CD}
-		  AND   CREATE_DT = #{CREATE_DT}
 	</update>
 
 	<update id="packageDupdated" parameterType="hashmap" statementType="CALLABLE">
+		/*blurb02Mapper.packageDupdated*/
 		UPDATE ES_BLURB_PKG_D
 		SET AM = #{AM}
 		  ,	SALE_RT = #{SALE_RT}
@@ -127,12 +129,14 @@
 	</update>
 
 	<delete id="packageHdeleted" parameterType="hashmap" statementType="CALLABLE">
+		/*blurb02Mapper.packageHdeleted*/
 		DELETE FROM ES_BLURB_PKG_M
 		WHERE COMPANY_CD = #{COMPANY_CD}
 		  AND   PKG_CD = #{PKG_CD}
 	</delete>
 
 	<delete id="packageDdeleted" parameterType="hashmap" statementType="CALLABLE">
+		/*blurb02Mapper.packageDdeleted*/
 		DELETE FROM ES_BLURB_PKG_D
 		WHERE COMPANY_CD = #{COMPANY_CD}
 		  AND   PKG_CD = #{PKG_CD}

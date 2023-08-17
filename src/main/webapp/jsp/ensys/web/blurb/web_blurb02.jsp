@@ -9,14 +9,6 @@
 <ax:layout name="base">
     <jsp:attribute name="script">
         <ax:script-lang key="ax.script"/>
-
-        <style>
-            .red {
-                background: #f8d2cb !important;
-            }
-
-        </style>
-
         <script type="text/javascript">
             var selectRow = 0;
             var selectRow2 = 0;
@@ -37,9 +29,6 @@
 
                     fnObj.gridView01.target.read().done(function(res){
                         caller.gridView01.setData(res);
-                        if (res.list.length <= selectRow) {
-                            selectRow = 0
-                        }
                         caller.gridView01.target.focus(selectRow);
                         caller.gridView01.target.select(selectRow);
                         ACTIONS.dispatch(ACTIONS.ITEM_CLICK);
@@ -133,7 +122,7 @@
                     var PKG_CD = caller.gridView01.target.getList('selected')[0].PKG_CD;
 
                     var lastIdx = nvl(caller.gridView02.target.list.length, caller.gridView02.lastRow());
-                    selectRow = lastIdx - 1;
+                    selectRow2 = lastIdx - 1;
 
                     caller.gridView02.target.select(lastIdx - 1);
                     caller.gridView02.target.focus(lastIdx - 1);
@@ -222,19 +211,8 @@
                                     }
                                 }, sortable: true,
                             },
-                            {
-                                key: "PKG_NM",
-                                label: "패키지명",
-                                width: 150,
-                                align: "left",
-                                editor: {type: "text"},
-                                sortable: true,
-                            },
-                            {
-                                key: "USE_YN",
-                                label: "사용여부",
-                                width: 80,
-                                align: "left",
+                            {key: "PKG_NM", label: "패키지명", width: '*',  align: "left", editor: {type: "text"}, sortable: true,},
+                            {key: "USE_YN", label: "사용여부", width: 80, align: "center", sortable: true,
                                 editor: {
                                     type: "select", config: {
                                         options: ES_Q0001
@@ -243,9 +221,7 @@
                                 formatter: function () {
                                     return $.changeTextValue(ES_Q0001, this.value);
                                 },
-                                sortable: true,
                             },
-
                             {key: "INSERT_DTS", label: "생성일자", width: 150, align: "center", sortable: true,
                                 formatter : function() {
                                     return $.changeDataFormat(this.value,"yyyyMMddhhmmss")
@@ -257,6 +233,9 @@
                                 var idx = this.dindex;
                                 var data = fnObj.gridView01.target.list[idx];
 
+                                if (selectRow == idx){
+                                    return;
+                                }
 
                                 selectRow = idx;
                                 this.self.focus(idx);
@@ -333,37 +312,31 @@
                                     callback: function (e) {
                                         fnObj.gridView02.target.setValue(this.dindex, "ADV_CD", e[0].ADV_CD);
                                         fnObj.gridView02.target.setValue(this.dindex, "ADV_NM", e[0].ADV_NM);
+                                        fnObj.gridView02.target.setValue(this.dindex, "BLURB_AM", e[0].AM);
                                     },
                                 }
                             },
-                            // {key: "ADV_NM", label: "광고명", width: 100, align: "left", sortable: true,editor: false,
-                            //     picker: {
-                            //         top: _pop_top,
-                            //         width: 600,
-                            //         height: _pop_height,
-                            //         url: "/jsp/ensys/help/blurbHelper.jsp",
-                            //         action: ["commonHelp", "HELP_BLURB"],
-                            //         param: function () {
-                            //             return {
-                            //                 MODE   : 'SINGLE'
-                            //             }
-                            //         },
-                            //         callback: function (e) {
-                            //             fnObj.gridView02.target.setValue(this.dindex, "ADV_CD", e[0].ADV_CD);
-                            //         },
-                            //     }
-                            // },
-                            {
-                                key: "ADV_NM",
-                                label: "광고명",
-                                width: '100',
-                                align: "left",
-                                editor: {type: "text"},
-                                sortable: true,
+                            {key: "ADV_NM", label: "광고명", width: '100', align: "left", editor: false, sortable: true,},
+                            {key: "SEQ", label: "순번", width: 60, align: "left", sortable: true, editor: false, hidden: true},
+                            {key: "BLURB_AM", label: "광고금액", width: 100, sortable: true, align: "right", editor: false},
+                            {key: "SALE_RT", label: "할인율", width: 80, align: "center", sortable: true, editor: {type: "number"},
+                                formatter:function(){
+                                    if (nvl(this.item.SALE_RT) == '') {
+                                        this.item.SALE_RT = 0;
+                                    }
+                                    this.item.SALE_RT = Math.floor(Number(this.item.SALE_RT));
+                                    return ax5.util.number(Math.floor(this.item.SALE_RT));
+                                }
                             },
-                            {key: "SEQ", label: "순번", width: 60, align: "left", sortable: true, editor: false},
-                            {key: "AM", label: "금액", width: 100, sortable: true, align: "left",editor: {type: "number"}},
-                            {key: "SALE_RT", label: "할인율", width: 80, align: "left", sortable: true, editor: {type: "number"}}
+                            {key: "AM", label: "할인적용금액", width: 100, sortable: true, align: "right", editor: false,
+                                formatter:function(){
+                                    if (nvl(this.item.AM) == '') {
+                                        this.item.AM = 0;
+                                    }
+                                    this.item.AM = Math.floor(Number(this.item.AM));
+                                    return ax5.util.number(Math.floor(this.item.AM), {"money": true});
+                                }
+                            },
 
                         ],
                         body: {

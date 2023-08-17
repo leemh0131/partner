@@ -38,7 +38,7 @@
                     }
                     parent.modal.close();
                 },
-                PAGE_SEARCH: function (caller, act, data) {ㅋ
+                PAGE_SEARCH: function (caller, act, data) {
                     var temp = isChecked(fnObj.gridView01.target.getList());
 
                     if(initData && initData['initData'] && nvl(initData['initData']['DEFAULT_VALUE']) != ''){
@@ -191,8 +191,9 @@
                                     type: "checkbox", config: {height: 17, trueValue: true, falseValue: false}
                                 } , hidden : mode == 'SINGLE' ? true : false 
                             },
-                            {key: "ADV_CD", label: "광고코드", width: 100, align: "center", editor: false},
-                            {key: "ADV_NM", label: "광고명", width: 100, align: "center", editor: false},
+                            {key: "ADV_CD", label: "광고코드", width: 120, align: "center", editor: false},
+                            {key: "ADV_NM", label: "광고명", width: 180, align: "center", editor: false},
+                            {key: "AM", label: "금액", width: 180, align: "center", editor: false},
                         ],
                         body: {
                             onClick: function () {
@@ -306,7 +307,7 @@
         <div class="ax-button-group" data-fit-height-aside="grid-view-01" id="title">
             <div class="left">
                 <h2><i class="cqc-list"></i>
-                    사용자 리스트 </h2>
+                    광고 리스트 </h2>
             </div>
 
         </div>

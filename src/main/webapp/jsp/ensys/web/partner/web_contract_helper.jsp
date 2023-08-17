@@ -70,6 +70,11 @@
             let contractD = fnObj.gridView02.target.getDirtyData();
             let fileData = $("#FILE").saveData(); // 파일 링크 정보
 
+            if(nvl(contract.CONTRACT_NM) == ''){
+                qray.alert("계약명을 입력해주세요");
+                return;
+            }
+
             axboot.ajax({
                 type: "POST",
                 url: ["/api/web/partner", "contractSave"],
@@ -201,6 +206,7 @@
             $('[data-ax5select="CONTRACT_ST"]').ax5select("setValue", "01");
         } else {
             ACTIONS.dispatch(ACTIONS.PAGE_SEARCH);
+            $('[data-ax5select="CONTRACT_ST"]').ax5select('disable');
         }
 
     };
@@ -336,6 +342,24 @@
         }
     });
 
+    //계약대기, 중, 중지, 해지, 만료 버튼 이벤트
+    function contractState(e){
+
+        if(e.id == $('[data-ax5select="CONTRACT_ST"]').ax5select("getValue")[0].CODE){
+            return;
+        }
+
+        qray.confirm({
+            msg: "계약상태를 "+ e.textContent  +"(으)로 변경하시겠습니까?"
+        }, function () {
+            if (this.key == "ok") {
+                $('[data-ax5select="CONTRACT_ST"]').ax5select("setValue", e.id);
+                ACTIONS.dispatch(ACTIONS.PAGE_SAVE);
+            }
+        });
+
+    }
+
     $(document).ready(function () {
         changesize();
     });
@@ -386,6 +410,13 @@
                             <h2>
                                 <i class="icon_list"></i> 계약기본정보
                             </h2>
+                        </div>
+                        <div class="right">
+                            <button type="button" class="btn btn-small" onclick="contractState(this)" id="01" style="width:80px;">계약대기</button>
+                            <button type="button" class="btn btn-small" onclick="contractState(this)" id="02" style="width:80px;">계약중</button>
+                            <button type="button" class="btn btn-small" onclick="contractState(this)" id="03" style="width:80px;">계약중지</button>
+                            <button type="button" class="btn btn-small" onclick="contractState(this)" id="04" style="width:80px;">계약해지</button>
+                            <button type="button" class="btn btn-small" onclick="contractState(this)" id="05" style="width:80px;">계약만료</button>
                         </div>
                     </div>
                     <div class="QRAY_FORM">

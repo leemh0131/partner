@@ -201,8 +201,8 @@
                         target: $('[data-ax5grid="grid-view-01"]'),
                         columns: [
                             { key: "ADV_CD", label: "광고코드", width: 160, align: "center", sortable: true ,editor: false},
-                            { key: "ADV_NM", label: "광고명", width: 160, align: "center", sortable: true ,editor: false},
-                            {key: "AM", label: "금액", width: 150, align: "left", sortable: true,
+                            { key: "ADV_NM", label: "광고명", width: '*', align: "left", sortable: true ,editor: false},
+                            {key: "AM", label: "금액", width: 120, align: "right", sortable: true,
                                 editor : {
                                     type: "number",
                                     disabled: function () {
@@ -217,21 +217,35 @@
                                     return ax5.util.number(Math.floor(this.item.AM), {"money": true});
                                 }
                             },
-                            {key: "ADV_MONTH", label: "기본개월수", width: 150, align: "left", sortable: true,
+                            {key: "ADV_MONTH", label: "기본개월수", width: 80, align: "center", sortable: true,
                                 editor : {
                                     type: "number",
                                     disabled: function () {
                                         return true;
                                     },
+                                },
+                                formatter:function(){
+                                    if (nvl(this.item.ADV_MONTH) == '') {
+                                        this.item.ADV_MONTH = 0;
+                                    }
+                                    this.item.ADV_MONTH = Math.floor(Number(this.item.ADV_MONTH));
+                                    return ax5.util.number(Math.floor(this.item.ADV_MONTH));
                                 }
                             },
-                            { key: "BOX_YN", label: "박스수지정여부", width: 160, align: "center", sortable: true ,editor: false},
-                            {key: "BOX_NUM", label: "박스수", width: 150, align: "left", sortable: true,
+                            { key: "BOX_YN", label: "박스수지정여부", width: 100, align: "center", sortable: true ,editor: false},
+                            {key: "BOX_NUM", label: "박스수", width: 80, align: "center", sortable: true,
                                 editor : {
                                     type: "number",
                                     disabled: function () {
                                         return true;
                                     },
+                                },
+                                formatter:function(){
+                                    if (nvl(this.item.BOX_NUM) == '') {
+                                        this.item.BOX_NUM = 0;
+                                    }
+                                    this.item.BOX_NUM = Math.floor(Number(this.item.BOX_NUM));
+                                    return ax5.util.number(Math.floor(this.item.BOX_NUM));
                                 }
                             },
                         ],
@@ -315,11 +329,11 @@
             </div>
         </div>
 
-        <div style="width:40%;float:left;">
+        <div style="width:55%;float:left;">
             <div class="ax-button-group" data-fit-height-aside="grid-view-01" id="left_title" name="왼쪽">
                 <div class="left">
                     <h2>
-                        <i class="icon_list"></i> 프리폼 그리드
+                        <i class="icon_list"></i> 광고리스트
                     </h2>
                 </div>
                 <div class="right">
@@ -337,7 +351,7 @@
                  name="왼쪽그리드">
             </div>
         </div>
-        <div style="width:59%;float:right;overflow:hidden;">
+        <div style="width:44%;float:right;overflow:hidden;">
             <div class="ax-button-group" id="right_title" name="오른쪽부분타이틀">
                 <div class="left">
                     <h2>
@@ -352,32 +366,20 @@
                             <ax:tr>
                                 <ax:td label='광고코드' width="300px">
                                     <input type="text" class="form-control" data-ax-path="ADV_CD" name="ADV_CD"
-                                           id="ADV_CD" form-bind-text='ADV_CD' form-bind-type='text'/>
+                                           id="ADV_CD" form-bind-text='ADV_CD' form-bind-type='text' readonly/>
                                 </ax:td>
                                 <ax:td label='광고명' width="300px">
                                     <input type="text" class="form-control" data-ax-path="ADV_NM" name="ADV_NM"
                                            id="ADV_NM" form-bind-text='ADV_NM' form-bind-type='text'/>
                                 </ax:td>
-
                             </ax:tr>
                             <ax:tr>
-<%--                                <ax:td label='column3(코드피커)' width="300px">--%>
-<%--                                    <codepicker id="column3_cd"--%>
-<%--                                                HELP_ACTION="HELP_USER"--%>
-<%--                                                HELP_URL="/jsp/ensys/help/userHelper.jsp"--%>
-<%--                                                BIND-CODE="USER_ID"--%>
-<%--                                                BIND-TEXT="USER_NM"--%>
-<%--                                                form-bind-type="codepicker"--%>
-<%--                                                form-bind-code="column3_cd"--%>
-<%--                                                form-bind-text="column3_nm"></codepicker>--%>
-<%--                                </ax:td>--%>
                                 <ax:td label='금액' width="300px">
                                     <input type="text" class="form-control" data-ax-path="AM" name="AM"
                                            id="AM" form-bind-text='AM' form-bind-type='text'
                                            oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" />
                                 </ax:td>
                                 <ax:td label='박스수지정여부' width="300px">
-<%--                                    <div id="column2" name="column2" data-ax5select="column2" data-ax5select-config='{}' form-bind-type="selectBox"></div>--%>
                                     <div id="BOX_YN" name="BOX_YN" data-ax5select="BOX_YN" data-ax5select-config='{}'
                                          form-bind-text='BOX_YN' form-bind-type="selectBox"></div>
                                 </ax:td>
@@ -393,8 +395,6 @@
                                            id="BOX_NUM" form-bind-text='BOX_NUM' form-bind-type='text'
                                            oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" />
                                 </ax:td>
-                            </ax:tr>
-                            <ax:tr>
                             </ax:tr>
                         </ax:tbl>
                     </ax:form>

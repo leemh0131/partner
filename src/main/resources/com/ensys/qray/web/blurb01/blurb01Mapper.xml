@@ -54,30 +54,23 @@
 			)
 	</insert>
 
-	<update id="update" parameterType="hashmap" statementType="CALLABLE">
-		UPDATE ES_BOARD
-		SET TITLE      =   #{TITLE}
-		  ,	CONTENTS   =   #{CONTENTS}
-		  ,	UPDATE_ID  =   #{UPDATE_ID}
-		  ,	UPDATE_DTS =   #{UPDATE_DTS}
-		WHERE COMPANY_CD = #{COMPANY_CD}
-		  AND   BOARD_TYPE = #{BOARD_TYPE}
-		  AND   SEQ        = #{SEQ}
+	<update id="updated" parameterType="hashmap" statementType="CALLABLE">
+		/*blurb01Mapper.updated*/
+		UPDATE ES_BLURB_MASTER
+		SET 	   ADV_NM = #{ADV_NM}
+				,  AM = #{AM}
+				,  ADV_MONTH = #{ADV_MONTH}
+				,  BOX_YN = #{BOX_YN}
+				,  BOX_NUM = #{BOX_NUM}
+		  WHERE   COMPANY_CD = #{COMPANY_CD}
+		  AND   ADV_CD        = #{ADV_CD}
 	</update>
 
-	<delete id="delete" parameterType="hashmap" statementType="CALLABLE">
-		DELETE FROM ES_BOARD
+	<delete id="deleted" parameterType="hashmap" statementType="CALLABLE">
+		/*blurb01Mapper.deleted*/
+		DELETE FROM ES_BLURB_MASTER
 		WHERE COMPANY_CD = #{COMPANY_CD}
-		  AND   BOARD_TYPE = #{BOARD_TYPE}
-		  AND   SEQ        = #{SEQ}
+		  AND   ADV_CD = #{ADV_CD}
 	</delete>
-
-	<update id="updateHit"  parameterType="hashmap" statementType="CALLABLE">
-		UPDATE ES_BOARD
-		SET    HIT = HIT + 1
-		WHERE  COMPANY_CD = #{COMPANY_CD}
-		  AND    BOARD_TYPE = #{BOARD_TYPE}
-		  AND    SEQ 		  = #{SEQ}
-	</update>
 
 </mapper>

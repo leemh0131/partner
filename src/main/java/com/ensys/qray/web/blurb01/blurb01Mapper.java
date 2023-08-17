@@ -13,8 +13,8 @@ public interface blurb01Mapper extends MyBatisMapper {
 
 	void created(HashMap<String, Object> item);
 
-	void update(HashMap<String, Object> param);
+	void updated(HashMap<String, Object> param);
 
-	void delete(HashMap<String, Object> param);
+	void deleted(HashMap<String, Object> param);
 
 }

@@ -212,7 +212,16 @@ public class PartnerService extends BaseService {
 		contract.put("INSERT_DTS", strDate);
 		contract.put("UPDATE_ID", user.getUserId());
 		contract.put("UPDATE_DTS", strDate);
+
+		//계약즁으로 변경 시
+		if("02".equals(contract.get("CONTRACT_ST"))){
+			int chk = partnermapper.contractStateChk(contract);
+			if(chk > 0){
+				throw new RuntimeException("이미 계약중인 광고가 있습니다.<br>계약중인 계약상태를 변경하고 진행해주세요.");
+			}
+		}
 		partnermapper.contractInsertUpdate(contract);
+
 
 		for(HashMap<String, Object> item : (List<HashMap<String, Object>>)contractM.get("deleted")) {
 			item.put("COMPANY_CD", user.getCompanyCd());
@@ -236,6 +245,8 @@ public class PartnerService extends BaseService {
 			partnermapper.contractMupdated(item);
 		}
 
+
+		//
 		for(HashMap<String, Object> item : (List<HashMap<String, Object>>)contractD.get("deleted")) {
 			item.put("COMPANY_CD", user.getCompanyCd());
 			partnermapper.contractDdeleted(item);
@@ -258,6 +269,7 @@ public class PartnerService extends BaseService {
 			partnermapper.contractDupdated(item);
 		}
 
+		//
 		if (fileData != null) {
 			List<HashMap<String, Object>> delete = (List<HashMap<String, Object>>) fileData.get("delete");
 			List<HashMap<String, Object>> gridData = (List<HashMap<String, Object>>) fileData.get("gridData");

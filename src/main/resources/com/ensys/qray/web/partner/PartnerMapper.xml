@@ -14,6 +14,7 @@
 			  , A.CEO_NM  		AS "CEO_NM"
 			  , A.PARTNER_TP  	AS "PARTNER_TP"
 			  , A.POST_NO  		AS "POST_NO"
+			  , A.HOME_PAGE  	AS "HOME_PAGE"
 			  , A.ADS_H  		AS "ADS_H"
 			  , A.ADS_D  		AS "ADS_D"
 			  , A.JOB_FIELD  	AS "JOB_FIELD"
@@ -84,6 +85,7 @@
 			, COMPANY_NO
 			, CEO_NM
 			, PARTNER_TP
+			, HOME_PAGE
 			, POST_NO
 			, ADS_H
 			, ADS_D
@@ -105,6 +107,7 @@
 				, #{COMPANY_NO}
 				, #{CEO_NM}
 				, #{PARTNER_TP}
+				, #{HOME_PAGE}
 				, #{POST_NO}
 				, #{ADS_H}
 				, #{ADS_D}
@@ -126,6 +129,7 @@
 			, PARTNER_NM = #{PARTNER_NM}
 			, COMPANY_NO = #{COMPANY_NO}
 			, CEO_NM = #{CEO_NM}
+			, HOME_PAGE = #{HOME_PAGE}
 			, PARTNER_TP = #{PARTNER_TP}
 			, POST_NO = #{POST_NO}
 			, ADS_H = #{ADS_H}
@@ -371,6 +375,15 @@
 		FROM ES_CONTRACT_PACKAGE A
 		WHERE A.COMPANY_CD = #{COMPANY_CD}
 		AND A.CONTRACT_CD = #{CONTRACT_CD}
+	</select>
+
+	<select id="contractStateChk" resultType="int" parameterType="hashmap" statementType="CALLABLE">
+		/*PartnerMapper.contractStateChk*/
+		SELECT  COUNT(*) AS "COUNT"
+		FROM ES_CONTRACT A
+		WHERE A.COMPANY_CD = #{COMPANY_CD}
+		  AND A.PARTNER_CD = #{PARTNER_CD}
+		  AND A.CONTRACT_ST = '02'
 	</select>
 
 	<insert id="contractInsertUpdate" parameterType="hashmap" statementType="CALLABLE">

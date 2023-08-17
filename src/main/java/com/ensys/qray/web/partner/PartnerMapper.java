@@ -52,4 +52,7 @@ public interface PartnerMapper extends MyBatisMapper {
     void contractDupdated(HashMap<String, Object> item);
 
     void contractDeleteAll(HashMap<String, Object> item);
+
+    int contractStateChk(HashMap<String, Object> contract);
+
 }
