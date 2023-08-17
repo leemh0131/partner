@@ -69,6 +69,12 @@
                             qray.alert("광고명을 입력해주세요.");
                             return;
                         }
+
+                        if(nvl(verify[i].AM, 0) == 0){
+                            qray.alert("금액이 0원인 데이터가 있습니다.");
+                            return;
+                        }
+
                     }
 
                     qray.confirm({

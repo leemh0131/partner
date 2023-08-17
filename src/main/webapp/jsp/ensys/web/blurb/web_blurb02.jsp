@@ -183,7 +183,6 @@
 
                     this.target = axboot.gridBuilder({
                         showRowSelector: true,
-                        frozenColumnIndex: 0,
                         target: $('[data-ax5grid="grid-view-01"]'),
                         childGrid : [fnObj.gridView02],
                         type : "POST",
@@ -211,7 +210,16 @@
                                     }
                                 }, sortable: true,
                             },
-                            {key: "PKG_NM", label: "패키지명", width: '*',  align: "left", editor: {type: "text"}, sortable: true,},
+                            {key: "PKG_NM", label: "패키지명", width: 280,  align: "left", editor: {type: "text"}, sortable: true,},
+                            {key: "PKG_AM", label: "패키지금액", width: 90,  align: "right",  sortable: true, editor: false,
+                                formatter:function(){
+                                    if (nvl(this.item.PKG_AM) == '') {
+                                        this.item.PKG_AM = 0;
+                                    }
+                                    this.item.PKG_AM = Math.floor(Number(this.item.PKG_AM));
+                                    return ax5.util.number(Math.floor(this.item.PKG_AM));
+                                }
+                            },
                             {key: "USE_YN", label: "사용여부", width: 80, align: "center", sortable: true,
                                 editor: {
                                     type: "select", config: {
@@ -318,8 +326,16 @@
                             },
                             {key: "ADV_NM", label: "광고명", width: '100', align: "left", editor: false, sortable: true,},
                             {key: "SEQ", label: "순번", width: 60, align: "left", sortable: true, editor: false, hidden: true},
-                            {key: "BLURB_AM", label: "광고금액", width: 100, sortable: true, align: "right", editor: false},
-                            {key: "SALE_RT", label: "할인율", width: 80, align: "center", sortable: true, editor: {type: "number"},
+                            {key: "BLURB_AM", label: "광고금액", width: 100, sortable: true, align: "right", editor: false,
+                                formatter:function(){
+                                    if (nvl(this.item.BLURB_AM) == '') {
+                                        this.item.BLURB_AM = 0;
+                                    }
+                                    this.item.BLURB_AM = Math.floor(Number(this.item.BLURB_AM));
+                                    return ax5.util.number(Math.floor(this.item.BLURB_AM), {"money": true});
+                                }
+                            },
+                            {key: "SALE_RT", label: "할인율(%)", width: 80, align: "center", sortable: true, editor: {type: "number"},
                                 formatter:function(){
                                     if (nvl(this.item.SALE_RT) == '') {
                                         this.item.SALE_RT = 0;
@@ -346,18 +362,26 @@
                                 selectRow2 = this.dindex;
                             },
                             onDataChanged: function () {
-                                if(this.key == 'PKG_CD') {
-                                    if(this.value == '') {
-                                        // fnObj.gridView02.target.setValue(this.dindex, "NM_PACKAGE", '');
+                                if(this.key == 'SALE_RT'){
+                                    if(Number(nvl(this.value, 0)) > 100){
+                                        qray.alert("할인률(%) 100%가 넘어갑니다.");
+                                        fnObj.gridView02.target.setValue(this.dindex, "SALE_RT", this.previous);
+                                        return;
                                     }
                                 }
+
+                                if(Number(nvl(this.item.SALE_RT, 0)) > 0){
+                                    let am =  Number(this.item.BLURB_AM) - Number(this.item.BLURB_AM) * Number(nvl(this.item.SALE_RT, 0)) / 100;
+                                    fnObj.gridView02.target.setValue(this.dindex, "AM", am);
+                                } else {
+                                    fnObj.gridView02.target.setValue(this.dindex, "AM", Number(this.item.BLURB_AM));
+                                }
+
+
                             },
-                            // onDBLClick: function(){
-                            //     userCallBack = function (e){
-                            //         ACTIONS.dispatch(ACTIONS.PAGE_SEARCH);
-                            //     }
-                            //     $.openCommonPopup("/jsp/ensys/help/blurbHelper.jsp", "userCallBack",  '', '', this.item, $(".ax-body").width(), $(".ax-body").height(), null, null, false);
-                            // }
+                            onDBLClick: function(){
+
+                             }
                         }
                     });
 

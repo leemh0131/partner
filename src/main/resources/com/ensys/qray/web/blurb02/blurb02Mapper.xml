@@ -10,12 +10,22 @@
 			 , 	A.PKG_CD		AS "PKG_CD"
 			 , 	A.PKG_NM		AS "PKG_NM"
 			 , 	A.USE_YN		AS "USE_YN"
+			 ,  B.PKG_AM		AS "PKG_AM"
 			 , 	A.CREATE_DT		AS "CREATE_DT"
 			 , 	A.INSERT_ID		AS "INSERT_ID"
 			 , 	A.INSERT_DTS	AS "INSERT_DTS"
 			 , 	A.UPDATE_ID		AS "UPDATE_ID"
 			 , 	A.UPDATE_DTS	AS "UPDATE_DTS"
 		FROM ES_BLURB_PKG_M A
+		LEFT JOIN (
+						SELECT    COMPANY_CD
+								, PKG_CD
+								, SUM(AM) AS PKG_AM
+						FROM  ES_BLURB_PKG_D
+						GROUP BY COMPANY_CD, PKG_CD
+					)  B
+		ON A.COMPANY_CD = B.COMPANY_CD
+		AND A.PKG_CD = B.PKG_CD
 		WHERE A.COMPANY_CD = #{COMPANY_CD}
 	</select>
 
@@ -27,7 +37,7 @@
 		      , B.ADV_NM		 AS "ADV_NM"
 			  , A.SEQ			 AS "SEQ"
               , A.AM			 AS "AM"
-              , B.BLURB_AM		 AS "BLURB_AM"
+              , B.AM		 	 AS "BLURB_AM"
               , A.SALE_RT		 AS "SALE_RT"
               , A.INSERT_ID		 AS "INSERT_ID"
               , A.INSERT_DTS	 AS "INSERT_DTS"
