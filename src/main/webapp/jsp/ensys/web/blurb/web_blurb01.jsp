@@ -223,7 +223,7 @@
                                     return ax5.util.number(Math.floor(this.item.AM), {"money": true});
                                 }
                             },
-                            {key: "ADV_MONTH", label: "기본개월수", width: 80, align: "center", sortable: true,
+                            /*{key: "ADV_MONTH", label: "기본개월수", width: 80, align: "center", sortable: true,
                                 editor : {
                                     type: "number",
                                     disabled: function () {
@@ -237,7 +237,7 @@
                                     this.item.ADV_MONTH = Math.floor(Number(this.item.ADV_MONTH));
                                     return ax5.util.number(Math.floor(this.item.ADV_MONTH));
                                 }
-                            },
+                            },*/
                             { key: "BOX_YN", label: "박스수지정여부", width: 100, align: "center", sortable: true ,editor: false},
                             {key: "BOX_NUM", label: "박스수", width: 80, align: "center", sortable: true,
                                 editor : {
