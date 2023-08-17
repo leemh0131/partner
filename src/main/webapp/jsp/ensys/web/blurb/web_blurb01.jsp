@@ -391,11 +391,11 @@
                                 </ax:td>
                             </ax:tr>
                             <ax:tr>
-                                <ax:td label='기본개월수' width="300px">
+                                <%--<ax:td label='기본개월수' width="300px">
                                     <input type="text" class="form-control" data-ax-path="ADV_MONTH" name="ADV_MONTH"
                                            id="ADV_MONTH" form-bind-text='MONTH' form-bind-type='text'
                                            oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" />
-                                </ax:td>
+                                </ax:td>--%>
                                 <ax:td label='박스수' width="300px">
                                     <input type="text" class="form-control" data-ax-path="BOX_NUM" name="BOX_NUM"
                                            id="BOX_NUM" form-bind-text='BOX_NUM' form-bind-type='text'
