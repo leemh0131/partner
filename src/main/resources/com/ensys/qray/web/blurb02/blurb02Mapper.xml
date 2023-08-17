@@ -89,7 +89,6 @@
 				#{COMPANY_CD}
 			, #{PKG_CD}
 			, #{ADV_CD}
--- 			, #{SEQ}
 			, (SELECT COALESCE(MAX(SEQ), 0) + 1
 			   FROM ES_BLURB_PKG_D
 			   WHERE COMPANY_CD = #{COMPANY_CD}
@@ -102,7 +101,6 @@
 			, #{UPDATE_ID}
 			, #{UPDATE_DTS}
 			)
-
 	</insert>
 
 	<update id="packageHupdated" parameterType="hashmap" statementType="CALLABLE">

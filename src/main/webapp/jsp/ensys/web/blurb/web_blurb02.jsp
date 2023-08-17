@@ -246,16 +246,9 @@
                                 sortable: true,
                             },
 
-                            {key: "CREATE_DT", label: "생성일자", width: 100, align: "center", sortable: true,
-                                editor: {
-                                    type: "date", config: {
-                                        content: {
-                                            config: {
-                                                mode: "day",
-                                                selectMode: "day"
-                                            }
-                                        }
-                                    }
+                            {key: "INSERT_DTS", label: "생성일자", width: 150, align: "center", sortable: true,
+                                formatter : function() {
+                                    return $.changeDataFormat(this.value,"yyyyMMddhhmmss")
                                 },
                             },
                         ],
