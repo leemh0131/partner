@@ -52,7 +52,7 @@
                     var temp2 = [];
                     //선택데이터세팅
                     for (var i = 0; i < temp.length; i++) {
-                        chkArr.push(temp[i].USER_ID);
+                        chkArr.push(temp[i].ADV_CD);
                     }
                     chkArr = chkArr.join('|');
 
