@@ -211,13 +211,13 @@
                                 }, sortable: true,
                             },
                             {key: "PKG_NM", label: "패키지명", width: 280,  align: "left", editor: {type: "text"}, sortable: true,},
-                            {key: "PKG_AM", label: "패키지금액", width: 90,  align: "right",  sortable: true, editor: false,
+                            {key: "PKG_AM", label: "패키지 금액", width: 90,  align: "right",  sortable: true, editor: false,
                                 formatter:function(){
                                     if (nvl(this.item.PKG_AM) == '') {
                                         this.item.PKG_AM = 0;
                                     }
                                     this.item.PKG_AM = Math.floor(Number(this.item.PKG_AM));
-                                    return ax5.util.number(Math.floor(this.item.PKG_AM));
+                                    return ax5.util.number(Math.floor(this.item.PKG_AM), {"money": true});
                                 }
                             },
                             {key: "USE_YN", label: "사용여부", width: 80, align: "center", sortable: true,
