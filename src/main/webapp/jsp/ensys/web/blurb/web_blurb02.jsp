@@ -312,12 +312,17 @@
                                     height: _pop_height,
                                     url: "/jsp/ensys/help/blurbHelper.jsp",
                                     action: ["commonHelp", "HELP_BLURB"],
+                                    // url: "/jsp/ensys/help/packageHelper.jsp",
+                                    // action: ["commonHelp", "HELP_PACKAGE"],
                                     param: function () {
                                         return {
                                             MODE   : 'SINGLE'
                                         }
                                     },
                                     callback: function (e) {
+                                        // fnObj.gridView02.target.setValue(this.dindex, "ADV_CD", e[0].PKG_CD);
+                                        // fnObj.gridView02.target.setValue(this.dindex, "ADV_NM", e[0].PKG_NM);
+                                        // fnObj.gridView02.target.setValue(this.dindex, "BLURB_AM", e[0].PKG_AM);
                                         fnObj.gridView02.target.setValue(this.dindex, "ADV_CD", e[0].ADV_CD);
                                         fnObj.gridView02.target.setValue(this.dindex, "ADV_NM", e[0].ADV_NM);
                                         fnObj.gridView02.target.setValue(this.dindex, "BLURB_AM", e[0].AM);

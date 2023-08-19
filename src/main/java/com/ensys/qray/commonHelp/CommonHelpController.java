@@ -84,4 +84,9 @@ public class CommonHelpController extends BaseController {
 		return Responses.ListResponse.of(commonHelpService.HELP_CATEGORY(param));
 	}
 
+	// 패키지 도움창
+	@RequestMapping(value = "HELP_PACKAGE", method = RequestMethod.POST, produces = APPLICATION_JSON)
+	public Responses.ListResponse HELP_PACKAGE(@RequestBody HashMap<String, Object> param) {
+		return Responses.ListResponse.of(commonHelpService.HELP_PACKAGE(param));
+	}
 }

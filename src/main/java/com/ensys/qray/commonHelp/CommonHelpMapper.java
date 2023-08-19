@@ -29,4 +29,6 @@ public interface CommonHelpMapper extends MyBatisMapper {
 	List<HashMap<String, Object>> HELP_BLURB(HashMap<String, Object> param);
 
 	List<HashMap<String, Object>> HELP_CATEGORY(HashMap<String, Object> param);
+
+	List<HashMap<String, Object>> HELP_PACKAGE(HashMap<String, Object> param);
 }

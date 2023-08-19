@@ -136,4 +136,11 @@ public class CommonHelpService extends BaseService {
 
 		return commonHelpMapper.HELP_CATEGORY(map);
 	}
+
+	public List<HashMap<String, Object>> HELP_PACKAGE(HashMap<String, Object> param) {
+		SessionUser sessionUser = SessionUtils.getCurrentUser();
+		param.put("COMPANY_CD", sessionUser.getCompanyCd());
+
+		return commonHelpMapper.HELP_PACKAGE(param);
+	}
 }
