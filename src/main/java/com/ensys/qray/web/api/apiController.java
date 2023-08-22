@@ -2,7 +2,6 @@ package com.ensys.qray.web.api;
 
 import com.chequer.axboot.core.api.response.Responses;
 import com.chequer.axboot.core.controllers.BaseController;
-import com.ensys.qray.web.partner.PartnerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +18,12 @@ public class apiController extends BaseController {
     @RequestMapping(value = "partnerDetail", method = RequestMethod.POST, produces = APPLICATION_JSON)
     public Responses.MapResponse partnerDetail(@RequestBody HashMap<String, Object> request) {
         return Responses.MapResponse.of(apiService.partnerDetail(request));
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "partnerList", method = RequestMethod.POST, produces = APPLICATION_JSON)
+    public Responses.MapResponse partnerList(@RequestBody HashMap<String, Object> request) {
+        return Responses.MapResponse.of(apiService.partnerList(request));
     }
 
 }

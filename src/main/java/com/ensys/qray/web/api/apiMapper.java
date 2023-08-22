@@ -11,4 +11,6 @@ public interface apiMapper extends MyBatisMapper {
 
     HashMap<String, Object> partnerDetail(HashMap<String, Object> param);
 
+    List<HashMap<String, Object>> partnerList(HashMap<String, Object> param);
+
 }

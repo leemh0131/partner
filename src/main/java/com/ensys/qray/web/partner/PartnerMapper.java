@@ -55,4 +55,5 @@ public interface PartnerMapper extends MyBatisMapper {
 
     int contractStateChk(HashMap<String, Object> contract);
 
+    List<HashMap<String, Object>> blurbMasterChk(HashMap<String, Object> param);
 }

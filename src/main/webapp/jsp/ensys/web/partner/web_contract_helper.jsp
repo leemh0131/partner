@@ -16,6 +16,7 @@
     var initData = (nvl(sendData['initData']) == '') ? {} : sendData.initData;
     let selectRow = 0;
     let selectRow2 = 0;
+    var userCallBack;
 
     var ES_CODES = $.SELECT_COMMON_ARRAY_CODE("ES_Q0135");
     var ES_Q0135 = $.SELECT_COMMON_GET_CODE(ES_CODES, 'ES_Q0135', false);        /** 계약상태*/
@@ -31,11 +32,16 @@
                 parent[param.callBack]();
                 return;
             }
+            parent[param.callBack]();
             parent.modal.close();
         },
         //조회
         PAGE_SEARCH: function(caller, act, data) {
 
+            fnObj.gridView01.clear();
+            fnObj.gridView02.clear();
+            fnObj.gridView01.target.dirtyClear();
+            fnObj.gridView02.target.dirtyClear();
             axboot.ajax({
                 type: "POST",
                 url: ["/api/web/partner", "selectContractAll"],
@@ -75,6 +81,17 @@
                 return;
             }
 
+            if(nvl(contract.CONTRACT_ST) == '02'){
+                let gridView01 = fnObj.gridView01.target.getList();
+                if(gridView01.length == 0){
+                    qray.alert("계약중일 경우 광고패키지가 존재하여야합니다.");
+                    return;;
+                }
+
+            }
+
+            initData.CONTRACT_CD = contract.CONTRACT_CD;
+
             axboot.ajax({
                 type: "POST",
                 url: ["/api/web/partner", "contractSave"],
@@ -86,12 +103,13 @@
                 }),
                 callback: function () {
                     qray.alert("저장 되었습니다.").then(function() {
-                        ACTIONS.dispatch(ACTIONS.PAGE_CLOSE);
+                        ACTIONS.dispatch(ACTIONS.PAGE_SEARCH);
                     });
                 },
                 options: {
                     onError: function(err){
                         qray.alert(err.message);
+                        $('[data-ax5select="CONTRACT_ST"]').ax5select("setValue", '01');
                         return;
                     }
                 }
@@ -102,20 +120,28 @@
         //삭제
         PAGE_DEL: function(caller, act, data) {
 
-            let item = $('.QRAY_FORM').getElementData();
+            let contract = $('.QRAY_FORM').getElementData();
 
             qray.confirm({
-                msg: "삭제하시겠습니까?"
+                msg: "삭제 하시겠습니까?"
             }, function () {
                 if(this.key == "ok") {
                     axboot.ajax({
                         type: "POST",
-                        url: ["ETET03", "delete"],
-                        data: JSON.stringify(item),
-                        callback: function (res) {
-                            qray.alert("삭제되었습니다.").then(function() {
-                                fnObj.popView.close.call(parent[window.param.modalName]);
+                        url: ["/api/web/partner", "contractDeleteAll"],
+                        data: JSON.stringify({
+                            contract: contract,
+                        }),
+                        callback: function () {
+                            qray.alert("삭제 되었습니다.").then(function() {
+                                ACTIONS.dispatch(ACTIONS.PAGE_CLOSE);
                             });
+                        },
+                        options: {
+                            onError: function(err){
+                                qray.alert(err.message);
+                                return;
+                            }
                         }
                     });
                 }
@@ -124,18 +150,7 @@
         //광고추가
         ITEM_ADD: function(caller, act, data) {
 
-            // 그리드 추가
-            fnObj.gridView01.addRow();
-
-            //마지막 인덱스를 구하는 로직
-            var lastIdx = nvl(caller.gridView01.target.list.length, caller.gridView01.lastRow());
-            selectRow = lastIdx - 1;
-
-            //그리드row 포커스
-            fnObj.gridView01.target.select(selectRow);
-            fnObj.gridView01.target.focus(selectRow);
-            fnObj.gridView01.target.setValue(lastIdx - 1, "PARTNER_CD", $('#PARTNER_CD').val());
-            fnObj.gridView01.target.setValue(lastIdx - 1, "CONTRACT_CD", $('#CONTRACT_CD').val());
+            $.openCommonPopup('/jsp/ensys/help/packageHelper.jsp', 'userCallBack', 'HELP_PACKAGE', '', '', 600, _pop_height, _pop_top);
 
         },
         //광고삭제
@@ -193,6 +208,37 @@
         },
     });
 
+    userCallBack = function (e){
+
+        var chkArr = [];
+        for(var i = 0; i < fnObj.gridView01.target.list.length; i++) {
+            chkArr.push(fnObj.gridView01.target.list[i].PKG_CD);
+        }
+        chkArr = chkArr.join('|');
+
+
+        if(e.length > 0) {
+            for(var i = 0; i < e.length; i++) {
+
+                if(chkArr.indexOf(e[i].PKG_CD) > -1) continue;
+
+                fnObj.gridView01.addRow();
+
+                var lastIdx = nvl(fnObj.gridView01.target.list.length, fnObj.gridView01.lastRow());
+                selectRow = lastIdx - 1;
+
+                //그리드row 포커스
+                fnObj.gridView01.target.select(selectRow);
+                fnObj.gridView01.target.focus(selectRow);
+                fnObj.gridView01.target.setValue(lastIdx - 1, "PARTNER_CD", $('#PARTNER_CD').val());
+                fnObj.gridView01.target.setValue(lastIdx - 1, "CONTRACT_CD", $('#CONTRACT_CD').val());
+                fnObj.gridView01.target.setValue(lastIdx - 1, "PKG_CD", e[i].PKG_CD);
+                fnObj.gridView01.target.setValue(lastIdx - 1, "PKG_NM", e[i].PKG_NM);
+                fnObj.gridView01.target.setValue(lastIdx - 1, "PKG_AM", e[i].PKG_AM);
+            }
+        }
+    }
+
     fnObj.pageStart = function () {
         this.pageButtonView.initView();
         this.gridView01.initView();
@@ -236,8 +282,23 @@
                 frozenColumnIndex: 0,
                 target: $('[data-ax5grid="grid-view-01"]'),
                 columns: [
-                    { key: "PACKAGE_CD", label: "패키지 코드", width: 120, align: "left", sortable: true, editor: "text"},
-                    { key: "PACKAGE_NM", label: "패키지 명", width: 120, align: "left", sortable: true, editor: "text"}
+                    { key: "PKG_CD", label: "패키지 코드", width: 120, align: "left", sortable: true, editor: false},
+                    { key: "PKG_NM", label: "패키지 명", width: 120, align: "left", sortable: true, editor: false},
+                    { key: "PKG_AM", label: "패키지 금액", width: 120, align: "right", sortable: true, editor: false,
+                        formatter:function(){
+                            if (nvl(this.item.PKG_AM) == '') {
+                                this.item.PKG_AM = 0;
+                            }
+                            this.item.PKG_AM = Math.floor(Number(this.item.PKG_AM));
+                            return ax5.util.number(Math.floor(this.item.PKG_AM), {"money": true});
+                        }
+                    },
+                ],
+                footSum: [
+                    [
+                        {label: "패키지 합계", colspan: 2, align: "center"},
+                        {key: "PKG_AM", collector: "sum", formatter: "money", align: "right"}
+                    ]
                 ],
                 body: {
                     onClick: function () {
@@ -311,6 +372,13 @@
                             return ax5.util.number(Math.floor(this.item.AM), {"money": true});
                         }
                     },
+                ],
+                footSum: [
+                    [
+                        {label: "합계", colspan: 1, align: "center"},
+                        {key: "AM_MM", collector: "sum", formatter: "money", align: "right"},
+                        {key: "AM", collector: "sum", formatter: "money", align: "right"},
+                    ]
                 ],
                 body: {
                     onClick: function () {

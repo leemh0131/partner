@@ -346,9 +346,9 @@
                     <button type="button" class="btn btn-small" data-grid-view-01-btn="add" style="width:80px;"><i
                             class="icon_add"></i>
                         <ax:lang id="ax.admin.add"/></button>
-                    <button type="button" class="btn btn-small" data-grid-view-01-btn="delete" style="width:80px;"><i
+                    <%--<button type="button" class="btn btn-small" data-grid-view-01-btn="delete" style="width:80px;"><i
                             class="icon_del"></i>
-                        <ax:lang id="ax.admin.delete"/></button>
+                        <ax:lang id="ax.admin.delete"/></button>--%>
                 </div>
             </div>
             <div data-ax5grid="grid-view-01"

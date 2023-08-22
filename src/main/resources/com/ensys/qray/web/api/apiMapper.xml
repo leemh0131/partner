@@ -25,4 +25,37 @@
           AND A.PARTNER_CD = #{PARTNER_CD}
     </select>
 
+    <select id="partnerList" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+        /*apiMapper.partnerList*/
+        SELECT    c.partner_cd
+                , c.partner_nm
+                , c.company_intro
+                , c.youtube_link
+                , d.tel_no
+                , concat(#{IMG_URL},e.file_name,'.',e.file_ext) as img_url
+        FROM ES_CONTRACT_PACKAGE A
+        LEFT JOIN ES_CONTRACT B
+        ON A.COMPANY_CD = B.COMPANY_CD
+        AND A.CONTRACT_CD = B.CONTRACT_CD
+        LEFT JOIN ES_PARTNER C
+        ON B.COMPANY_CD = B.COMPANY_CD
+        AND B.PARTNER_CD = C.PARTNER_CD
+        LEFT JOIN ES_PARTNER_PTR D
+        ON C.COMPANY_CD = D.COMPANY_CD
+        AND C.PARTNER_CD = D.PARTNER_CD
+        AND D.MAIN_YN = 'Y'
+        LEFT JOIN ES_FILE E
+        ON C.COMPANY_CD = E.COMPANY_CD
+        AND C.PARTNER_CD = E.TABLE_KEY
+        AND E.TABLE_ID = 'partner'
+        AND E.MAIN_YN = 'Y'
+        WHERE B.COMPANY_CD = #{COMPANY_CD}
+        AND B.CONTRACT_ST = '02'
+        AND TO_DATE(TO_CHAR(CURRENT_DATE, 'YYYYMMDD'), 'YYYYMMDD') BETWEEN TO_DATE(B.CONTRACT_START_DT, 'YYYYMMDD') AND TO_DATE(B.CONTRACT_END_DT, 'YYYYMMDD')
+        AND A.PKG_CD IN (
+        SELECT PKG_CD FROM ES_BLURB_PKG_D WHERE COMPANY_CD =  #{COMPANY_CD} AND ADV_CD = #{ADV_CD} /*광고코드파라미터*/
+        )
+        ORDER BY RANDOM();
+    </select>
+
 </mapper>

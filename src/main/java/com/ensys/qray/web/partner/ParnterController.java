@@ -47,6 +47,13 @@ public class ParnterController extends BaseController {
 	}
 
 	@ResponseBody
+	@RequestMapping(value = "contractDeleteAll", method = {RequestMethod.POST}, produces = APPLICATION_JSON)
+	public ApiResponse contractDeleteAll(@RequestBody HashMap<String, Object> param) throws Exception {
+		partnerservice.contractDeleteAll(param);
+		return ok();
+	}
+
+	@ResponseBody
 	@RequestMapping(value = "selectList", method = RequestMethod.POST, produces = APPLICATION_JSON)
 	public Responses.ListResponse selectList(@RequestBody HashMap<String, Object> request) {
 		return Responses.ListResponse.of(partnerservice.selectList(request));

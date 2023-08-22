@@ -146,6 +146,7 @@ public class StatementMethodInterceptor implements MethodInterceptor {
                     String sqlLogging = getLoggingSql(statementExecutionInfo, sqlExecutionInfo, invocation);
                     if( sqlLogging.indexOf("es_log_aspect") == -1 &&
                         sqlLogging.indexOf("/*SysInformation08Mapper.upsertNo*/") == -1 &&
+                        sqlLogging.indexOf("select nextval ('hibernate_sequence')") == -1 &&
                         sqlLogging.indexOf("/*SysInformation08Mapper.getNo*/") == -1 &&
                         sqlLogging.indexOf("/*commonMapper.getCommonCode*/") == -1) {
                         logger.info("\n[query] - {} - {}\n", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), sqlLogging);
@@ -170,6 +171,7 @@ public class StatementMethodInterceptor implements MethodInterceptor {
                     String sqlLogging = getLoggingSql(statementExecutionInfo, sqlExecutionInfo, invocation);
                     if( sqlLogging.indexOf("es_log_aspect") == -1 &&
                         sqlLogging.indexOf("/*SysInformation08Mapper.upsertNo*/") == -1 &&
+                        sqlLogging.indexOf("select nextval ('hibernate_sequence')") == -1 &&
                         sqlLogging.indexOf("/*SysInformation08Mapper.getNo*/") == -1 &&
                         sqlLogging.indexOf("/*commonMapper.getCommonCode*/") == -1 ) {
                         logger.info("\n[query] - {} - {}\n", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), sqlLogging);

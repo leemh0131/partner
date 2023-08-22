@@ -75,6 +75,29 @@
 		AND	A.PARTNER_CD = #{PARTNER_CD}
 	</select>
 
+	<select id="blurbMasterChk" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*PartnerMapper.blurbMasterChk*/
+		SELECT    A.ADV_CD AS "ADV_CD"
+				, B.ADV_NM AS "ADV_NM"
+				, COUNT(*) AS "COUNT"
+				, B.BOX_NUM AS "BOX_NUM"
+				, B.BOX_YN AS "BOX_YN"
+				, CASE WHEN  COUNT(*) > B.BOX_NUM THEN 'Y' ELSE 'N' END AS "BLURBMASTERCHK"
+		FROM ES_BLURB_PKG_D A
+		LEFT JOIN ES_BLURB_MASTER B
+		ON A.COMPANY_CD = B.COMPANY_CD
+		AND A.ADV_CD = B.ADV_CD
+		LEFT JOIN ES_CONTRACT_PACKAGE C
+		ON A.COMPANY_CD = C.COMPANY_CD
+		AND A.PKG_CD = C.PKG_CD
+		LEFT JOIN ES_CONTRACT D
+		ON C.COMPANY_CD = D.COMPANY_CD
+		AND C.CONTRACT_CD = D.CONTRACT_CD
+		WHERE A.COMPANY_CD = #{COMPANY_CD}
+		AND D.CONTRACT_ST = '02'
+		GROUP BY A.ADV_CD, B.BOX_NUM, B.BOX_YN, B.ADV_NM
+	</select>
+
 	<insert id="partnerInsertUpdate" parameterType="hashmap" statementType="CALLABLE">
 		/*PartnerMapper.partnerInsertUpdate*/
 		INSERT INTO ES_PARTNER
@@ -366,13 +389,27 @@
 		SELECT    A.COMPANY_CD 	AS "COMPANY_CD"
 				, A.PARTNER_CD 	AS "PARTNER_CD"
 				, A.CONTRACT_CD AS "CONTRACT_CD"
-				, A.PACKAGE_CD 	AS "PACKAGE_CD"
+				, A.PKG_CD 		AS "PKG_CD"
+		        , B.PKG_NM 		AS "PKG_NM"
+		        , C.PKG_AM 		AS "PKG_AM"
 				, A.SEQ			AS "SEQ"
 				, A.INSERT_ID 	AS "INSERT_ID"
 				, A.INSERT_DTS 	AS "INSERT_DTS"
 				, A.UPDATE_ID 	AS "UPDATE_ID"
 				, A.UPDATE_DTS 	AS "UPDATE_DTS"
 		FROM ES_CONTRACT_PACKAGE A
+		LEFT JOIN ES_BLURB_PKG_M B
+		LEFT JOIN (
+					SELECT    COMPANY_CD
+							, PKG_CD
+							, SUM(AM) AS PKG_AM
+					FROM  ES_BLURB_PKG_D
+					GROUP BY COMPANY_CD, PKG_CD
+					)  C
+		ON B.COMPANY_CD = C.COMPANY_CD
+		AND B.PKG_CD = C.PKG_CD
+		ON A.COMPANY_CD = B.COMPANY_CD
+		AND A.PKG_CD = B.PKG_CD
 		WHERE A.COMPANY_CD = #{COMPANY_CD}
 		AND A.CONTRACT_CD = #{CONTRACT_CD}
 	</select>
@@ -438,7 +475,7 @@
 		  COMPANY_CD
 		, PARTNER_CD
 		, CONTRACT_CD
-		, PACKAGE_CD
+		, PKG_CD
 		, INSERT_ID
 		, INSERT_DTS
 		, UPDATE_ID
@@ -450,7 +487,7 @@
 		  #{COMPANY_CD}
 		, #{PARTNER_CD}
 		, #{CONTRACT_CD}
-		, #{PACKAGE_CD}
+		, #{PKG_CD}
 		, #{INSERT_ID}
 		, #{INSERT_DTS}
 		, #{UPDATE_ID}
@@ -500,7 +537,7 @@
 	<update id="contractMupdated" parameterType="hashmap" statementType="CALLABLE">
 		/*PartnerMapper.contractMupdated*/
 		UPDATE ES_CONTRACT_PACKAGE
-		SET   PACKAGE_CD = #{PACKAGE_CD}
+		SET   PKG_CD = #{PKG_CD}
 		    , UPDATE_ID = #{UPDATE_ID}
 		    , UPDATE_DTS = #{UPDATE_DTS}
 		WHERE COMPANY_CD  = #{COMPANY_CD}
@@ -551,9 +588,9 @@
 			WHERE COMPANY_CD = #{COMPANY_CD}
 			  AND CONTRACT_CD   = #{CONTRACT_CD}
 		),
-		ES_PARTNER_DEPOSIT_AS AS
+		ES_CONTRACT_DEPOSIT_AS AS
 		(
-			DELETE FROM ES_PARTNER_DEPOSIT
+			DELETE FROM ES_CONTRACT_DEPOSIT
 			WHERE COMPANY_CD = #{COMPANY_CD}
 			  AND CONTRACT_CD   = #{CONTRACT_CD}
 		)

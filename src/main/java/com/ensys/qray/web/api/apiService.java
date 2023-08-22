@@ -1,14 +1,12 @@
 package com.ensys.qray.web.api;
 
+import com.chequer.axboot.core.api.ApiException;
 import com.ensys.qray.setting.base.BaseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 @Service
 @Transactional
@@ -21,7 +19,7 @@ public class apiService extends BaseService {
 	public HashMap<String, Object> partnerDetail(HashMap<String, Object> param) {
 
 		if(param.get("PARTNER_CD") == null || "".equals(param.get("PARTNER_CD")) || param.get("COMPANY_CD") == null || "".equals(param.get("COMPANY_CD"))){
-			throw new RuntimeException("코드또는 회사코드가 파라미터로 필요합니다.");
+			throw new ApiException("코드또는 회사코드가 파라미터로 필요합니다.");
 		}
 
 		HashMap<String, Object> item = apimapper.partnerDetail(param);
@@ -86,6 +84,38 @@ public class apiService extends BaseService {
 		result.put("job_ep", JOB_EP_LIST);
 		result.put("job_zone", JOB_ZONE_LIST);
 		result.put("item_intro", ITEM_INTRO_LIST);
+
+		return result;
+	}
+
+	@Transactional(readOnly = true)
+	public HashMap<String, Object> partnerList(HashMap<String, Object> param) {
+
+		//이미지 링크 만들기
+		//mklink /d "C:\qrayTomcat\apache-tomcat-9.0.62-8012\webapps\ROOT\PARTNER_TEMP" "C:\PARTNER_TEMP"
+
+		if(param.get("company") == null || "".equals(param.get("company"))){
+			throw new ApiException("회사코드가 파라미터로 필요합니다.");
+		}
+
+		if(param.get("blurbParam") == null || "".equals(param.get("blurbParam"))){
+			throw new ApiException("광고코드가 파라미터로 필요합니다.");
+		}
+
+		HashMap<String, Object> blurbParam = (HashMap<String, Object>) param.get("blurbParam");
+		HashMap<String, Object> company = (HashMap<String, Object>) param.get("company");
+
+		HashMap<String, Object> result = new HashMap<>();
+
+		for (Map.Entry<String, Object> entry : blurbParam.entrySet()) {
+			String key = entry.getKey();
+			Object value = entry.getValue();
+			HashMap<String, Object> item = new HashMap<>();
+			item.put("COMPANY_CD", company.get("COMPANY_CD"));
+			item.put("IMG_URL", param.get("IMG_URL"));
+			item.put("ADV_CD", value);
+			result.put(key, apimapper.partnerList(item));
+		}
 
 		return result;
 	}

@@ -5,6 +5,7 @@ import com.ensys.qray.setting.base.BaseService;
 import com.ensys.qray.user.SessionUser;
 import com.ensys.qray.utils.HammerUtility;
 import com.ensys.qray.utils.SessionUtils;
+import com.ensys.qray.web.blurb01.blurb01Mapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +19,8 @@ import java.util.List;
 public class PartnerService extends BaseService {
 
 	private final PartnerMapper partnermapper;
+
+	private final blurb01Mapper blurb01mapper;
 
 	private final FileMapper filemapper;
 
@@ -162,6 +165,16 @@ public class PartnerService extends BaseService {
 
 	}
 
+	public void contractDeleteAll(HashMap<String, Object> param) throws Exception {
+		SessionUser user = SessionUtils.getCurrentUser();
+
+		HashMap<String, Object> partner = (HashMap<String, Object>) param.get("contract");
+		partner.put("COMPANY_CD", user.getCompanyCd());
+
+		partnermapper.contractDeleteAll(partner);
+
+	}
+
 
 	@Transactional(readOnly = true)
 	public HashMap<String, Object> selectContractAll(HashMap<String, Object> param) {
@@ -294,6 +307,21 @@ public class PartnerService extends BaseService {
 
 					filemapper.insert(item);
 
+				}
+			}
+		}
+
+		//계약중으로 변경 시 광고 마스터에 있는 박스갯수로 verification
+		if("02".equals(contract.get("CONTRACT_ST"))){
+			param.put("COMPANY_CD", user.getCompanyCd());
+			List<HashMap<String, Object>> blurbMasterChk = partnermapper.blurbMasterChk(param);
+			for(HashMap<String, Object> item : blurbMasterChk){
+				if("Y".equals(item.get("BOX_YN")) && "Y".equals(item.get("BLURBMASTERCHK"))){
+					throw new RuntimeException("광고에 세팅된 박수갯수가 초과되었습니다." +
+							"<br>광고코드 : " + item.get("ADV_CD") +
+							"<br>광고이름 : " + item.get("ADV_NM") +
+							"<br>광고박수 갯수 : " + item.get("BOX_NUM") + "개" +
+							"<br>광고세팅 총갯수 : " + item.get("COUNT") + "개");
 				}
 			}
 		}
