@@ -3,7 +3,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="ax" tagdir="/WEB-INF/tags" %>
 
-<ax:set key="title" value="광고패키지"/>
+<ax:set key="title" value="거래처광고 후기관리"/>
 <ax:set key="page_desc" value="${pageRemark}"/>
 <ax:set key="page_auto_height" value="true"/>
 <ax:layout name="base">
@@ -81,38 +81,6 @@
                         qray.loading.hide();
                     });
                 },
-                //그리드1 추가
-                ITEM_ADD: function(caller, act, data){
-                    caller.gridView02.clear();
-                    fnObj.gridView01.addRow();
-                    var lastIdx = nvl(fnObj.gridView01.target.list.length, fnObj.gridView01.lastRow());
-                    selectRow = lastIdx - 1;
-                    fnObj.gridView01.target.focus(lastIdx - 1);
-                    fnObj.gridView01.target.select(lastIdx - 1);
-
-                    fnObj.gridView01.target.setValue(lastIdx - 1, "PKG_CD", GET_NO('MA', '23'))
-                    fnObj.gridView01.target.setValue(lastIdx - 1, "PKG_NM", '')
-                    fnObj.gridView01.target.setValue(lastIdx - 1, "USE_YN", 'Y');
-                    fnObj.gridView01.target.setValue(lastIdx - 1, "CREATE_DT", '')
-                    ACTIONS.dispatch(ACTIONS.ITEM_CLICK);
-                },
-                //그리드1 삭제
-                ITEM_DEL: function(caller, act, data){
-
-                    var beforeIdx = fnObj.gridView01.target.selectedDataIndexs[0];
-                    var dataLen = fnObj.gridView01.target.getList().length;
-
-                    if ((beforeIdx + 1) == dataLen) {
-                        beforeIdx = beforeIdx - 1;
-                    }
-                    selectRow = beforeIdx;
-                    fnObj.gridView01.delRow('selected');
-                    if (beforeIdx > 0 || beforeIdx == 0) {
-                        fnObj.gridView01.target.select(selectRow);
-                        fnObj.gridView01.target.focus(selectRow);
-                    }
-                    ACTIONS.dispatch(ACTIONS.ITEM_CLICK);
-                },
                 //그리드2 추가
                 ITEM_ADD2: function(caller, act, data){
 
@@ -180,8 +148,8 @@
                         target: $('[data-ax5grid="grid-view-01"]'),
                         childGrid : [fnObj.gridView02],
                         type : "POST",
-                        classUrl : "/api/web/blurb02",
-                        methodUrl :  "packageHeader",
+                        //classUrl : "/api/web/blurb02",
+                        //methodUrl :  "packageHeader",
                         async : false,
                         param : function(){
                             var param = {
@@ -283,8 +251,8 @@
                         target: $('[data-ax5grid="grid-view-02"]'),
                         parentGrid : fnObj.gridView01,
                         type : "POST",
-                        classUrl : "/api/web/blurb02",
-                        methodUrl :  "packageDetail",
+                        //classUrl : "/api/web/blurb02",
+                        //methodUrl :  "packageDetail",
                         async : false,
                         param : function(){
                             var selected = fnObj.gridView01.target.getList('selected')[0];
@@ -469,16 +437,11 @@
                 <div class="ax-button-group" data-fit-height-aside="grid-view-01" id="left_title" name="왼쪽영역제목부분">
                     <div class="left">
                         <h2>
-                            <i class="icon_list"></i> 패키지정보
+                            <i class="icon_list"></i> 거래처정보
                         </h2>
                     </div>
                     <div class="right">
-                        <button type="button" class="btn btn-small" data-grid-view-01-btn="add" style="width:80px;"><i
-                                class="icon_add"></i>
-                            <ax:lang id="ax.admin.add"/></button>
-                        <button type="button" class="btn btn-small" data-grid-view-01-btn="delete" style="width:80px;">
-                            <i
-                                    class="icon_del"></i> <ax:lang id="ax.admin.delete"/></button>
+
                     </div>
                 </div>
                 <div data-ax5grid="grid-view-01"
@@ -492,7 +455,7 @@
                 <div class="ax-button-group" data-fit-height-aside="grid-view-02" id="right_title" name="오른쪽타이틀">
                     <div class="left">
                         <h2>
-                            <i class="icon_list"></i> 패키지상세
+                            <i class="icon_list"></i> 후기
                         </h2>
                     </div>
                     <div class="right">
