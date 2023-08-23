@@ -15,7 +15,6 @@ public class apiService extends BaseService {
 
 	private final apiMapper apimapper;
 
-	@Transactional(readOnly = true)
 	public HashMap<String, Object> partnerDetail(HashMap<String, Object> param) {
 
 		if(param.get("PARTNER_CD") == null || "".equals(param.get("PARTNER_CD")) || param.get("COMPANY_CD") == null || "".equals(param.get("COMPANY_CD"))){
@@ -29,7 +28,7 @@ public class apiService extends BaseService {
 		String JOB_ZONE = "";
 		String ITEM_INTRO = "";
 
-		HashMap<String, Object> partner = new HashMap<>();;
+		HashMap<String, Object> partner = new HashMap<>();
 		for (HashMap.Entry<String, Object> entry : item.entrySet()) {
 			String key = entry.getKey();
 			Object value = entry.getValue();
@@ -84,12 +83,28 @@ public class apiService extends BaseService {
 		result.put("job_ep", JOB_EP_LIST);
 		result.put("job_zone", JOB_ZONE_LIST);
 		result.put("item_intro", ITEM_INTRO_LIST);
+		result.put("img", apimapper.partnerImg(param));
+
+		
+		HashMap<String, Object> blurbParam = new HashMap<>();
+		blurbParam.put("COMPANY_CD", param.get("COMPANY_CD"));
+		blurbParam.put("ADV_CD", "ADV2023081700002");
+		blurbParam.put("IMG_URL", param.get("IMG_URL"));
+		result.put("blurbSide", apimapper.partnerBlurbList(blurbParam)); //세로 광고
+
+		//행정사인지 탐정사 인지
+		if("01".equals(partner.get("PARTNER_TP"))){ //탐정사
+			blurbParam.put("ADV_CD", "ADV2023081700005");
+		} else if("02".equals(partner.get("PARTNER_TP"))) { //행정사
+			blurbParam.put("ADV_CD", "ADV2023081700006");
+		}
+		result.put("blurbSpecial", apimapper.partnerBlurbList(blurbParam));//탐정사, 행정 상세보기 스페셜 광고
 
 		return result;
 	}
 
 	@Transactional(readOnly = true)
-	public HashMap<String, Object> partnerList(HashMap<String, Object> param) {
+	public HashMap<String, Object> partnerBlurbList(HashMap<String, Object> param) {
 
 		//이미지 링크 만들기
 		//mklink /d "C:\qrayTomcat\apache-tomcat-9.0.62-8012\webapps\ROOT\PARTNER_TEMP" "C:\PARTNER_TEMP"
@@ -114,8 +129,20 @@ public class apiService extends BaseService {
 			item.put("COMPANY_CD", company.get("COMPANY_CD"));
 			item.put("IMG_URL", param.get("IMG_URL"));
 			item.put("ADV_CD", value);
-			result.put(key, apimapper.partnerList(item));
+			result.put(key, apimapper.partnerBlurbList(item));
 		}
+
+		HashMap<String, Object> blurbMasterSelect = new HashMap<>();
+		for (Map.Entry<String, Object> entry : blurbParam.entrySet()) {
+			String key = entry.getKey();
+			Object value = entry.getValue();
+			HashMap<String, Object> item = new HashMap<>();
+			item.put("COMPANY_CD", company.get("COMPANY_CD"));
+			item.put("ADV_CD", value);
+			blurbMasterSelect.put(key, apimapper.blurbMasterSelect(item));
+		}
+
+		result.put("blurbMaster", blurbMasterSelect);
 
 		return result;
 	}

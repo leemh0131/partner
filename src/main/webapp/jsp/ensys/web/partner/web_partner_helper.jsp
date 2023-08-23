@@ -616,6 +616,16 @@
                                     </ax:td>
                                 </ax:tr>
                                 <ax:tr>
+                                    <ax:td label="카카오톡" width="49%">
+                                        <input type="text" class="form-control" data-ax-path="KAKAOTALK" name="KAKAOTALK"
+                                               id="KAKAOTALK" form-bind-text='KAKAOTALK' form-bind-type='text' maxlength="200"/>
+                                    </ax:td>
+                                    <ax:td label="텔레그램" width="49%">
+                                        <input type="text" class="form-control" data-ax-path="TELEGRAM" name="TELEGRAM"
+                                               id="TELEGRAM" form-bind-text='TELEGRAM' form-bind-type='text' maxlength="200"/>
+                                    </ax:td>
+                                </ax:tr>
+                                <ax:tr>
                                     <ax:td label="전문분야" width="32%">
                                         <multipicker id="JOB_FIELD"
                                                      class="CATEGORY_PICKER"

@@ -11,6 +11,10 @@
              , B.E_MAIL AS "E_MAIL"
              , B.TEL_NO AS "TEL_NO"
              , A.YOUTUBE_LINK AS "YOUTUBE_LINK"
+             , A.TELEGRAM AS "TELEGRAM"
+             , A.KAKAOTALK AS "KAKAOTALK"
+             , A.PARTNER_TP AS "PARTNER_TP"
+             , A.HOME_PAGE AS "HOME_PAGE"
              , A.COMPANY_INTRO AS "COMPANY_INTRO"
              , F_ES_CATEGORY_NM(A.COMPANY_CD, A.JOB_FIELD) AS "JOB_FIELD"
              , F_ES_CATEGORY_NM(A.COMPANY_CD, A.JOB_EP) AS "JOB_EP"
@@ -25,8 +29,31 @@
           AND A.PARTNER_CD = #{PARTNER_CD}
     </select>
 
-    <select id="partnerList" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
-        /*apiMapper.partnerList*/
+    <select id="blurbMasterSelect" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+        /*apiMapper.blurbMasterSelect*/
+        SELECT    adv_cd
+                , adv_nm
+                , am
+                , adv_month
+                , box_yn
+                , box_num
+        FROM ES_BLURB_MASTER
+        WHERE COMPANY_CD = #{COMPANY_CD}
+          AND ADV_CD = #{ADV_CD}
+    </select>
+
+    <select id="partnerImg" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+        /*apiMapper.partnerImg*/
+        SELECT  CONCAT(#{IMG_URL}, FILE_NAME, '.', FILE_EXT) AS img_url
+              , MAIN_YN AS main_yn
+        FROM ES_FILE
+        WHERE COMPANY_CD = #{COMPANY_CD}
+          AND TABLE_ID = 'partner'
+          AND TABLE_KEY = #{PARTNER_CD}
+    </select>
+
+    <select id="partnerBlurbList" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+        /*apiMapper.partnerBlurbList*/
         SELECT    c.partner_cd
                 , c.partner_nm
                 , c.company_intro

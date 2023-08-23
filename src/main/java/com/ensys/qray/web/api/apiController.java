@@ -21,9 +21,9 @@ public class apiController extends BaseController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "partnerList", method = RequestMethod.POST, produces = APPLICATION_JSON)
-    public Responses.MapResponse partnerList(@RequestBody HashMap<String, Object> request) {
-        return Responses.MapResponse.of(apiService.partnerList(request));
+    @RequestMapping(value = "partnerBlurbList", method = RequestMethod.POST, produces = APPLICATION_JSON)
+    public Responses.MapResponse partnerBlurbList(@RequestBody HashMap<String, Object> request) {
+        return Responses.MapResponse.of(apiService.partnerBlurbList(request));
     }
 
 }

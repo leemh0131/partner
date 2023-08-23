@@ -154,6 +154,8 @@
 							{ key: "JOB_FIELD_NM", label: "전문분야", width: 120, align: "left", editor: false, sortable: true, },
 							{ key: "JOB_EP_NM", label: "보유장비", width: 120, align: "left", editor: false, sortable: true, },
 							{ key: "JOB_ZONE_NM", label: "업무지역", width: 120, align: "left", editor: false, sortable: true, },
+							{ key: "KAKAOTALK", label: "카카오톡", width: 120, align: "left", editor: false, sortable: true, },
+							{ key: "TELEGRAM", label: "텔레그램", width: 120, align: "left", editor: false, sortable: true, },
 							{ key: "HOME_PAGE", label: "홈페이지", width: 200, align: "left", editor: false, sortable: true, },
 							{ key: "YOUTUBE_LINK", label: "유튜트링크", width: 200, align: "left", editor: false, sortable: true, },
 						],
