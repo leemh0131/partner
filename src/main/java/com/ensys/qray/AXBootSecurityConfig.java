@@ -43,6 +43,7 @@ public class AXBootSecurityConfig extends WebSecurityConfigurerAdapter {
             "/axboot.config.js",
             "/assets/**",
             "/jsp/common/**",
+            "/PARTNER_TEMP/**", /*심볼릭링크 이미지 경로*/
             "/swagger/**",
             "/api-docs/**",
             "/h2-console/**",
@@ -87,7 +88,7 @@ public class AXBootSecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .authorizeRequests().anyRequest().hasRole(ROLE)
                 .antMatchers(HttpMethod.POST, LOGIN_API).permitAll()
-                .antMatchers(LOGIN_PAGE, "/api/web/v1/**").permitAll()
+                .antMatchers(LOGIN_PAGE, "/api/web/v1/**", "/PARTNER_TEMP/**").permitAll()
                 .antMatchers("/modelExtractor**").permitAll()
                 .and()
 
