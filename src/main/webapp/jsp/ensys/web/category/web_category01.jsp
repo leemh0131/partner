@@ -17,6 +17,27 @@
 
     $("#PARTNER_TP").ax5select({options: ES_Q0033}); //거래처구분
 
+    var dl_ICON = [
+          {CODE:'img/icon/i_icon_01.svg', TEXT:'<div style="height: 27px;"><img style="width: 100%;height: 100%;" src="img/icon/i_icon_01.svg"></div>'}
+        , {CODE:'img/icon/i_icon_02.svg', TEXT:'<div style="height: 27px;"><img style="width: 100%;height: 100%;" src="img/icon/i_icon_02.svg"></div>'}
+        , {CODE:'img/icon/i_icon_03.svg', TEXT:'<div style="height: 27px;"><img style="width: 100%;height: 100%;" src="img/icon/i_icon_03.svg"></div>'}
+        , {CODE:'img/icon/i_icon_04.svg', TEXT:'<div style="height: 27px;"><img style="width: 100%;height: 100%;" src="img/icon/i_icon_04.svg"></div>'}
+        , {CODE:'img/icon/i_icon_05.svg', TEXT:'<div style="height: 27px;"><img style="width: 100%;height: 100%;" src="img/icon/i_icon_05.svg"></div>'}
+        , {CODE:'img/icon/i_icon_06.svg', TEXT:'<div style="height: 27px;"><img style="width: 100%;height: 100%;" src="img/icon/i_icon_06.svg"></div>'}
+        , {CODE:'img/icon/i_icon_07.svg', TEXT:'<div style="height: 27px;"><img style="width: 100%;height: 100%;" src="img/icon/i_icon_07.svg"></div>'}
+        , {CODE:'img/icon/i_icon_08.svg', TEXT:'<div style="height: 27px;"><img style="width: 100%;height: 100%;" src="img/icon/i_icon_08.svg"></div>'}
+        , {CODE:'img/icon/i_icon_09.svg', TEXT:'<div style="height: 27px;"><img style="width: 100%;height: 100%;" src="img/icon/i_icon_09.svg"></div>'}
+        , {CODE:'img/icon/i_icon_10.svg', TEXT:'<div style="height: 27px;"><img style="width: 100%;height: 100%;" src="img/icon/i_icon_10.svg"></div>'}
+        , {CODE:'img/icon/i_icon_11.svg', TEXT:'<div style="height: 27px;"><img style="width: 100%;height: 100%;" src="img/icon/i_icon_11.svg"></div>'}
+        , {CODE:'img/icon/i_icon_12.svg', TEXT:'<div style="height: 27px;"><img style="width: 100%;height: 100%;" src="img/icon/i_icon_12.svg"></div>'}
+        , {CODE:'img/icon/i_icon_13.svg', TEXT:'<div style="height: 27px;"><img style="width: 100%;height: 100%;" src="img/icon/i_icon_13.svg"></div>'}
+        , {CODE:'img/icon/i_icon_14.svg', TEXT:'<div style="height: 27px;"><img style="width: 100%;height: 100%;" src="img/icon/i_icon_14.svg"></div>'}
+        , {CODE:'img/icon/i_icon_15.svg', TEXT:'<div style="height: 27px;"><img style="width: 100%;height: 100%;" src="img/icon/i_icon_15.svg"></div>'}
+        , {CODE:'img/icon/i_icon_16.svg', TEXT:'<div style="height: 27px;"><img style="width: 100%;height: 100%;" src="img/icon/i_icon_16.svg"></div>'}
+        , {CODE:'img/icon/i_icon_17.svg', TEXT:'<div style="height: 27px;"><img style="width: 100%;height: 100%;" src="img/icon/i_icon_17.svg"></div>'}
+        , {CODE:'img/icon/i_icon_18.svg', TEXT:'<div style="height: 27px;"><img style="width: 100%;height: 100%;" src="img/icon/i_icon_18.svg"></div>'}
+    ];
+
     var ACTIONS = axboot.actionExtend(fnObj, {
         PAGE_SEARCH: function (caller, act, data) {
 
@@ -271,6 +292,22 @@
                 },
                 columns: [
                     {key: "CATEGORY_NM", label: "카테고리 이름", width: 150, align: "left", editor: {type: "text"}, sortable: true},
+                    {key: "CATEGORY_ICON", label: "아이콘", width: 90, align: "left",
+                        formatter: function () {
+                            if (!this.value) {
+                                return "";
+                            }
+                            return '<div style="height: 27px;"><img style="width: 100%;height: 100%;" src="' + this.value + '"></div>';
+                        },
+                        editor: {
+                            type: "select", config: {
+                                columnKeys: {
+                                    optionValue: "CODE", optionText: "TEXT"
+                                },
+                                options: dl_ICON
+                            }
+                        }
+                    },
                     {key: "USE_YN", label: "사용여부", width: 150, align: "center", sortable: true,
                         editor: {
                             type: "checkbox", config: {height: 17, trueValue: 'Y', falseValue: 'N'}

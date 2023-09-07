@@ -5,10 +5,11 @@
 <mapper namespace="com.ensys.qray.web.category.categoryMapper">
 
     <select id="select" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
-        /*categoryMapper.xml.select*/
+        /*categoryMapper.select*/
         SELECT    A.COMPANY_CD AS "COMPANY_CD"
                 , A.CATEGORY_CD AS "CATEGORY_CD"
                 , A.CATEGORY_NM AS "CATEGORY_NM"
+                , A.CATEGORY_ICON AS "CATEGORY_ICON"
                 , A.PARENT_CD AS "PARENT_CD"
                 , A.USE_YN AS "USE_YN"
         FROM ES_CATEGORY A
@@ -25,6 +26,7 @@
             , CATEGORY_NM
             , PARENT_CD
             , USE_YN
+            , CATEGORY_ICON
             , INSERT_ID
             , INSERT_DTS
             , UPDATE_ID
@@ -40,6 +42,7 @@
             , #{CATEGORY_NM}
             , #{PARENT_CD}
             , #{USE_YN}
+            , #{CATEGORY_ICON}
             , #{INSERT_ID}
             , #{INSERT_DTS}
             , #{UPDATE_ID}
@@ -51,6 +54,7 @@
         UPDATE ES_CATEGORY
         SET CATEGORY_NM  =   #{CATEGORY_NM}
           ,	USE_YN  =   #{USE_YN}
+          ,	CATEGORY_ICON  =   #{CATEGORY_ICON}
           ,	UPDATE_ID  =   #{UPDATE_ID}
           ,	UPDATE_DTS =   #{UPDATE_DTS}
         WHERE COMPANY_CD = #{COMPANY_CD}
