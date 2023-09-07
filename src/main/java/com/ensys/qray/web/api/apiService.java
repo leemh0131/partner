@@ -24,7 +24,9 @@ public class apiService extends BaseService {
 		HashMap<String, Object> item = apimapper.partnerDetail(param);
 
 		String JOB_FIELD = "";
+		String JOB_FIELD_ICON = "";
 		String JOB_EP = "";
+		String JOB_EP_ICON = "";
 		String JOB_ZONE = "";
 		String ITEM_INTRO = "";
 
@@ -36,6 +38,14 @@ public class apiService extends BaseService {
 			if("JOB_FIELD".equals(key)){ // 전문분야
 				if(value != null){
 					JOB_FIELD = (String) value;
+				}
+			} else if("JOB_EP_ICON".equals(key)){ // 아이콘
+				if(value != null){
+					JOB_EP_ICON = (String) value;
+				}
+			} else if("JOB_FIELD_ICON".equals(key)){ // 아이콘
+				if(value != null){
+					JOB_FIELD_ICON = (String) value;
 				}
 			} else if("JOB_EP".equals(key)){ // 보유장비
 				if(value != null){
@@ -57,6 +67,8 @@ public class apiService extends BaseService {
 
 		List<String> JOB_FIELD_LIST = new ArrayList<>();
 		List<String> JOB_EP_LIST = new ArrayList<>();
+		List<String> JOB_FIELD_ICON_LIST = new ArrayList<>();
+		List<String> JOB_EP_ICON_LIST = new ArrayList<>();
 		List<String> JOB_ZONE_LIST = new ArrayList<>();
 		List<String> ITEM_INTRO_LIST = new ArrayList<>();
 
@@ -66,6 +78,14 @@ public class apiService extends BaseService {
 
 		if(!"".equals(JOB_EP)){
 			JOB_EP_LIST = Arrays.asList(JOB_EP.split("\\|"));
+		}
+
+		if(!"".equals(JOB_FIELD_ICON)){
+			JOB_FIELD_ICON_LIST = Arrays.asList(JOB_EP.split("\\|"));
+		}
+
+		if(!"".equals(JOB_EP_ICON)){
+			JOB_EP_ICON_LIST = Arrays.asList(JOB_EP.split("\\|"));
 		}
 
 		if(!"".equals(JOB_ZONE)){
@@ -81,6 +101,8 @@ public class apiService extends BaseService {
 		result.put("partner", partner);
 		result.put("job_field", JOB_FIELD_LIST);
 		result.put("job_ep", JOB_EP_LIST);
+		result.put("job_ep_icon", JOB_EP_ICON_LIST);
+		result.put("job_field_icon", JOB_FIELD_ICON_LIST);
 		result.put("job_zone", JOB_ZONE_LIST);
 		result.put("item_intro", ITEM_INTRO_LIST);
 		result.put("img", apimapper.partnerImg(param));
