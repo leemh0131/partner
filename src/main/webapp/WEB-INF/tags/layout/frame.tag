@@ -509,8 +509,6 @@
 	        <div class="header_wrap">
 	        <div class="header">
 		        <div class="content-head">
-		        	<!-- 	[ ******** Qray 고도화 상단바 영역 ******** ]		-->
-				    <p class="logo"><a href="#"><img src="/assets/images/login/img_logo.svg" alt="E&SYS" style="width: 50px;"></a><span>Expense Management System</span></p>
 	<!-- 			    <div class="icon-wrap"> -->
 				    <div class="gnb_wrap">
 				    	<div class="icon search">

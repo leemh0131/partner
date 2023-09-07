@@ -119,7 +119,6 @@
                 </div>
                 <!-- //border-line -->
             </div>
-            <p class="copyright">© 2022 E&Sys. All Rights Reserved. Q-Ray</p>
         </div>
     </jsp:body>
 </ax:layout>
