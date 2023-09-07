@@ -39,9 +39,13 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
 
 import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletRequest;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -82,6 +86,7 @@ public class FileService extends BaseService {
 		String strDate = HammerUtility.nowDate("yyyyMMddHHmmss");
 
 		List<HashMap<String, Object>> saveData = (List<HashMap<String, Object>>) param.get("saveData");
+		String filePath = FileSupport.getGlobalFilePath();
 
 		if (saveData != null && saveData.size() > 0) {
 			for (HashMap<String, Object> item : saveData) {
@@ -99,6 +104,7 @@ public class FileService extends BaseService {
 						}
 					} else if (item.get("__created__") != null) {
 						if ((boolean) item.get("__created__")) {
+							item.put("FILE_PATH", filePath);
 							fileMapper.insert(item);
 						}
 					}
@@ -636,35 +642,106 @@ public class FileService extends BaseService {
 		return fileNameExtension;
 	}
 
-	private String getFileSize(long size) {
-		String[] gubn = { "Byte", "KB", "MB" };
-		String returnSize = "";
-		int gubnKey = 0;
-		double changeSize = 0;
-		long fileSize = 0;
-		try {
-			fileSize = size;
-			for (int x = 0; (fileSize / (double) 1024) > 0; x++, fileSize /= (double) 1024) {
-				gubnKey = x;
-				changeSize = fileSize;
+	@Transactional
+	public void bannerUpload(MultipartFile[] bannerImage) throws Exception {
+
+		MultipartFile file = bannerImage[0];
+		String strDate = HammerUtility.nowDate("yyyyMMddHHmmss");
+		SessionUser user = SessionUtils.getCurrentUser();
+
+		HashMap<String, Object> param = new HashMap<>();
+		param.put("COMPANY_CD", user.getCompanyCd());
+		param.put("TABLE_ID", "CENTER_BANNER");
+		param.put("TABLE_KEY", "CENTER_BANNER");
+		param.put("FILE_SEQ", "1");
+
+
+		String filePath = FileSupport.getGlobalFilePath();
+
+		fileMapper.delete(param);
+
+		param.put("FILE_PATH", filePath);
+
+		// 파일 이름 가져오기
+		String originalFilename = file.getOriginalFilename();
+		param.put("ORGN_FILE_NAME", originalFilename);
+
+		// 확장자 가져오기
+		String fileExtension = "";
+		if (originalFilename != null) {
+			int lastDotIndex = originalFilename.lastIndexOf(".");
+			if (lastDotIndex != -1) {
+				fileExtension = originalFilename.substring(lastDotIndex + 1);
 			}
-			returnSize = changeSize + gubn[gubnKey];
-		} catch (Exception ex) {
-			returnSize = "0.0 Byte";
+		}
+		param.put("FILE_EXT", fileExtension);
+		String FILE_NAME = "center_banner_img";
+		param.put("FILE_NAME", FILE_NAME);
+
+		param.put("INSERT_ID", user.getUserId());
+		param.put("INSERT_DTS", strDate);
+		param.put("UPDATE_ID", user.getUserId());
+		param.put("UPDATE_DTS", strDate);
+
+		fileMapper.insert(param);
+
+		if (filePath != null) {
+			File dir = new File(filePath);
+
+			 //폴더가 없을 경우 생성
+			if (!dir.isDirectory()) {
+				dir.mkdir();
+			}
+
+			File newFile = new File(filePath + File.separator + FILE_NAME + "." + fileExtension);
+
+			if(newFile.isFile()){
+				newFile.delete();
+			}
+
+			file.transferTo(newFile);
+
+			HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+			String savePath = request.getSession().getServletContext().getRealPath("/file");
+			if("jpg".equals(param.get("FILE_EXT")) || "png".equals(param.get("FILE_EXT")) || "gif".equals(param.get("FILE_EXT")) || "pdf".equals(param.get("FILE_EXT"))){
+				File chkFile = new File(savePath + File.separator + param.get("FILE_NAME") + "." + param.get("FILE_EXT"));
+
+				if(chkFile.isFile()){
+					chkFile.delete();
+				}
+
+				File OrgnFile = new File(param.get("FILE_PATH") + File.separator + param.get("FILE_NAME") + "." + param.get("FILE_EXT"));
+
+				if (OrgnFile.isFile()) {
+					File copyFolder = new File(savePath);
+
+					if (!copyFolder.isDirectory()) {
+						copyFolder.mkdir();
+					}
+
+					FileInputStream fis = new FileInputStream(OrgnFile); // 읽을파일
+					FileOutputStream fos = new FileOutputStream(savePath + File.separator + param.get("FILE_NAME") + "." + param.get("FILE_EXT")); // 복사할파일
+					ScatteringByteChannel sbc = fis.getChannel();
+					GatheringByteChannel gbc = fos.getChannel();
+
+					ByteBuffer bb = ByteBuffer.allocateDirect(1024);
+
+					while (sbc.read(bb) != -1) {
+						bb.flip();
+						gbc.write(bb);
+						bb.clear();
+					}
+
+					fis.close();
+					fos.close();
+				}
+
+
+			}
+
 		}
 
-		return returnSize;
-	}
 
-	private boolean isValidExtension(String originalName) {
-		String originalNameExtension = originalName.substring(originalName.lastIndexOf(".") + 1);
-		switch (originalNameExtension) {
-		case "jpg":
-		case "png":
-		case "gif":
-			return true;
-		}
-		return false;
 	}
 
 }
