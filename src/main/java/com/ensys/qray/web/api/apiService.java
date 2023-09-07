@@ -81,11 +81,11 @@ public class apiService extends BaseService {
 		}
 
 		if(!"".equals(JOB_FIELD_ICON)){
-			JOB_FIELD_ICON_LIST = Arrays.asList(JOB_EP.split("\\|"));
+			JOB_FIELD_ICON_LIST = Arrays.asList(JOB_FIELD_ICON.split("\\|"));
 		}
 
 		if(!"".equals(JOB_EP_ICON)){
-			JOB_EP_ICON_LIST = Arrays.asList(JOB_EP.split("\\|"));
+			JOB_EP_ICON_LIST = Arrays.asList(JOB_EP_ICON.split("\\|"));
 		}
 
 		if(!"".equals(JOB_ZONE)){
