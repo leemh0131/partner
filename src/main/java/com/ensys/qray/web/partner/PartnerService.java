@@ -1,17 +1,21 @@
 package com.ensys.qray.web.partner;
 
 import com.ensys.qray.file.FileMapper;
+import com.ensys.qray.file.FileSupport;
 import com.ensys.qray.setting.base.BaseService;
 import com.ensys.qray.user.SessionUser;
 import com.ensys.qray.utils.HammerUtility;
 import com.ensys.qray.utils.SessionUtils;
 import com.ensys.qray.web.blurb01.blurb01Mapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
+
 
 @Service
 @Transactional
@@ -127,6 +131,7 @@ public class PartnerService extends BaseService {
 		if (fileData != null) {
 			List<HashMap<String, Object>> delete = (List<HashMap<String, Object>>) fileData.get("delete");
 			List<HashMap<String, Object>> gridData = (List<HashMap<String, Object>>) fileData.get("gridData");
+			String filePath = FileSupport.getGlobalFilePath();
 
 			for (HashMap<String, Object> item : delete) {
 				item.put("COMPANY_CD", user.getCompanyCd());
@@ -145,6 +150,7 @@ public class PartnerService extends BaseService {
 					item.put("INSERT_DTS", strDate);
 					item.put("UPDATE_ID", user.getUserId());
 					item.put("UPDATE_DTS", strDate);
+					item.put("FILE_PATH", filePath);
 
 					filemapper.insert(item);
 
@@ -214,6 +220,7 @@ public class PartnerService extends BaseService {
 	public void contractSave(HashMap<String, Object> param) throws Exception {
 		SessionUser user = SessionUtils.getCurrentUser();
 		String strDate = HammerUtility.nowDate("yyyyMMddHHmmss");
+		String filePath = FileSupport.getGlobalFilePath();
 
 		HashMap<String, Object> contract = (HashMap<String, Object>) param.get("contract");
 		HashMap<String, Object> contractM = (HashMap<String, Object>) param.get("contractM");
@@ -304,8 +311,9 @@ public class PartnerService extends BaseService {
 					item.put("INSERT_DTS", strDate);
 					item.put("UPDATE_ID", user.getUserId());
 					item.put("UPDATE_DTS", strDate);
-
+					item.put("FILE_PATH", filePath);
 					filemapper.insert(item);
+
 
 				}
 			}
