@@ -103,6 +103,7 @@
                 timeout: 600000,
                 callback: function (res) {
                     // 업로드 완료 후의 처리
+                    qray.alert("배너 설정이 완료되었습니다.");
                 },
                 options: {
                     onError: function (err) {
