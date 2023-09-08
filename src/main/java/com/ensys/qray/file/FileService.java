@@ -643,7 +643,7 @@ public class FileService extends BaseService {
 	}
 
 	@Transactional
-	public void bannerUpload(MultipartFile[] bannerImage) throws Exception {
+	public void bannerUpload(MultipartFile[] bannerImage,String device) throws Exception {
 
 		MultipartFile file = bannerImage[0];
 		String strDate = HammerUtility.nowDate("yyyyMMddHHmmss");
@@ -651,8 +651,19 @@ public class FileService extends BaseService {
 
 		HashMap<String, Object> param = new HashMap<>();
 		param.put("COMPANY_CD", user.getCompanyCd());
-		param.put("TABLE_ID", "CENTER_BANNER");
-		param.put("TABLE_KEY", "CENTER_BANNER");
+
+		String FILE_NAME = "";
+
+		if("pc".equals(device)){
+			param.put("TABLE_ID", "CENTER_BANNER_PC");
+			param.put("TABLE_KEY", "CENTER_BANNER_PC");
+			FILE_NAME = "center_banner_img_pc";
+		} else {
+			param.put("TABLE_ID", "CENTER_BANNER_MO");
+			param.put("TABLE_KEY", "CENTER_BANNER_MO");
+			FILE_NAME = "center_banner_img_mo";
+		}
+
 		param.put("FILE_SEQ", "1");
 
 
@@ -675,7 +686,6 @@ public class FileService extends BaseService {
 			}
 		}
 		param.put("FILE_EXT", fileExtension);
-		String FILE_NAME = "center_banner_img";
 		param.put("FILE_NAME", FILE_NAME);
 
 		param.put("INSERT_ID", user.getUserId());

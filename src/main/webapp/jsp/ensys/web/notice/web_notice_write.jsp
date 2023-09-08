@@ -11,7 +11,10 @@
 <ax:layout name="base">
     <jsp:attribute name="script">
         <ax:script-lang key="ax.script"/>
+        <script type="text/javascript" src="/assets/naver_smart_editor2/js/HuskyEZCreator.js?" charset="utf-8"></script>
+        <link rel="stylesheet" type="text/css" href="/assets/naver_smart_editor2/css/smart_editor2_in.css">
         <script type="text/javascript">
+            let oEditors = []
             var param = ax5.util.param(ax5.info.urlUtil().param);
             var initData = parent[param.modalName].modalConfig.sendData().initData;
             var BOARD_TYPE = nvl(initData["BOARD_TYPE"], '') != '' ? true : false;
@@ -26,7 +29,9 @@
                     var DATA = {};
                     DATA.BOARD_TYPE = initData["BOARD_TYPE"];
                     DATA.TITLE = $("#TITLE").val();
-                    DATA.CONTENTS = document.getElementById('CONTENTS').innerHTML;
+                    oEditors.getById["community_editor"].exec("UPDATE_CONTENTS_FIELD", []);
+                    let content = document.getElementById("community_editor").value;
+                    DATA.CONTENTS = content;
                     DATA.SEQ = Number(initData["SEQ"]);
 
                     var parameterData = {};
@@ -39,7 +44,7 @@
                         if (this.key == "ok") {
                             axboot.ajax({
                                 type: "POST",
-                                url: ["WEBNOTICE01", "save"],
+                                url: ["SPDNORMAL00001", "save"],
                                 data: JSON.stringify(parameterData),
                                 callback: function (result) {
                                     parent[param.callBack](DATA);
@@ -54,20 +59,36 @@
                 },
             });
 
-
             // fnObj 기본 함수 스타트와 리사이즈
             fnObj.pageStart = function () {
                 this.pageButtonView.initView();
 
-                if (CONTENTS) {
-                    document.getElementById('CONTENTS').innerHTML = initData["CONTENTS"];
-                }
+                nhn.husky.EZCreator.createInIFrame({
+                    oAppRef: oEditors,
+                    elPlaceHolder: "community_editor",
+                    sSkinURI: "/assets/naver_smart_editor2/SmartEditor2SkinCommunity.html",
+                    fCreator: "createSEditor2",
+                    htParams : {
+                        bUseModeChanger : false, // 모드 탭(Editor | HTML | TEXT) 사용 여부 (true:사용/ false:사용하지 않음)
+                        bUseToolbar : true
+                    },
+                    fOnAppLoad : function() {
+                        // Editor 에 값 셋팅
+                        if(CONTENTS){
+                            oEditors.getById["community_editor"].exec("PASTE_HTML", [initData.CONTENTS]);
+                        } else {
+                            oEditors.getById["community_editor"].exec("PASTE_HTML", ['']);
+                        }
+                    },
+                });
+
                 if (TITLE) {
                     $("#TITLE").val(initData["TITLE"])
                 }
                 $("#FILE").setTableId(initData["BOARD_TYPE"]);
                 $("#FILE").setTableKey(initData["SEQ"]);
                 $("#FILE").read();
+
             };
 
 
@@ -88,235 +109,50 @@
                 }
             });
 
-            function htmledit(excute, values) {
-                if (values == null) {
-                    document.execCommand(excute);
-                } else {
-                    document.execCommand(excute, "", values);
-                }
-            }
-
-
         </script>
     </jsp:attribute>
-    <jsp:body>
-        <style>
-
-            i {
-                font-style: italic;
-            }
-
-            html, body {
-                margin: 0;
-                padding: 0;
-                width: 100%;
-                height: 100%;
-                font-size: 12px;
-            }
-
-            td {
-                border: 1px solid #ddd;
-                padding-top: 7px;
-            }
-
-
-            #jb-container {
-                padding: auto;
-                margin: auto;
-                width: 100%;
-                height: 500px;
-                border: 0px solid #eee;
-            }
-
-            #jb-header {
-                margin-bottom: 20px;
-            }
-
-            #jb-content {
-                width: 100%;
-                height: 400px;
-                min-height: 50px;
-                max-height: 500px;
-                border: 0px solid #eee;
-            }
-
-            .inputText {
-                outline-style: none;
-                border: 0px solid #eee;
-            }
-
-            input:disabled {
-                background-color: #ffffff;
-            }
-
-            .noresize {
-                outline-style: none;
-                border: 1px solid #eee;
-                resize: none; /* 사용자 임의 변경 불가 */
-                width: 100%;
-                height: 100%;
-                overflow: auto;
-            }
-
-            .editor {
-                margin: 0 auto 5px;
-                height: 40px;
-                border: 1px solid #ddd;
-            }
-
-            .editor table {
-                border: 0px;
-            }
-
-            .editor table tr {
-                border: 0px;
-            }
-
-            .editor table td {
-                border: 0px;
-            }
-
-            .editor button:first-child {
-                width: 45px;
-                height: 25px;
-                border-radius: 3px;
-                background: none;
-                border: none;
-                box-sizing: border-box;
-                padding: 0;
-                color: #a6a6a6;
-                cursor: pointer;
-                outline: none;
-            }
-
-            .editor button {
-                width: 45px;
-                height: 25px;
-                border-radius: 3px;
-                background: none;
-                border-left: 1px solid #eee;
-                box-sizing: border-box;
-                padding: 0;
-                color: #a6a6a6;
-                cursor: pointer;
-                outline: none;
-            }
-
-            .editor button:last-child {
-                width: 45px;
-                height: 25px;
-                border-radius: 3px;
-                background: none;
-                border-right: 1px solid #eee;
-                box-sizing: border-box;
-                padding: 0;
-                color: #a6a6a6;
-                cursor: pointer;
-                outline: none;
-            }
-
-            .editor select {
-                width: 80px;
-                height: 25px;
-                border-radius: 3px;
-                background: none;
-                border: 1px solid #eee;
-                box-sizing: border-box;
-                padding: 0;
-                color: #a6a6a6;
-                cursor: pointer;
-                outline: none;
-            }
-        </style>
-
-        <div id="jb-container">
-            <div id="jb-header">
-                <table style="minWidth:800px;">
-                    <tr>
-                        <td style="background: #f6f6f6; width: 150px; text-align: center; letter-spacing: 2px;"><label
-                                style="color: #656a6f;">제목</label>
-                        </td>
-                        <td style="padding: 10px;">
-                            <input type="text" id="TITLE" class="inputText" style="width: 760px; height: 30px;">
-                        </td>
-                    </tr>
-                </table>
+    <jsp:body >
+        <%--상단버튼--%>
+        <div data-page-buttons="">
+            <div class="button-warp">
+                <button type="button" class="btn btn-info" data-page-btn="save">저장</button>
+                <button type="button" class="btn btn-info" data-page-btn="close">취소</button>
             </div>
+        </div>
+
+        <div role="page-header" id="pageheader">
+            <ax:form name="searchView0">
+                <ax:tbl clazz="ax-search-tbl" minWidth="500px">
+                    <ax:tr>
+                        <ax:td label='제목' width="400px">
+                            <input type="text" id="TITLE" class="inputText" style="width: 300px; height: 30px;">
+                        </ax:td>
+                        <ax:td label='형태' width="100px">
+
+                        </ax:td>
+                    </ax:tr>
+                </ax:tbl>
+            </ax:form>
+        </div>
+        <br>
+        <div id="content" style="overflow-y:auto;" name="콘텐츠">
+            <ax:form name="binder-form">
+                <ax:tbl clazz="ax-search-tb2" minWidth="650px">
+                    <ax:tr>
+                        <ax:td label='내용' width="100%">
+                            <div id="smarteditor" style="margin-top:10px;height:360px;">
+                            <textarea name="community_editor" id="community_editor"
+                                      rows="35" cols="10"
+                                      placeholder="내용을 입력해주세요"
+                                      style="width:100%;height:310px;"></textarea>
+                            </div>
+                        </ax:td>
+                    </ax:tr>
+                </ax:tbl>
+            </ax:form>
+        </div>
+        <%--<div id="jb-container" style="overflow-scrolling: auto;">
             <div id="jb-content">
-                <div class="editor" for="CONTENTS">
-                    <table>
-                        <colgroup>
-                            <col style="width:120px">
-                            <col style="width:100px">
-                            <col style="width:95px">
-                            <col>
-                        </colgroup>
-                        <tr>
-                            <td style="padding-left:20px;">
-                                <select onchange="htmledit('fontname',this.value);">
-                                    <option value="돋음">글꼴</option>
-                                    <option value="돋음">돋음</option>
-                                    <option value="굴림">굴림</option>
-                                    <option value="궁서">궁서</option>
-                                </select>
-                            </td>
-                            <td>
-                                <select onchange="htmledit('fontSize',this.value);">
-                                    <option value="2">크기</option>
-                                    <option value="2">2</option>
-                                    <option value="4">4</option>
-                                    <option value="6">6</option>
-                                    <option value="8">8</option>
-                                </select>
-                            </td>
-                            <!--
-                            <td style="padding-left: 10px;"><img src="/assets/images/editor/btn_n_bold.gif"
-                                                                 style="height: 25px;" onclick="htmledit('BOLD');">
-                            </td>
-                            <td><img src="/assets/images/editor/btn_n_underline.gif" style="height: 25px;"
-                                     onclick="htmledit('underline');"></td>
-                            <td><img src="/assets/images/editor/btn_n_Italic.gif" style="height: 25px;"
-                                     onclick="htmledit('italic')"></td>
-
-                            <td style="padding-left: 10px;"><img src="/assets/images/editor/btn_n_alignleft.gif"
-                                                                 style="height: 25px;" onclick="htmledit('justifyleft');">
-                            </td>
-                            <td><img src="/assets/images/editor/btn_n_aligncenter.gif" style="height: 25px;"
-                                     onclick="htmledit('justifycenter');">
-                            </td>
-                            <td><img src="/assets/images/editor/btn_n_alignright.gif" style="height: 25px;"
-                                     onclick="htmledit('justifyright');"></td>
-                            <td><img src="/assets/images/editor/btn_n_alignjustify.gif" style="height: 25px;"
-                                     onclick="htmledit('justify');">
-                            </td>
-                            -->
-                            <td style="font-size:0;">
-                                <img src="/assets/images/editor/btn_n_bold.gif" style="display:inline-block; height: 25px;" onclick="htmledit('BOLD');">
-                                <img src="/assets/images/editor/btn_n_underline.gif" style="display:inline-block; height: 25px;" onclick="htmledit('underline');">
-                                <img src="/assets/images/editor/btn_n_Italic.gif" style="display:inline-block; height: 25px;" onclick="htmledit('italic')">
-                            </td>
-                            <td style="font-size:0;">
-                                <img src="/assets/images/editor/btn_n_alignleft.gif" style="display:inline-block; height: 25px;" onclick="htmledit('justifyleft');">
-                                <img src="/assets/images/editor/btn_n_aligncenter.gif" style="display:inline-block; height: 25px;" onclick="htmledit('justifycenter');">
-                                <img src="/assets/images/editor/btn_n_alignright.gif" style="display:inline-block; height: 25px;" onclick="htmledit('justifyright');">
-                                <img src="/assets/images/editor/btn_n_alignjustify.gif" style="display:inline-block; height: 25px;" onclick="htmledit('justify');">
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-
-
-                <table style="minWidth:800px;">
-                    <tr>
-                        <td style="background: #f6f6f6; width: 150px; text-align: center; letter-spacing: 2px; padding:10px;"><label
-                                style="color: #656a6f;">내용</label>
-                        </td>
-                        <td style="padding: 10px;">
-                            <div id="CONTENTS" name="CONTENTS" class="noresize" contenteditable="true"
-                                 style="width: 765px; height: 300px; "/>
-                        </td>
-                    </tr>
-                </table>
                 <table style="minWidth:800px;">
                     <tr>
                         <td style="background: #f6f6f6; width: 150px; text-align: center; letter-spacing: 2px;"><label
@@ -335,6 +171,6 @@
                 <button type="button" class="btn btn-info" data-page-btn="save">저장</button>
                 <button type="button" class="btn btn-info" data-page-btn="close">취소</button>
             </div>
-        </div>
+        </div>--%>
     </jsp:body>
 </ax:layout>

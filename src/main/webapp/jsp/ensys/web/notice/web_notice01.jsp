@@ -87,6 +87,7 @@
                     pRCnt = parseInt(pageNo / pageSize) - 1;
                 } //이전 화살표
                 if (pageNo > pageSize) {
+                    console.log("이전 gopaging");
                     var s2;
                     if (pageNo % pageSize == 0) {
                         s2 = pageNo - pageSize;
@@ -100,6 +101,7 @@
                     html.push("</a>");
                     html.push('</span>');
                 } else {
+                    console.log("이전 #");
                     html.push('<span>');
                     html.push('<a href="#" class="nav prev">');
                     html.push('</a>');
@@ -149,10 +151,10 @@
 
                     axboot.ajax({
                         type: "POST",
-                        url: ["WEBNOTICE01", "selectTOT"],
+                        url: ["SPDNORMAL00001", "selectTOT"],
                         async: false,
                         data: JSON.stringify({
-                            "NOWPAGE": Number(page),
+                            "NOWPAGE": page,
                             "PAGING_SIZE": 0,
                             "BOARD_TYPE": BOARD_TYPE,
                             "KEYWORD": keyword,
@@ -168,13 +170,13 @@
 
                     axboot.ajax({
                         type: "POST",
-                        url: ["WEBNOTICE01", "select"],
+                        url: ["SPDNORMAL00001", "select"],
                         async: false,
                         data: JSON.stringify({
                             "BOARD_TYPE": BOARD_TYPE,
                             "KEYWORD": keyword,
                             "CONDITION": condition,
-                            "NOWPAGE": Number(page),
+                            "NOWPAGE": page,
                             "PAGING_SIZE": Number(nvl(paging_size, 0)),
                             "OPT": 0,
                             "SEQ": 0
@@ -207,7 +209,7 @@
                             for (var i = 0; i < res.list.length; i++) {
                                 var result = res.list[i];
 
-                                var detailPath = "/jsp/ensys/web/notice/web_notice_detail.jsp?page=" + page + "&BOARD_TYPE=" + BOARD_TYPE +
+                                var detailPath = "/jsp/ensys/spd/normal/web_notice_detail.jsp?page=" + page + "&BOARD_TYPE=" + BOARD_TYPE +
                                     "&seq=" + Number(result.SEQ) + searchQuery + pagingQuery;
                                 html = "";
                                 html += "<tr class='selectTR' onclick=\"goPage('" + detailPath + "')\" style=\"cursor:hand\">";

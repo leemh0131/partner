@@ -318,8 +318,8 @@ public class FileController extends BaseController {
 
 	@ResponseBody
 	@RequestMapping(value = "bannerUpload", method = RequestMethod.POST, produces = APPLICATION_JSON)
-	public ApiResponse draftAttachment(@RequestParam("bannerImage") MultipartFile[] bannerImage) throws Exception {
-		fileService.bannerUpload(bannerImage);
+	public ApiResponse draftAttachment(@RequestParam("bannerImage") MultipartFile[] bannerImage, @RequestParam("device") String device) throws Exception {
+		fileService.bannerUpload(bannerImage, device);
 		return ok();
 	}
 

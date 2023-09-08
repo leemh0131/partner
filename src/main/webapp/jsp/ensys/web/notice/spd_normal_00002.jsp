@@ -87,6 +87,7 @@
                     pRCnt = parseInt(pageNo / pageSize) - 1;
                 } //이전 화살표
                 if (pageNo > pageSize) {
+                    console.log("이전 gopaging");
                     var s2;
                     if (pageNo % pageSize == 0) {
                         s2 = pageNo - pageSize;
@@ -100,6 +101,7 @@
                     html.push("</a>");
                     html.push('</span>');
                 } else {
+                    console.log("이전 #");
                     html.push('<span>');
                     html.push('<a href="#" class="nav prev">');
                     html.push('</a>');
@@ -149,7 +151,7 @@
 
                     axboot.ajax({
                         type: "POST",
-                        url: ["WEBNOTICE01", "selectTOT"],
+                        url: ["SPDNORMAL00001", "selectTOT"],
                         async: false,
                         data: JSON.stringify({
                             "NOWPAGE": page,
@@ -168,7 +170,7 @@
 
                     axboot.ajax({
                         type: "POST",
-                        url: ["WEBNOTICE01", "select"],
+                        url: ["SPDNORMAL00001", "select"],
                         async: false,
                         data: JSON.stringify({
                             "BOARD_TYPE": BOARD_TYPE,

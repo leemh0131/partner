@@ -166,6 +166,12 @@ public class apiService extends BaseService {
 
 		result.put("blurbMaster", blurbMasterSelect);
 
+		HashMap<String, Object> map = new HashMap<>();
+		map.put("COMPANY_CD", company.get("COMPANY_CD"));
+		map.put("IMG_URL", param.get("IMG_URL"));
+
+		result.put("center_banner_img", apimapper.centerBannerImg(map));
+
 		return result;
 	}
 

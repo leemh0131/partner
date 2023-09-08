@@ -13,8 +13,8 @@
 
 
         <ax:script-lang key="ax.script"/>
-
-
+        <script type="text/javascript" src="/assets/naver_smart_editor2/js/HuskyEZCreator.js?" charset="utf-8"></script>
+        <link rel="stylesheet" type="text/css" href="/assets/naver_smart_editor2/css/smart_editor2_in.css">
         <script type="text/javascript">
             var url = document.location.search;
 
@@ -27,14 +27,14 @@
                 eval("InitData." + key + "= value");
             }
 
-            var parentUrl = (InitData.BOARD_TYPE == 'notice') ? "/jsp/ensys/web/notice/web_notice01.jsp" : "../bbs/p_cz_q_bbs_file_m.jsp";
+            var parentUrl = (InitData.BOARD_TYPE == 'notice') ? "/jsp/ensys/spd/normal/spd_normal_00001.jsp" : "../bbs/p_cz_q_bbs_file_m.jsp";
 
             var fnObj = {}, CODE = {};
             var ACTIONS = axboot.actionExtend(fnObj, {
                 PAGE_SEARCH: function (caller, act, data) {
                     axboot.ajax({
                         type: "POST",
-                        url: ["WEBNOTICE01", "updateHit"],
+                        url: ["SPDNORMAL00001", "updateHit"],
                         async: false,
                         data: JSON.stringify({
                             "BOARD_TYPE": InitData.BOARD_TYPE,
@@ -49,7 +49,7 @@
 
                             axboot.ajax({
                                 type: "POST",
-                                url: ["WEBNOTICE01", "selectDetail"],
+                                url: ["SPDNORMAL00001", "selectDetail"],
                                 async: false,
                                 data: JSON.stringify({
                                     "BOARD_TYPE": InitData.BOARD_TYPE,
@@ -80,7 +80,7 @@
 
                                     axboot.ajax({
                                         type: "POST",
-                                        url: ["WEBNOTICE01", "selectDetailLIK"],
+                                        url: ["SPDNORMAL00001", "selectDetailLIK"],
                                         async: false,
                                         data: JSON.stringify({
                                             "BOARD_TYPE": InitData.BOARD_TYPE,
@@ -88,8 +88,9 @@
                                             "OPT": "LIK"
                                         }),
                                         callback: function (res) {
+                                            console.log("다음글 이전글 : ", res);
 
-                                            var query = "/jsp/ensys/web/notice/web_notice_detail.jsp?";
+                                            var query = "/jsp/ensys/spd/normal/web_notice_detail.jsp?";
                                             for (var i = 0; i < res.list.length; i++) {
                                                 var result = res.list[i];
                                                 if (result.STAT_CD == 'NEXT') {
@@ -144,7 +145,7 @@
                             window.location.reload();
                         });
                     }
-                    $.openCommonPopup("/jsp/ensys/web/notice/web_notice_write.jsp", "userCallBack", null, '',
+                    $.openCommonPopup("/jsp/ensys/spd/normal/web_notice_write.jsp", "userCallBack", null, '',
                         {
                             BOARD_TYPE: InitData.BOARD_TYPE,
                             SEQ: Number(InitData.seq),
@@ -165,7 +166,7 @@
 
                             axboot.ajax({
                                 type: "PUT",
-                                url: ["WEBNOTICE01", "delete"],
+                                url: ["SPDNORMAL00001", "delete"],
                                 data: JSON.stringify(data),
                                 callback: function (result) {
                                     qray.alert('성공적으로 삭제되었습니다.').then(function(){

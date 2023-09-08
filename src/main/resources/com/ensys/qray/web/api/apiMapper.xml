@@ -87,4 +87,13 @@
         ORDER BY RANDOM();
     </select>
 
+    <select id="centerBannerImg" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+        /*apiMapper.centerBannerImg*/
+        SELECT CONCAT(#{IMG_URL}, FILE_NAME,'.', FILE_EXT) AS IMG_URL, TABLE_ID AS TABLE_ID
+        FROM ES_FILE
+        WHERE COMPANY_CD = #{COMPANY_CD}
+          AND TABLE_ID LIKE '%CENTER_BANNER%'
+          AND TABLE_KEY LIKE '%CENTER_BANNER%'
+    </select>
+
 </mapper>

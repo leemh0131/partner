@@ -19,22 +19,16 @@
 
     $(document).ready(function(){
 
-        axboot.ajax({
-            type: "POST",
-            url: ["file", "search"],
-            data: JSON.stringify({
-                "TABLE_ID": "CENTER_BANNER",
-                "TABLE_KEY": "CENTER_BANNER"
-            }),
-            callback: function (res) {
 
-                if(nvl(res.list) != ''){
-                    $('#previewImage').show();
-                    $('#previewImage').attr('src', '/file/' + res.list[0].FILE_NAME + '.' + res.list[0].FILE_EXT);
-                }
+        let previewPc = $.DATA_SEARCH('file', 'search', {TABLE_ID: "CENTER_BANNER_PC",  TABLE_KEY: "CENTER_BANNER_PC"}).list;
+        let previewMo = $.DATA_SEARCH('file', 'search', {TABLE_ID: "CENTER_BANNER_MO",  TABLE_KEY: "CENTER_BANNER_MO"}).list;
 
-            }
-        });
+        if(previewPc != ''){
+            $('#previewImagePc').attr('src', '/file/' + previewPc[0].FILE_NAME + '.' + previewPc[0].FILE_EXT);
+        }
+        if(previewMo != ''){
+            $('#previewImageMo').attr('src', '/file/' + previewMo[0].FILE_NAME + '.' + previewMo[0].FILE_EXT);
+        }
 
 
     });
@@ -44,26 +38,50 @@
     }
 
     // 파일 선택 시 미리보기 이미지 업데이트
-    const bannerImageInput = document.getElementById("bannerImage");
-    const previewImage = document.getElementById("previewImage");
+    const bannerImageInput = document.getElementById("bannerImagePc");
+    const previewImagePc = document.getElementById("previewImagePc");
 
     bannerImageInput.addEventListener("change", function() {
         if (bannerImageInput.files && bannerImageInput.files[0]) {
             const reader = new FileReader();
 
             reader.onload = function(e) {
-                previewImage.src = e.target.result;
-                previewImage.style.display = "block";
+                previewImagePc.src = e.target.result;
+                previewImagePc.style.display = "block";
             };
 
             reader.readAsDataURL(bannerImageInput.files[0]);
         }
     });
 
-    $("#center-btn").click(function(e) {
+    // 파일 선택 시 미리보기 이미지 업데이트
+    const bannerImageInputMo = document.getElementById("bannerImageMo");
+    const previewImageMo = document.getElementById("previewImageMo");
+
+    bannerImageInputMo.addEventListener("change", function() {
+        if (bannerImageInputMo.files && bannerImageInputMo.files[0]) {
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                previewImageMo.src = e.target.result;
+                previewImageMo.style.display = "block";
+            };
+
+            reader.readAsDataURL(bannerImageInputMo.files[0]);
+        }
+    });
+
+    function uploadimg(item){
 
         // 파일 입력 필드 가져오기
-        var fileInput = document.getElementById('bannerImage');
+        var fileInput = '';
+
+        if(item == 'pc'){
+            fileInput = document.getElementById('bannerImagePc');
+        } else {
+            fileInput = document.getElementById('bannerImageMo');
+        }
+
         // 선택된 파일 가져오기
         var file = fileInput.files[0];
 
@@ -71,6 +89,7 @@
             // FormData 객체 생성
             var formData = new FormData();
             formData.append('bannerImage', file);
+            formData.append('device', item);
 
             axboot.ajax({
                 type: "POST",
@@ -96,6 +115,12 @@
             qray.alert('파일을 선택하세요.');
         }
 
+    }
+
+    $("#center-btn").click(function(e) {
+
+
+
     });
 
 </script>
@@ -107,6 +132,13 @@
 
     h1 {
         color: #333;
+    }
+
+    .center-banner-img {
+        width: 700px;
+        height: 200px;
+        margin: auto;
+        align-items: center;
     }
 
     form {
@@ -135,15 +167,6 @@
         cursor: pointer;
     }
 
-    img#previewImage {
-        display: none;
-        max-width: 300px;
-        max-height: 300px;
-        margin-top: 10px;
-        margin-bottom: 10px;
-        align-items: center;
-    }
-
     ::-webkit-scrollbar {
         width: 4px;
         background: rgba(255, 255, 255, 0.1);
@@ -160,9 +183,8 @@
     .center-banner {
         margin: 20px auto;
         padding: 20px;
-        width: 100%;
+        width: 60%;
         background-color: #f9f9f9;
-        border-radius:3%; /* 동그라미 모양의 테두리 */
         border: 1px solid #ccc;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     }
@@ -173,17 +195,33 @@
         <div class="contents">
             <div class="dashboard" style="float: left; width: 100%">
                 <!-- //border-line -->
-                <div class="dashboard-line" style="width: 100%;" >
-                    <div class="center-banner">
-                        <h1>센터 배너 이미지 등록 및 미리보기</h1>
+                <div class="dashboard-line" style="width: 100%;display: flex" >
+                    <div class="center-banner" style="float: left;width: 49%;">
+                        <h1>센터 PC 배너 이미지 등록 및 미리보기</h1>
                         <div>
-                            <label for="bannerImage">배너 이미지 선택:</label>
-                            <input type="file" name="bannerImage" id="bannerImage" accept="image/*">
-                            <label class="custom-file-upload" for="bannerImage">파일 선택</label>
+                            <label for="bannerImagePc">배너 이미지 선택:</label>
+                            <input type="file" name="bannerImagePc" id="bannerImagePc" accept="image/*">
+                            <label class="custom-file-upload" for="bannerImagePc">파일 선택</label>
                             <br>
-                            <img src="#" alt="미리보기 이미지" id="previewImage">
+                            <div class="center-banner-img">
+                            <img src="#" alt="미리보기 이미지" id="previewImagePc">
+                            </div>
                             <br>
-                            <button type="button" class="custom-file-upload" id="center-btn">적용</button>
+                            <button type="button" class="custom-file-upload" onclick="uploadimg('pc')">적용</button>
+                        </div>
+                    </div>
+                    <div class="center-banner" style="float: left;width: 49%;">
+                        <h1>센터 MOBILE 배너 이미지 등록 및 미리보기</h1>
+                        <div>
+                            <label for="bannerImagePc">배너 이미지 선택:</label>
+                            <input type="file" name="bannerImageMo" id="bannerImageMo" accept="image/*">
+                            <label class="custom-file-upload" for="bannerImageMo">파일 선택</label>
+                            <br>
+                            <div class="center-banner-img">
+                            <img src="#" alt="미리보기 이미지" id="previewImageMo">
+                            </div>
+                            <br>
+                            <button type="button" class="custom-file-upload" onclick="uploadimg('mo')">적용</button>
                         </div>
                     </div>
                 </div>
