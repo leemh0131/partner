@@ -29,7 +29,7 @@
         <if test=' PARTNER_CD != null and PARTNER_CD != ""'>
             AND	A.PARTNER_CD = #{PARTNER_CD}
         </if>
-
+        ORDER BY A.PARTNER_NM
 
     </select>
 
@@ -51,6 +51,7 @@
              ,	A.UPDATE_DTS    AS "UPDATE_DTS"
         FROM ES_REVIEW_WRITE A
         WHERE A.COMPANY_CD  = #{COMPANY_CD}
+        AND	A.PARTNER_CD = #{PARTNER_CD}
     </select>
 
 <!--    <insert id="reviewsHcreated" parameterType="hashmap" statementType="CALLABLE">-->
@@ -116,7 +117,7 @@
             AND NAME = #{IP}
             AND NAME = #{KAKAO_ID}
            )
-        ,   #{WRITE_DT}
+        ,   #{INSERT_DTS}
         ,   #{STAR_SCORE}
         ,   #{RMK_DC}
         ,   #{INSERT_ID}

@@ -38,6 +38,7 @@ public class reviewsService extends BaseService {
     public void save(HashMap<String, Object> param) throws Exception {
         SessionUser user = SessionUtils.getCurrentUser();
         String strDate = HammerUtility.nowDate("yyyyMMddHHmmss");
+        String strCur = HammerUtility.nowDate("yyyyMMdd");
 
 //        HashMap<String, Object> gridView01 = (HashMap<String, Object>) param.get("gridView01");
 
@@ -75,6 +76,7 @@ public class reviewsService extends BaseService {
 
         for(HashMap<String, Object> item : (List<HashMap<String, Object>>)gridView02.get("created")) {
             item.put("COMPANY_CD", user.getCompanyCd());
+            item.put("WRITE_DT", strCur);
             item.put("INSERT_ID", user.getUserId());
             item.put("INSERT_DTS", strDate);
             item.put("UPDATE_ID", user.getUserId());

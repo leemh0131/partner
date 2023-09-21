@@ -3,7 +3,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="ax" tagdir="/WEB-INF/tags" %>
 
-<ax:set key="title" value="후기작성"/>
+<ax:set key="title" value="거래처 후기관리"/>
 <ax:set key="page_desc" value="${pageRemark}"/>
 <ax:set key="page_auto_height" value="true"/>
 <ax:layout name="base">
@@ -38,12 +38,11 @@
                 qray.loading.hide();
               });
 
-
             },
             //저장
             PAGE_SAVE: function (caller, act, data) {
 
-              var gridView01 = fnObj.gridView01.target.getDirtyData();
+              // var gridView01 = fnObj.gridView01.target.getDirtyData();
               var gridView02 = fnObj.gridView02.target.getDirtyData();
 
               //fnObj.gridView01.target.getDirtyData().verify[0]
@@ -81,6 +80,7 @@
                 qray.loading.hide();
               });
             },
+
             // //그리드1 추가
             // ITEM_ADD: function(caller, act, data){
             //   caller.gridView02.clear();
@@ -128,12 +128,12 @@
               caller.gridView02.target.setValue(lastIdx - 1, 'PARTNER_CD', PARTNER_CD);
               caller.gridView02.target.setValue(lastIdx - 1, 'NAME', "");
               caller.gridView02.target.setValue(lastIdx - 1, 'IP', "");   // 이건 민호씨한테 물어보자
-              caller.gridView02.target.setValue(lastIdx - 1, 'kakao_id', "");
+              caller.gridView02.target.setValue(lastIdx - 1, 'KAKAO_ID', "");
               caller.gridView02.target.setValue(lastIdx - 1, 'SEQ', 0);
               caller.gridView02.target.setValue(lastIdx - 1, 'INSERT_DTS', "");
-              caller.gridView02.target.setValue(lastIdx - 1, 'rmk_dc', "");
-              caller.gridView02.target.setValue(lastIdx - 1, 'star_score', 0);
-
+              caller.gridView02.target.setValue(lastIdx - 1, 'RMK_DC', "");
+              caller.gridView02.target.setValue(lastIdx - 1, 'STAR_SCORE', 0);
+              // ACTIONS.dispatch(ACTIONS.ITEM_CLICK2);
             },
             //그리드2 삭제
             ITEM_DEL2: function(caller, act, data){
@@ -193,13 +193,22 @@
                 },
                 columns: [
 
-                  { key: "PARTNER_CD", label: "거래처코드", width: 100, align: "center", editor: false, sortable: true, },
-                  { key: "PARTNER_NM", label: "거래처명", width: 100, align: "left", editor: false, sortable: true, },
-                  { key: "COMPANY_NO", label: "사업자번호", width: 100, align: "center", editor: false, sortable: true,},
-                  { key: "CEO_NM", label: "대표자", width: 80, align: "left", editor: false, sortable: true, },
-                  { key: "JOB_FIELD_NM", label: "전문분야", width: 80, align: "left", editor: false, sortable: true, },
-                  { key: "JOB_ZONE_NM", label: "업무지역", width: 80, align: "left", editor: false, sortable: true, },
-                  { key: "KAKAOTALK", label: "카카오톡", width: 80, align: "left", editor: false, sortable: true, },
+                  { key: "PARTNER_CD", label: "거래처코드", width: 120, align: "center", editor: false, sortable: true, },
+                  { key: "PARTNER_NM", label: "거래처명", width: 150, align: "left", editor: false, sortable: true, },
+                  { key: "COMPANY_NO", label: "사업자번호", width: 130, align: "center", editor: false, sortable: true,
+                    formatter: function () {
+                      var returnValue = this.item.COMPANY_NO;
+                      if (nvl(this.item.COMPANY_NO, '') != '') {
+                        this.item.COMPANY_NO = this.item.COMPANY_NO.replace(/\-/g, '');
+                        returnValue = $.changeDataFormat(this.item.COMPANY_NO, 'company');
+                      }
+                      return returnValue;
+                    }
+                  },
+                  { key: "CEO_NM", label: "대표자", width: 100, align: "left", editor: false, sortable: true, },
+                  { key: "JOB_FIELD_NM", label: "전문분야", width: 180, align: "left", editor: false, sortable: true, },
+                  { key: "JOB_ZONE_NM", label: "업무지역", width: 120, align: "left", editor: false, sortable: true, },
+                  { key: "KAKAOTALK", label: "카카오톡", width: 120, align: "left", editor: false, sortable: true, },
 
                 ],
                 body: {
@@ -263,20 +272,36 @@
                   return JSON.stringify($.extend({}, selected));
                 },
                 columns: [
-                  {key: "partner_cd", label: "거래처코드", width: 0, align: "left", editor: false, hidden: true, sortable: true,},
-                  {key: "name", label: "이름", width: 80, align: "left", editor: true, hidden: true, sortable: true,},
-                  {key: "ip", label: "ip", width: 80, align: "left", editor: false, hidden: true, sortable: true,},
-                  {key: "kakao_id", label: "카카오ID", width: 80, align: "left", editor: true, hidden: true, sortable: true,},
+                  {key: "PARTNER_CD", label: "거래처코드", width: 120, align: "left", editor: false, sortable: true,},
+                  {key: "NAME", label: "이름", width: 120, align: "left", sortable: true, editor: {type: "text"}},
+                  {key: "IP", label: "ip", width: 120, align: "left"
+                        , editor: {
+                          type: "text",
+                                  attributes: {
+                            'maxlength': 15,
+                          }
+                        },
+                  },
+                  {key: "KAKAO_ID", label: "카카오ID", width: 120, align: "left", editor: {type: "text"}, sortable: true,},
                   {key: "SEQ", label: "순번", width: 60, align: "left", sortable: true, editor: false, hidden: true},
-
                   {key: "INSERT_DTS", label: "작성일자", width: 150, align: "center", sortable: true,
                           formatter : function() {
                     return $.changeDataFormat(this.value,"yyyyMMddhhmmss")
                   },
                   },
 
-                  {key: "rmk_dc", label: "작성내용", width:100, align: "left", editor: true, hidden: true, sortable: true,},
-                  {key: "star_score", label: "별점", width: 40, align: "left", editor: true, hidden: true, sortable: true,},
+                  {key: "RMK_DC", label: "작성내용", width:200, align: "left", editor: {type: "text"}, sortable: true,},
+                  // {key: "STAR_SCORE", label: "별점", width: 80, align: "right", editor: {type: "number"}, sortable: true,},
+
+                  {key: "STAR_SCORE", label: "별점", width: 80, sortable: true, align: "right", editor: {type: "number"},
+                    formatter:function(){
+                      if (nvl(this.item.STAR_SCORE) == '') {
+                        this.item.STAR_SCORE = 0;
+                      }
+                      this.item.STAR_SCORE = Math.floor(Number(this.item.STAR_SCORE));
+                      return ax5.util.number(Math.floor(this.item.STAR_SCORE));
+                    }
+                  },
 
                   // {key: "ADV_CD", label: "광고코드", width: 100, align: "left", sortable: true,editor: false,
                   //   picker: {
@@ -306,21 +331,13 @@
                     selectRow2 = this.dindex;
                   },
                   onDataChanged: function () {
-                    if(this.key == 'SALE_RT'){
-                      if(Number(nvl(this.value, 0)) > 100){
-                        qray.alert("할인률(%) 100%가 넘어갑니다.");
-                        fnObj.gridView02.target.setValue(this.dindex, "SALE_RT", this.previous);
+                    if(this.key == 'STAR_SCORE'){
+                      if(Number(nvl(this.value, 0)) > 5){
+                        qray.alert("별점은 5점을 초과할 수 없습니다.");
+                        fnObj.gridView02.target.setValue(this.dindex, "STAR_SCORE", this.previous);
                         return;
                       }
                     }
-
-                    if(Number(nvl(this.item.SALE_RT, 0)) > 0){
-                      let am =  Number(this.item.BLURB_AM) - Number(this.item.BLURB_AM) * Number(nvl(this.item.SALE_RT, 0)) / 100;
-                      fnObj.gridView02.target.setValue(this.dindex, "AM", am);
-                    } else {
-                      fnObj.gridView02.target.setValue(this.dindex, "AM", Number(this.item.BLURB_AM));
-                    }
-
 
                   },
                   onDBLClick: function(){
@@ -398,8 +415,11 @@
             //타이틀을 뺀 상하단 그리드 합친높이
             var tempgridheight = datarealheight - $("#left_title").height();
 
-            $("#left_grid").css("height", tempgridheight / 100 * 99);
-            $("#right_grid").css("height", tempgridheight / 100 * 99);
+            // $("#left_grid").css("height", tempgridheight / 100 * 99);
+            // $("#right_grid").css("height", tempgridheight / 100 * 99);
+            $("#left_grid").css("height", tempgridheight / 100 * 47);
+            $("#right_grid").css("height", tempgridheight / 100 * 47);
+
           }
 
         </script>
@@ -420,8 +440,25 @@
       </div>
     </div>
 
+    <div role="page-header" id="pageheader">
+      <ax:form name="searchView0">
+        <ax:tbl clazz="ax-search-tbl" minWidth="500px">
+          <ax:tr>
+            <ax:td label='거래처 검색' width="400px">
+              <input type="text" class="form-control" name="KEYWORD"  id="KEYWORD" TRIGGER_TARGET="SEARCH"/>
+            </ax:td>
+<%--            <ax:td label='계약일자' width="450px">--%>
+<%--              <period-datepicker mode="date" id="CONTRACT_DATE" > </period-datepicker>--%>
+<%--            </ax:td>--%>
+          </ax:tr>
+        </ax:tbl>
+      </ax:form>
+      <div class="H10"></div>
+    </div>
+
     <div style="width:100%;overflow:hidden">
-      <div style="width:45%;float:left;">
+      <div style="width:100%;float:left;">
+<%--      <div style="width:45%;float:left;">--%>
         <!-- 목록 -->
         <div class="ax-button-group" data-fit-height-aside="grid-view-01" id="left_title" name="왼쪽영역제목부분">
           <div class="left">
@@ -444,12 +481,13 @@
              name="왼쪽그리드"
         ></div>
       </div>
-      <div style="width:54%;float:right">
+<%--      <div style="width:54%;float:right">--%>
+      <div style="width:100%;float:left">
         <!-- 목록 -->
         <div class="ax-button-group" data-fit-height-aside="grid-view-02" id="right_title" name="오른쪽타이틀">
           <div class="left">
             <h2>
-              <i class="icon_list"></i> 상세후기
+              <i class="icon_list"></i> 후기정보
             </h2>
           </div>
           <div class="right">
