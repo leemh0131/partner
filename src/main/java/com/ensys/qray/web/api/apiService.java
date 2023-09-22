@@ -125,6 +125,18 @@ public class apiService extends BaseService {
 		return result;
 	}
 
+	public HashMap<String, Object> partnerDetail2(HashMap<String, Object> param) {
+
+
+		HashMap<String, Object> result = new HashMap<>();
+
+		result.put("key", new String[]{"test", "test2", "test3"});
+
+
+
+		return result;
+	}
+
 	@Transactional(readOnly = true)
 	public HashMap<String, Object> partnerBlurbList(HashMap<String, Object> param) {
 
