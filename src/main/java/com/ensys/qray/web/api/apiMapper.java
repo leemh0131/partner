@@ -19,4 +19,6 @@ public interface apiMapper extends MyBatisMapper {
 
     List<HashMap<String, Object>> partnerImg(HashMap<String, Object> param);
 
+    List<HashMap<String, Object>> getPartnerSearch(HashMap<String, Object> param);
+
 }

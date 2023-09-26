@@ -187,6 +187,30 @@ public class apiService extends BaseService {
 		return result;
 	}
 
+	public HashMap<String, Object> getPartnerSearch(HashMap<String, Object> param) {
+
+
+		HashMap<String, Object> result = new HashMap<>();
+
+		String partnerTp = param.get("PARTNER_TP") == null ? "" : (String) param.get("PARTNER_TP");
+
+		if("행정사".equals(partnerTp)){
+			param.put("PARTNER_TP", "02");
+		} else if("탐정".equals(partnerTp)){
+			param.put("PARTNER_TP", "01");
+		} else {
+			param.put("PARTNER_TP", null);
+		}
+
+		param.put("L_JOB_ZONE", Arrays.asList(param.getOrDefault("REGION", "").toString().split("\\|")));    //카드관리부서
+
+		result.put("list", apimapper.getPartnerSearch(param));
+
+
+
+		return result;
+	}
+
 
 
 

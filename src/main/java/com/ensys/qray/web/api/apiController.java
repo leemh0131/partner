@@ -32,4 +32,10 @@ public class apiController extends BaseController {
         return Responses.MapResponse.of(apiService.partnerBlurbList(request));
     }
 
+    @ResponseBody
+    @RequestMapping(value = "getPartnerSearch", method = RequestMethod.POST, produces = APPLICATION_JSON)
+    public Responses.MapResponse getPartnerSearch(@RequestBody HashMap<String, Object> request) {
+        return Responses.MapResponse.of(apiService.getPartnerSearch(request));
+    }
+
 }
