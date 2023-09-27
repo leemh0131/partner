@@ -22,6 +22,10 @@
 
         let previewPc = $.DATA_SEARCH('file', 'search', {TABLE_ID: "CENTER_BANNER_PC",  TABLE_KEY: "CENTER_BANNER_PC"}).list;
         let previewMo = $.DATA_SEARCH('file', 'search', {TABLE_ID: "CENTER_BANNER_MO",  TABLE_KEY: "CENTER_BANNER_MO"}).list;
+        let companyInfo = $.DATA_SEARCH('/api/web/dashboard', 'selectInfo', ).list[0];
+
+        $(".QRAY_FORM").setFormData(companyInfo);
+
 
         if(previewPc != ''){
             $('#previewImagePc').attr('src', '/file/' + previewPc[0].FILE_NAME + '.' + previewPc[0].FILE_EXT);
@@ -118,17 +122,33 @@
 
     }
 
-    $("#center-btn").click(function(e) {
+    function infoSave() {
 
+        let param = $(".QRAY_FORM").getElementData();
 
+        axboot.ajax({
+            type: "POST",
+            url: ["/api/web/dashboard", "infoSave"],
+            data: JSON.stringify(param),
+            callback: function (res) {
+                qray.alert('저장되었습니다.').then(function(){
 
-    });
+                })
+            }
+        });
+
+    }
 
 </script>
 <style>
     body {
         font-family: Arial, sans-serif;
         text-align: center;
+    }
+
+    .preview-img {
+        max-width: 100%; /* 부모 요소의 최대 너비에 맞추기 */
+        height: 100%;    /* 높이를 자동으로 조절하여 원래 비율 유지 */
     }
 
     h1 {
@@ -196,8 +216,8 @@
         <div class="contents">
             <div class="dashboard" style="float: left; width: 100%">
                 <!-- //border-line -->
-                <div class="dashboard-line" style="width: 100%;display: flex" >
-                    <div class="center-banner" style="float: left;width: 49%;">
+                <div class="dashboard-line" style="width: 100%;display: inline-block" >
+                    <div class="center-banner" style="float: left;width: 50%;">
                         <h1>센터 PC 배너 이미지 등록 및 미리보기</h1>
                         <div>
                             <label for="bannerImagePc">배너 이미지 선택:</label>
@@ -205,13 +225,13 @@
                             <label class="custom-file-upload" for="bannerImagePc">파일 선택</label>
                             <br>
                             <div class="center-banner-img">
-                            <img src="#" alt="미리보기 이미지" id="previewImagePc">
+                            <img src="#" class="preview-img" alt="미리보기 이미지" id="previewImagePc">
                             </div>
                             <br>
                             <button type="button" class="custom-file-upload" onclick="uploadimg('pc')">적용</button>
                         </div>
                     </div>
-                    <div class="center-banner" style="float: left;width: 49%;">
+                    <div class="center-banner" style="float: left;width: 50%;">
                         <h1>센터 MOBILE 배너 이미지 등록 및 미리보기</h1>
                         <div>
                             <label for="bannerImagePc">배너 이미지 선택:</label>
@@ -219,11 +239,35 @@
                             <label class="custom-file-upload" for="bannerImageMo">파일 선택</label>
                             <br>
                             <div class="center-banner-img">
-                            <img src="#" alt="미리보기 이미지" id="previewImageMo">
+                            <img src="#" class="preview-img" alt="미리보기 이미지" id="previewImageMo">
                             </div>
                             <br>
                             <button type="button" class="custom-file-upload" onclick="uploadimg('mo')">적용</button>
                         </div>
+                    </div>
+                    <div class="center-banner" style="float: left;width: 50%;">
+                        <h1>광고문의등록</h1>
+                        <div class="QRAY_FORM">
+                            <ax:form name="binder-form">
+                                <ax:tbl clazz="ax-search-tb2">
+                                    <ax:tr>
+                                        <ax:td label='전화번호' width="100%">
+                                            <input type="text" form-bind-type="text" class="form-control" name="TEL_NO" id="TEL_NO"  maxlength="20"/>
+                                        </ax:td>
+                                        <ax:td label="카카오톡" width="100%">
+                                            <input type="text" form-bind-type="text" class="form-control" name="KAKAO" id="KAKAO"  maxlength="20"/>
+                                        </ax:td>
+                                        <ax:td label='텔레그램' width="100%">
+                                            <input type="text" form-bind-type="text" class="form-control" name="TELEGRAM" id="TELEGRAM"  maxlength="20"/>
+                                        </ax:td>
+                                        <ax:td label='이메일' width="100%">
+                                            <input type="text" form-bind-type="text" class="form-control" name="EMAIL" id="EMAIL"  maxlength="200"/>
+                                        </ax:td>
+                                    </ax:tr>
+                                </ax:tbl>
+                            </ax:form>
+                        </div>
+                        <button type="button" class="custom-file-upload" onclick="infoSave()">적용</button>
                     </div>
                 </div>
                 <!-- //border-line -->

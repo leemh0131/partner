@@ -2,6 +2,7 @@ package com.ensys.qray.web.api;
 
 import com.chequer.axboot.core.api.ApiException;
 import com.ensys.qray.setting.base.BaseService;
+import com.ensys.qray.web.dashboard.DashboardMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +15,8 @@ import java.util.*;
 public class apiService extends BaseService {
 
 	private final apiMapper apimapper;
+
+	private final DashboardMapper DashboardMapper;
 
 	public HashMap<String, Object> partnerDetail(HashMap<String, Object> param) {
 
@@ -211,7 +214,9 @@ public class apiService extends BaseService {
 		return result;
 	}
 
-
-
+	@Transactional(readOnly = true)
+	public HashMap<String, Object> getCompanyInfo(HashMap<String, Object> param) {
+		return DashboardMapper.selectInfo(param).get(0);
+	}
 
 }

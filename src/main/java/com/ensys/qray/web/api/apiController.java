@@ -38,4 +38,10 @@ public class apiController extends BaseController {
         return Responses.MapResponse.of(apiService.getPartnerSearch(request));
     }
 
+    @ResponseBody
+    @RequestMapping(value = "getCompanyInfo", method = RequestMethod.POST, produces = APPLICATION_JSON)
+    public Responses.MapResponse getCompanyInfo(@RequestBody HashMap<String, Object> request) {
+        return Responses.MapResponse.of(apiService.getCompanyInfo(request));
+    }
+
 }

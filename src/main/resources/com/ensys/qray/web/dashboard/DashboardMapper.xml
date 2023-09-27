@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ensys.qray.web.dashboard.DashboardMapper">
+
+    <select id="selectInfo" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+        /*DashboardMapper.selectInfo*/
+        SELECT    KAKAO     AS "KAKAO"
+                , TELEGRAM  AS "TELEGRAM"
+                , EMAIL     AS "EMAIL"
+                , TEL_NO    AS "TEL_NO"
+        FROM ES_COMPANY
+        WHERE COMPANY_CD = #{COMPANY_CD}
+    </select>
+
+    <insert id="infoSave" parameterType="hashmap" statementType="CALLABLE">
+        /*DashboardMapper.infoSave*/
+        INSERT INTO ES_COMPANY
+        (
+          KAKAO
+        , TELEGRAM
+        , EMAIL
+        , TEL_NO
+        , COMPANY_CD
+        , COMPANY_NM
+        )
+        VALUES
+       (
+          #{KAKAO}
+        , #{TELEGRAM}
+        , #{EMAIL}
+        , #{TEL_NO}
+        , #{COMPANY_CD}
+        , #{COMPANY_NM}
+        )  ON CONFLICT (COMPANY_CD) DO UPDATE SET
+            KAKAO = #{KAKAO}
+          , TELEGRAM = #{TELEGRAM}
+          , EMAIL = #{EMAIL}
+          , TEL_NO = #{TEL_NO}
+	</insert>
+
+</mapper>
