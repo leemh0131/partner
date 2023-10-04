@@ -7,7 +7,10 @@
     <select id="selectInfo" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
         /*DashboardMapper.selectInfo*/
         SELECT    KAKAO     AS "KAKAO"
+                , KAKAO2     AS "KAKAO2"
                 , TELEGRAM  AS "TELEGRAM"
+                , TELEGRAM2  AS "TELEGRAM2"
+                , EMAIL     AS "EMAIL"
                 , EMAIL     AS "EMAIL"
                 , TEL_NO    AS "TEL_NO"
         FROM ES_COMPANY
@@ -19,7 +22,9 @@
         INSERT INTO ES_COMPANY
         (
           KAKAO
+        , KAKAO2
         , TELEGRAM
+        , TELEGRAM2
         , EMAIL
         , TEL_NO
         , COMPANY_CD
@@ -28,14 +33,18 @@
         VALUES
        (
           #{KAKAO}
+        , #{KAKAO2}
         , #{TELEGRAM}
+        , #{TELEGRAM2}
         , #{EMAIL}
         , #{TEL_NO}
         , #{COMPANY_CD}
         , #{COMPANY_NM}
         )  ON CONFLICT (COMPANY_CD) DO UPDATE SET
             KAKAO = #{KAKAO}
+          , KAKAO2 = #{KAKAO2}
           , TELEGRAM = #{TELEGRAM}
+          , TELEGRAM2 = #{TELEGRAM2}
           , EMAIL = #{EMAIL}
           , TEL_NO = #{TEL_NO}
 	</insert>

@@ -251,14 +251,24 @@
                             <ax:form name="binder-form">
                                 <ax:tbl clazz="ax-search-tb2">
                                     <ax:tr>
-                                        <ax:td label='전화번호' width="100%">
-                                            <input type="text" form-bind-type="text" class="form-control" name="TEL_NO" id="TEL_NO"  maxlength="200"/>
-                                        </ax:td>
-                                        <ax:td label="카카오톡" width="100%">
+                                        <ax:td label="카톡ID" width="100%">
                                             <input type="text" form-bind-type="text" class="form-control" name="KAKAO" id="KAKAO"  maxlength="200"/>
                                         </ax:td>
-                                        <ax:td label='텔레그램' width="100%">
+                                        <ax:td label="오픈카톡" width="100%">
+                                            <input type="text" form-bind-type="text" class="form-control" name="KAKAO2" id="KAKAO2"  maxlength="200"/>
+                                        </ax:td>
+                                    </ax:tr>
+                                    <ax:tr>
+                                        <ax:td label="텔레그램ID" width="100%">
                                             <input type="text" form-bind-type="text" class="form-control" name="TELEGRAM" id="TELEGRAM"  maxlength="200"/>
+                                        </ax:td>
+                                        <ax:td label="오픈텔레그램" width="100%">
+                                            <input type="text" form-bind-type="text" class="form-control" name="TELEGRAM2" id="TELEGRAM2"  maxlength="200"/>
+                                        </ax:td>
+                                    </ax:tr>
+                                    <ax:tr>
+                                        <ax:td label='전화번호' width="100%">
+                                            <input type="text" form-bind-type="text" class="form-control" name="TEL_NO" id="TEL_NO"  maxlength="200"/>
                                         </ax:td>
                                         <ax:td label='이메일' width="100%">
                                             <input type="text" form-bind-type="text" class="form-control" name="EMAIL" id="EMAIL"  maxlength="200"/>

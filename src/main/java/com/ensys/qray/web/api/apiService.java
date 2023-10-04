@@ -2,6 +2,9 @@ package com.ensys.qray.web.api;
 
 import com.chequer.axboot.core.api.ApiException;
 import com.ensys.qray.setting.base.BaseService;
+import com.ensys.qray.user.SessionUser;
+import com.ensys.qray.utils.HammerUtility;
+import com.ensys.qray.utils.SessionUtils;
 import com.ensys.qray.web.dashboard.DashboardMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -217,6 +220,16 @@ public class apiService extends BaseService {
 	@Transactional(readOnly = true)
 	public HashMap<String, Object> getCompanyInfo(HashMap<String, Object> param) {
 		return DashboardMapper.selectInfo(param).get(0);
+	}
+
+	public void callClick(HashMap<String, Object> param) {
+
+		if(param.get("PARTNER_CD") == null || "".equals(param.get("PARTNER_CD")) || param.get("COMPANY_CD") == null || "".equals(param.get("COMPANY_CD"))){
+			throw new ApiException("코드또는 회사코드가 파라미터로 필요합니다.");
+		}
+
+		apimapper.callClick(param);
+
 	}
 
 }

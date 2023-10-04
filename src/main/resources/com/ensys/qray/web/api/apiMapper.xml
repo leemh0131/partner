@@ -130,6 +130,14 @@
         </if>
     </select>
 
+    <update id="callClick" parameterType="hashmap" statementType="CALLABLE">
+        /*apiMapper.callClick*/
+        UPDATE ES_PARTNER
+        SET   CALL_CLICK = (SELECT COALESCE(CALL_CLICK, 0) + 1 FROM ES_PARTNER WHERE COMPANY_CD = #{COMPANY_CD} AND PARTNER_CD = #{PARTNER_CD})
+        WHERE  COMPANY_CD    = #{COMPANY_CD}
+          AND    PARTNER_CD = #{PARTNER_CD}
+    </update>
+
 
 
 </mapper>

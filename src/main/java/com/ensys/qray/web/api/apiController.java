@@ -1,5 +1,6 @@
 package com.ensys.qray.web.api;
 
+import com.chequer.axboot.core.api.response.ApiResponse;
 import com.chequer.axboot.core.api.response.Responses;
 import com.chequer.axboot.core.controllers.BaseController;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +43,13 @@ public class apiController extends BaseController {
     @RequestMapping(value = "getCompanyInfo", method = RequestMethod.POST, produces = APPLICATION_JSON)
     public Responses.MapResponse getCompanyInfo(@RequestBody HashMap<String, Object> request) {
         return Responses.MapResponse.of(apiService.getCompanyInfo(request));
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "callClick", method = {RequestMethod.POST}, produces = APPLICATION_JSON)
+    public ApiResponse callClick(@RequestBody HashMap<String, Object> param) {
+        apiService.callClick(param);
+        return ok();
     }
 
 }

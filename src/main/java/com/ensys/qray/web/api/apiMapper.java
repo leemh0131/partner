@@ -21,4 +21,5 @@ public interface apiMapper extends MyBatisMapper {
 
     List<HashMap<String, Object>> getPartnerSearch(HashMap<String, Object> param);
 
+    void callClick(HashMap<String, Object> param);
 }
