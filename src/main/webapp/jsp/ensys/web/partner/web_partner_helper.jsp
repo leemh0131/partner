@@ -6,8 +6,11 @@
 <ax:set key="page_auto_height" value="true"/>
 <ax:layout name="base">
 <jsp:attribute name="script">
+<script type="text/javascript" src="/assets/naver_smart_editor2/js/HuskyEZCreator.js?" charset="utf-8"></script>
+<link rel="stylesheet" type="text/css" href="/assets/naver_smart_editor2/css/smart_editor2_in.css">
 <script type="text/javascript">
     var fnObj = {}, CODE = {};
+    let oEditors = []
     fnObj.popView = {};
     var param = ax5.util.param(ax5.info.urlUtil().param);
     var sendData = eval("parent." + param.modalName + ".modalConfig.sendData()");
@@ -60,6 +63,25 @@
                     $("#FILE").setTableKey(initData.PARTNER_CD);
                     $("#FILE").read();
 
+                    nhn.husky.EZCreator.createInIFrame({
+                        oAppRef: oEditors,
+                        elPlaceHolder: "community_editor",
+                        sSkinURI: "/assets/naver_smart_editor2/SmartEditor2SkinCommunity.html",
+                        fCreator: "createSEditor2",
+                        htParams : {
+                            bUseModeChanger : true, // 모드 탭(Editor | HTML | TEXT) 사용 여부 (true:사용/ false:사용하지 않음)
+                            bUseToolbar : true
+                        },
+                        fOnAppLoad : function() {
+                            // Editor 에 값 셋팅
+                            if(nvl(data.partner[0].COMPANY_INTRO_HTML) != ''){
+                                oEditors.getById["community_editor"].exec("PASTE_HTML", [data.partner[0].COMPANY_INTRO_HTML]);
+                            } else {
+                                oEditors.getById["community_editor"].exec("PASTE_HTML", ['']);
+                            }
+                        },
+                    });
+
                 },
                 options: {
                     onError: function(err){
@@ -76,6 +98,14 @@
             let partnerM = fnObj.gridViewTab1.target.getDirtyData(); // 거래처 담장자 정보
             let partnerD = fnObj.gridViewTab2.target.getDirtyData(); // 거래처 계좌 정보
             let fileData = $("#FILE").saveData(); // 파일 링크 정보
+
+            //네이버 에디터 내용 community_editor 에 저장 함수
+            oEditors.getById["community_editor"].exec("UPDATE_CONTENTS_FIELD", []);
+
+            let COMPANY_INTRO_HTML = nvl($("#community_editor").val());
+            partner.COMPANY_INTRO_HTML = COMPANY_INTRO_HTML;
+            let COMPANY_INTRO = COMPANY_INTRO_HTML.replace(/[<][^>]*[>]/gi, "");
+            partner.COMPANY_INTRO = COMPANY_INTRO;
 
             axboot.ajax({
                 type: "POST",
@@ -677,7 +707,14 @@
                                 </ax:tr>
                                 <ax:tr>
                                     <ax:td label='업체 소개' width="98%">
-                                        <textarea type="text"
+                                        <div id="smarteditor" style="margin-top:10px;height:360px;">
+                                            <textarea name="community_editor" id="community_editor"
+                                                      rows="35" cols="10"
+                                                      placeholder="내용을 입력해주세요"
+                                                      style="width:100%;height:310px;">
+                                            </textarea>
+                                        </div>
+                                        <%--<textarea type="text"
                                                   form-bind-type='text'
                                                   style="height: 250px; resize: none;"
                                                   class="form-control"
@@ -685,7 +722,7 @@
                                                   name="COMPANY_INTRO"
                                                   id="COMPANY_INTRO"
                                                   maxlength="4000"
-                                                  ></textarea>
+                                                  ></textarea>--%>
                                     </ax:td>
                                 </ax:tr>
                                 <ax:tr>
