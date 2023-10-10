@@ -232,4 +232,54 @@ public class apiService extends BaseService {
 
 	}
 
+	@Transactional(readOnly = true)
+	public HashMap<String, Object> getSearchPageBlurb(HashMap<String, Object> param) {
+
+		HashMap<String, Object> result = new HashMap<>();
+
+		HashMap<String, Object> blurbParam = new HashMap<>();
+		blurbParam.put("COMPANY_CD", param.get("COMPANY_CD"));
+		blurbParam.put("IMG_URL", param.get("IMG_URL"));
+
+		//행정사인지 탐정사 인지
+		if("01".equals(param.get("PARTNER_TP"))){ //탐정사
+			blurbParam.put("ADV_CD", "ADV2023101000001"); //세로 광고
+			result.put("blurbSide", apimapper.partnerBlurbList(blurbParam)); //세로 광고
+
+			blurbParam.put("ADV_CD", "ADV2023081700003"); //스페셜 광고
+			result.put("blurbSpecial", apimapper.partnerBlurbList(blurbParam)); //스페셜 광고
+		}
+		if("02".equals(param.get("PARTNER_TP"))) { //행정사
+			blurbParam.put("ADV_CD", "ADV2023101000002"); //세로 광고
+			result.put("blurbSide", apimapper.partnerBlurbList(blurbParam)); //세로 광고
+
+			blurbParam.put("ADV_CD", "ADV2023081700004"); //스페셜 광고
+			result.put("blurbSpecial", apimapper.partnerBlurbList(blurbParam)); //스페셜 광고
+
+		}
+
+		if(param.get("PARTNER_TP") == null || "".equals(param.get("PARTNER_TP"))) { //행정사
+
+			blurbParam.put("L_ADV_CD", new ArrayList<>(Arrays.asList(new String[]{"ADV2023101000001", "ADV2023101000002"})));
+			result.put("blurbSide", apimapper.partnerBlurbList(blurbParam)); //세로 광고
+
+			blurbParam.put("L_ADV_CD", new ArrayList<>(Arrays.asList(new String[]{"ADV2023081700003", "ADV2023081700004"})));
+			result.put("blurbSpecial", apimapper.partnerBlurbList(blurbParam)); //스페셜 광고
+
+		}
+
+		return result;
+
+	}
+
+	@Transactional(readOnly = true)
+	public HashMap<String, Object> getCategory(HashMap<String, Object> param) {
+
+		HashMap<String, Object> result = new HashMap<>();
+
+		result.put("list", apimapper.getCategory(param));
+
+		return result;
+	}
+
 }

@@ -52,4 +52,16 @@ public class apiController extends BaseController {
         return ok();
     }
 
+    @ResponseBody
+    @RequestMapping(value = "getSearchPageBlurb", method = RequestMethod.POST, produces = APPLICATION_JSON)
+    public Responses.MapResponse getSearchPageBlurb(@RequestBody HashMap<String, Object> request) {
+        return Responses.MapResponse.of(apiService.getSearchPageBlurb(request));
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "getCategory", method = RequestMethod.POST, produces = APPLICATION_JSON)
+    public Responses.MapResponse getCategory(@RequestBody HashMap<String, Object> request) {
+        return Responses.MapResponse.of(apiService.getCategory(request));
+    }
+
 }

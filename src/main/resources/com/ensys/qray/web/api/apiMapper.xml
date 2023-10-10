@@ -82,9 +82,19 @@
         WHERE B.COMPANY_CD = #{COMPANY_CD}
         AND B.CONTRACT_ST = '02'
         AND TO_DATE(TO_CHAR(CURRENT_DATE, 'YYYYMMDD'), 'YYYYMMDD') BETWEEN TO_DATE(B.CONTRACT_START_DT, 'YYYYMMDD') AND TO_DATE(B.CONTRACT_END_DT, 'YYYYMMDD')
-        AND A.PKG_CD IN (
-        SELECT PKG_CD FROM ES_BLURB_PKG_D WHERE COMPANY_CD =  #{COMPANY_CD} AND ADV_CD = #{ADV_CD} /*광고코드파라미터*/
-        )
+        <if test='ADV_CD != null and ADV_CD != ""'>
+            AND A.PKG_CD IN (
+            SELECT PKG_CD FROM ES_BLURB_PKG_D WHERE COMPANY_CD =  #{COMPANY_CD} AND ADV_CD = #{ADV_CD} /*광고코드파라미터*/
+            )
+        </if>
+        <if test = "L_ADV_CD != null and L_ADV_CD.size() > 0 and !L_ADV_CD.get(0).equals('')">
+            AND A.PKG_CD IN (
+            SELECT PKG_CD FROM ES_BLURB_PKG_D WHERE COMPANY_CD =  #{COMPANY_CD} AND ADV_CD IN
+            <foreach collection="L_ADV_CD" item="item"  open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+            )
+        </if>
         ORDER BY RANDOM();
     </select>
 
@@ -129,6 +139,7 @@
             </foreach>
             )
         </if>
+        ORDER BY RANDOM();
     </select>
 
     <update id="callClick" parameterType="hashmap" statementType="CALLABLE">
@@ -139,6 +150,14 @@
           AND    PARTNER_CD = #{PARTNER_CD}
     </update>
 
+    <select id="getCategory" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+        /*apiMapper.getCategory*/
+        SELECT CATEGORY_NM AS "CATEGORY_NM"
+        FROM ES_CATEGORY
+        WHERE COMPANY_CD = #{COMPANY_CD}
+          AND PARENT_CD NOT IN ('MASTER', '01', '02', '03', '07', '08', '09')
+        GROUP BY CATEGORY_NM
+    </select>
 
 
 </mapper>
