@@ -64,4 +64,22 @@ public class apiController extends BaseController {
         return Responses.MapResponse.of(apiService.getCategory(request));
     }
 
+    @ResponseBody
+    @RequestMapping(value = "getNoticePaging", method = RequestMethod.POST, produces = APPLICATION_JSON)
+    public Responses.MapResponse getNoticePaging(@RequestBody HashMap<String, Object> request) {
+        return Responses.MapResponse.of(apiService.getNoticePaging(request));
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "getNoticeAsking", method = RequestMethod.POST, produces = APPLICATION_JSON)
+    public Responses.MapResponse getNoticeAsking(@RequestBody HashMap<String, Object> request) {
+        return Responses.MapResponse.of(apiService.getNoticeAsking(request));
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "getCustomerService", method = RequestMethod.POST, produces = APPLICATION_JSON)
+    public Responses.MapResponse getCustomerService(@RequestBody HashMap<String, Object> request) {
+        return Responses.MapResponse.of(apiService.getCustomerService(request));
+    }
+
 }

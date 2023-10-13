@@ -5,112 +5,41 @@
 <mapper namespace="com.ensys.qray.web.notice01.WebNotice01Mapper">
 
 	<select id="select" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
-		SELECT A.COMPANY_CD				AS "COMPANY_CD"
-			 , A.BOARD_TYPE             AS "BOARD_TYPE"
-			 , A.SEQ                    AS "SEQ"
-			 , A.TITLE                  AS "TITLE"
-			 , A.UPDATE_ID              AS "UPDATE_ID"
-			 , B.USER_NM                AS "USER_NM"
-			 , A.HIT                    AS "HIT"
-			 , A.INSERT_DTS             AS "INSERT_DTS"
-		FROM
-			(
-				SELECT ROW_NUMBER() OVER(ORDER BY SEQ DESC) AS ROWNUM ,*
-				FROM ES_BOARD
-				WHERE  COMPANY_CD = #{COMPANY_CD}
-				  AND    BOARD_TYPE = #{BOARD_TYPE}
-			) A
-				LEFT JOIN ES_USER       B
-						  ON     A.COMPANY_CD = B.COMPANY_CD
-							  AND    A.INSERT_ID  = B.USER_ID
-		WHERE  1=1
-		  AND    (  	(#{CONDITION} = 'COM' AND (	A.TITLE 	LIKE 	'%' || #{KEYWORD} || '%' OR A.CONTENTS LIKE '%' || #{KEYWORD} || '%'))
-			OR 	(#{CONDITION} = 'SUB' AND 	A.TITLE 	LIKE 	'%' || #{KEYWORD} || '%')
-			OR 	(#{CONDITION} = 'CON' AND 	A.CONTENTS 	LIKE 	'%' || #{KEYWORD} || '%')
-			OR 	(#{CONDITION} = 'AUT' AND 	B.USER_NM 	LIKE 	'%' || #{KEYWORD} || '%')
+		/*WebNotice01Mapper.select*/
+		SELECT
+				COMPANY_CD AS "COMPANY_CD"
+			,	BOARD_TYPE AS "BOARD_TYPE"
+			,	SEQ AS "SEQ"
+            ,	TITLE AS "TITLE"
+            ,	CONTENTS AS "CONTENTS"
+            ,	MAIN_YN AS "MAIN_YN"
+		FROM ES_BOARD
+		WHERE COMPANY_CD = #{COMPANY_CD}
+		<if test='KEYWORD != null and KEYWORD != ""'>
+			AND    (
+			TITLE    LIKE  '%' || #{KEYWORD} || '%'
+			OR CONTENTS    LIKE  '%' || #{KEYWORD} || '%'
 			)
-		  AND    A.ROWNUM BETWEEN ((#{NOWPAGE} - 1) * #{PAGING_SIZE} + 1) AND (#{NOWPAGE} * #{PAGING_SIZE})
-		ORDER BY A.SEQ DESC
-	</select>
-
-	<select id="selectTOT" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
-		SELECT COUNT(*) AS "TOT_PAGE"
-		FROM   ES_BOARD         A
-				   LEFT JOIN ES_USER       B
-							 ON     A.COMPANY_CD = B.COMPANY_CD
-								 AND    A.INSERT_ID  = B.USER_ID
-		WHERE  1=1
-		  AND    A.COMPANY_CD = #{COMPANY_CD}
-		  AND    A.BOARD_TYPE = #{BOARD_TYPE}
-		  AND    (  	(#{CONDITION} = 'COM' AND (	A.TITLE 	LIKE 	'%' || #{KEYWORD} || '%' OR A.CONTENTS LIKE '%' || #{KEYWORD} || '%'))
-			OR 	(#{CONDITION} = 'SUB' AND 	A.TITLE 	LIKE 	'%' || #{KEYWORD} || '%')
-			OR 	(#{CONDITION} = 'CON' AND 	A.CONTENTS 	LIKE 	'%' || #{KEYWORD} || '%')
-			OR 	(#{CONDITION} = 'AUT' AND 	B.USER_NM 	LIKE 	'%' || #{KEYWORD} || '%')
-			)
-	</select>
-
-	<select id="selectDetail" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
-		SELECT 	A.TITLE			AS "TITLE"
-			 , A.CONTENTS      AS "CONTENTS"
-			 , A.HIT           AS "HIT"
-			 , A.INSERT_DTS    AS "INSERT_DTS"
-			 , A.INSERT_ID     AS "INSERT_ID"
-			 , B.USER_NM       AS "USER_NM"
-		FROM   ES_BOARD         A
-				   LEFT JOIN ES_USER       B
-							 ON     A.COMPANY_CD = B.COMPANY_CD
-								 AND    A.INSERT_ID  = B.USER_ID
-		WHERE  1=1
-		  AND    A.COMPANY_CD = #{COMPANY_CD}
-		  AND    A.BOARD_TYPE = #{BOARD_TYPE}
-		  AND    A.SEQ        = #{SEQ}
-		ORDER BY A.SEQ DESC
-	</select>
-
-	<select id="selectDetailLIK" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
-		SELECT *
-		FROM	(
-					SELECT 'PREV' AS "STAT_CD"
-						 , SEQ    AS "SEQ"
-						 , TITLE  AS "TITLE"
-					FROM   ES_BOARD
-					WHERE  COMPANY_CD = #{COMPANY_CD}
-					  AND    BOARD_TYPE = #{BOARD_TYPE}
-					  AND    SEQ <![CDATA[<]]> #{SEQ}
-					ORDER BY SEQ DESC
-						LIMIT 1
-				)  A
-
-		UNION ALL
-
-		SELECT *
-		FROM	(
-					SELECT 'NEXT' AS "STAT_CD"
-						 , SEQ	  AS "SEQ"
-						 , TITLE  AS "TITLE"
-					FROM   ES_BOARD
-					WHERE  COMPANY_CD = #{COMPANY_CD}
-					  AND    BOARD_TYPE = #{BOARD_TYPE}
-					  AND    SEQ <![CDATA[>]]> #{SEQ}
-					ORDER BY SEQ ASC
-						LIMIT 1
-				)  B
+		</if>
+		<if test='BOARD_TYPE != null and BOARD_TYPE != ""'>
+			AND   BOARD_TYPE  = #{BOARD_TYPE}
+		</if>
+		<if test='SEQ != null and SEQ != ""'>
+			AND   SEQ  = #{SEQ}
+		</if>
+		ORDER BY SEQ
 	</select>
 
 	<insert id="insert" parameterType="hashmap" statementType="CALLABLE">
-		<selectKey keyProperty="SEQ" resultType="java.lang.Integer" order="BEFORE">
-			SELECT COALESCE(MAX(SEQ), 0) + 1
-			FROM ES_BOARD
-			WHERE COMPANY_CD = #{COMPANY_CD} AND BOARD_TYPE = #{BOARD_TYPE}
-		</selectKey>
 		INSERT INTO ES_BOARD
 		(
-		COMPANY_CD
+		  COMPANY_CD
 		, BOARD_TYPE
 		, SEQ
 		, TITLE
 		, CONTENTS
 		, HIT
+		, MAIN_YN
 		, INSERT_ID
 		, INSERT_DTS
 		, UPDATE_ID
@@ -118,12 +47,16 @@
 		)
 		VALUES
 		(
-		#{COMPANY_CD}
+		  #{COMPANY_CD}
 		, #{BOARD_TYPE}
-		, #{SEQ}
+		, (SELECT COALESCE(MAX(SEQ), 0) + 1
+		   FROM ES_BOARD
+		   WHERE COMPANY_CD = #{COMPANY_CD}
+		)
 		, #{TITLE}
 		, #{CONTENTS}
 		, 0
+		, #{MAIN_YN}
 		, #{INSERT_ID}
 		, #{INSERT_DTS}
 		, #{UPDATE_ID}
@@ -135,6 +68,8 @@
 		UPDATE ES_BOARD
 		SET TITLE      =   #{TITLE}
 		  ,	CONTENTS   =   #{CONTENTS}
+		  ,	MAIN_YN   =   #{MAIN_YN}
+		  ,	BOARD_TYPE   =   #{BOARD_TYPE}
 		  ,	UPDATE_ID  =   #{UPDATE_ID}
 		  ,	UPDATE_DTS =   #{UPDATE_DTS}
 		WHERE COMPANY_CD = #{COMPANY_CD}
@@ -145,16 +80,7 @@
 	<delete id="delete" parameterType="hashmap" statementType="CALLABLE">
 		DELETE FROM ES_BOARD
 		WHERE COMPANY_CD = #{COMPANY_CD}
-		  AND   BOARD_TYPE = #{BOARD_TYPE}
 		  AND   SEQ        = #{SEQ}
 	</delete>
-
-	<update id="updateHit"  parameterType="hashmap" statementType="CALLABLE">
-		UPDATE ES_BOARD
-		SET    HIT = HIT + 1
-		WHERE  COMPANY_CD = #{COMPANY_CD}
-		  AND    BOARD_TYPE = #{BOARD_TYPE}
-		  AND    SEQ 		  = #{SEQ}
-	</update>
 
 </mapper>

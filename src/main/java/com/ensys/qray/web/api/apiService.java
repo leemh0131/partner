@@ -208,7 +208,9 @@ public class apiService extends BaseService {
 			param.put("PARTNER_TP", null);
 		}
 
-		param.put("L_JOB_ZONE", Arrays.asList(param.getOrDefault("REGION", "").toString().split("\\|")));    //카드관리부서
+		param.put("L_JOB_ZONE", Arrays.asList(param.getOrDefault("REGION", "").toString().split("\\|")));
+
+		param.put("L_CATEGORY", Arrays.asList(param.getOrDefault("SELECTCATEGORY", "").toString().split("\\|")));
 
 		result.put("list", apimapper.getPartnerSearch(param));
 
@@ -281,5 +283,55 @@ public class apiService extends BaseService {
 
 		return result;
 	}
+
+	@Transactional(readOnly = true)
+	public HashMap<String, Object> getNoticePaging(HashMap<String, Object> param) {
+
+		HashMap<String, Object> result = new HashMap<>();
+
+		result.put("list", apimapper.getNoticePaging(param));
+
+		return result;
+	}
+
+	@Transactional(readOnly = true)
+	public HashMap<String, Object> getNoticeAsking(HashMap<String, Object> param) {
+
+		HashMap<String, Object> result = new HashMap<>();
+
+		List<HashMap<String, Object>> getNoticeAsking = apimapper.getNoticeAsking(param);
+
+		List<HashMap<String, Object>> customer = new ArrayList<>();
+		List<HashMap<String, Object>> individual = new ArrayList<>();
+		for(HashMap<String, Object> item : getNoticeAsking){
+			if("02".equals(item.get("BOARD_TYPE"))){
+				customer.add(item);
+			} else {
+				individual.add(item);
+			}
+		}
+
+		result.put("customer", customer);
+		result.put("individual", individual);
+
+		return result;
+	}
+
+	@Transactional(readOnly = true)
+	public HashMap<String, Object> getCustomerService(HashMap<String, Object> param) {
+
+		HashMap<String, Object> result = new HashMap<>();
+
+		result.put("center_banner_img", apimapper.centerBannerImg(param));
+		result.put("getPaging", apimapper.getPaging(param));
+		result.put("getMainNotice", apimapper.getMainNotice(param));
+
+		param.put("ADV_CD", "ADV2023081700008");
+		result.put("blurbSpecial", apimapper.partnerBlurbList(param));
+		result.put("asking", getNoticeAsking(param));
+
+		return result;
+	}
+
 
 }

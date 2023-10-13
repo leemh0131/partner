@@ -139,6 +139,22 @@
             </foreach>
             )
         </if>
+        <if test = "L_CATEGORY != null and L_CATEGORY.size() > 0 and !L_CATEGORY.get(0).equals('')">
+            AND (
+            ( F_ES_CATEGORY_NM(B.COMPANY_CD, B.JOB_FIELD) LIKE
+            <foreach collection="L_CATEGORY" item="item"
+                     separator="OR F_ES_CATEGORY_NM(B.COMPANY_CD, B.JOB_FIELD) LIKE ">
+                <![CDATA[ CONCAT('%', #{item}, '%')  ]]>
+            </foreach>
+            )
+            OR
+            ( F_ES_CATEGORY_NM(B.COMPANY_CD, B.JOB_EP) LIKE
+            <foreach collection="L_CATEGORY" item="item" separator="OR F_ES_CATEGORY_NM(B.COMPANY_CD, B.JOB_EP) LIKE ">
+                <![CDATA[ CONCAT('%', #{item}, '%')  ]]>
+            </foreach>
+            )
+            )
+        </if>
         ORDER BY RANDOM();
     </select>
 
@@ -157,6 +173,58 @@
         WHERE COMPANY_CD = #{COMPANY_CD}
           AND PARENT_CD NOT IN ('MASTER', '01', '02', '03', '07', '08', '09')
         GROUP BY CATEGORY_NM
+    </select>
+
+
+    <select id="getNoticeAsking" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+        /*apiMapper.getNoticeAsking*/
+        SELECT        COMPANY_CD AS "COMPANY_CD"
+                    , BOARD_TYPE AS "BOARD_TYPE"
+                    , SEQ AS "SEQ"
+                    , TITLE AS "TITLE"
+                    , CONTENTS AS "CONTENTS"
+                    , MAIN_YN AS "MAIN_YN"
+        FROM ES_BOARD
+        WHERE COMPANY_CD = #{COMPANY_CD}
+          AND BOARD_TYPE NOT IN ('01')
+    </select>
+
+    <select id="getNoticePaging" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+        /*apiMapper.getNoticePaging*/
+        SELECT        COMPANY_CD AS "COMPANY_CD"
+                    , BOARD_TYPE AS "BOARD_TYPE"
+                    , SEQ AS "SEQ"
+                    , TITLE AS "TITLE"
+                    , CONTENTS AS "CONTENTS"
+                    , MAIN_YN AS "MAIN_YN"
+        FROM ES_BOARD
+        WHERE COMPANY_CD = #{COMPANY_CD}
+          AND BOARD_TYPE = '01'
+          AND COALESCE(MAIN_YN, '') != 'N'
+        LIMIT 7 OFFSET (#{OFFSET} * 7)
+    </select>
+
+    <select id="getPaging" resultType="int" parameterType="hashmap" statementType="CALLABLE">
+        /*apiMapper.getPaging*/
+        SELECT COUNT(*) AS "PAGING"
+        FROM ES_BOARD
+        WHERE COMPANY_CD = #{COMPANY_CD}
+          AND BOARD_TYPE = '01'
+          AND COALESCE(MAIN_YN, '') != 'N'
+    </select>
+
+    <select id="getMainNotice" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+        /*apiMapper.getMainNotice*/
+        SELECT        COMPANY_CD AS "COMPANY_CD"
+                 , BOARD_TYPE AS "BOARD_TYPE"
+                 , SEQ AS "SEQ"
+                 , TITLE AS "TITLE"
+                 , CONTENTS AS "CONTENTS"
+                 , MAIN_YN AS "MAIN_YN"
+        FROM ES_BOARD
+        WHERE COMPANY_CD = #{COMPANY_CD}
+          AND BOARD_TYPE = '01'
+          AND COALESCE(MAIN_YN, '') = 'Y'
     </select>
 
 

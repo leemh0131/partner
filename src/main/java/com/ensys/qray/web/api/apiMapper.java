@@ -23,5 +23,13 @@ public interface apiMapper extends MyBatisMapper {
 
     List<HashMap<String, Object>> getCategory(HashMap<String, Object> param);
 
+    List<HashMap<String, Object>> getNoticePaging(HashMap<String, Object> param);
+
+    List<HashMap<String, Object>> getNoticeAsking(HashMap<String, Object> param);
+
+    List<HashMap<String, Object>> getMainNotice(HashMap<String, Object> param);
+
     void callClick(HashMap<String, Object> param);
+
+    int getPaging(HashMap<String, Object> param);
 }

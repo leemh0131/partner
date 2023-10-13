@@ -32,108 +32,42 @@ public class WebNotice01Service extends BaseService {
 		return webNotice01Mapper.select(param);
 	}
 
-	@Transactional(readOnly = true)
-	public List<HashMap<String, Object>> selectDetailLIK(HashMap<String, Object> param) {
-		SessionUser user = SessionUtils.getCurrentUser();
-		param.put("COMPANY_CD", user.getCompanyCd());
-
-		return webNotice01Mapper.selectDetailLIK(param);
-	}
-
-	@Transactional(readOnly = true)
-	public HashMap<String, Object> selectDetail(HashMap<String, Object> param) {
-		SessionUser user = SessionUtils.getCurrentUser();
-		param.put("COMPANY_CD", user.getCompanyCd());
-
-		return webNotice01Mapper.selectDetail(param);
-	}
-
-	@Transactional(readOnly = true)
-	public HashMap<String, Object> selectTOT(HashMap<String, Object> param) {
-		SessionUser user = SessionUtils.getCurrentUser();
-		param.put("COMPANY_CD", user.getCompanyCd());
-
-		return webNotice01Mapper.selectTOT(param);
-	}
-
-	public void updateHit(HashMap<String, Object> param) {
+	public void save(HashMap<String, Object> param) throws Exception {
 		SessionUser user = SessionUtils.getCurrentUser();
 		String strDate = HammerUtility.nowDate("yyyyMMddHHmmss");
 
-		param.put("COMPANY_CD", user.getCompanyCd());
-		param.put("INSERT_ID", user.getUserId());
-		param.put("UPDATE_ID", user.getUserId());
-		param.put("INSERT_DTS", strDate);
-		param.put("UPDATE_DTS", strDate);
+		HashMap<String, Object> saveData = (HashMap<String, Object>) param.get("saveData");
 
-		webNotice01Mapper.updateHit(param);
-	}
+		for(HashMap<String, Object> item : (List<HashMap<String, Object>>)saveData.get("deleted")) {
 
-	public void save(HashMap<String, Object> request) throws Exception {
-		SessionUser user = SessionUtils.getCurrentUser();
-		String strDate = HammerUtility.nowDate("yyyyMMddHHmmss");
+			item.put("COMPANY_CD", user.getCompanyCd());
+			item.put("INSERT_ID", user.getUserId());
+			item.put("UPDATE_ID", user.getUserId());
+			item.put("INSERT_DTS", strDate);
+			item.put("UPDATE_DTS", strDate);
+			webNotice01Mapper.delete(item);
 
-		HashMap<String, Object> bbsData = (HashMap<String, Object>) request.get("bbsData");
-		HashMap<String, Object> fileData = (HashMap<String, Object>) request.get("fileData");
+		}
+		for(HashMap<String, Object> item : (List<HashMap<String, Object>>)saveData.get("created")) {
+			item.put("COMPANY_CD", user.getCompanyCd());
+			item.put("INSERT_ID", user.getUserId());
+			item.put("INSERT_DTS", strDate);
+			item.put("UPDATE_ID", user.getUserId());
+			item.put("UPDATE_DTS", strDate);
 
-		Reader reader = Resources.getResourceAsReader("axboot-local.properties");
-
-		Properties properties = new Properties();
-		properties.load(reader);
-		String FILE_DIRECTORY_PATH = properties.getProperty("FILE_DIRECTORY_PATH");
-
-		bbsData.put("COMPANY_CD", user.getCompanyCd());
-		bbsData.put("INSERT_ID", user.getUserId());
-		bbsData.put("UPDATE_ID", user.getUserId());
-		bbsData.put("INSERT_DTS", strDate);
-		bbsData.put("UPDATE_DTS", strDate);
-
-		if (bbsData.get("SEQ") != null && !"".equals(bbsData.get("SEQ"))) {
-			webNotice01Mapper.update(bbsData);
-		} else {
-			webNotice01Mapper.insert(bbsData);
+			webNotice01Mapper.insert(item);
+		}
+		for(HashMap<String, Object> item : (List<HashMap<String, Object>>)saveData.get("updated")) {
+			item.put("COMPANY_CD", user.getCompanyCd());
+			item.put("INSERT_ID", user.getUserId());
+			item.put("UPDATE_ID", user.getUserId());
+			item.put("INSERT_DTS", strDate);
+			item.put("UPDATE_DTS", strDate);
+			webNotice01Mapper.update(item);
 		}
 
-		if (fileData != null) {
-			List<HashMap<String, Object>> delete = (List<HashMap<String, Object>>) fileData.get("delete");
-			List<HashMap<String, Object>> gridData = (List<HashMap<String, Object>>) fileData.get("gridData");
 
-			for (HashMap<String, Object> item : delete) {
-				item.put("TABLE_KEY", bbsData.get("SEQ"));
-				item.put("COMPANY_CD", user.getCompanyCd());
-				item.put("FILE_PATH", FILE_DIRECTORY_PATH);
-				item.put("INSERT_ID", user.getUserId());
-				item.put("INSERT_DTS", strDate);
-				item.put("UPDATE_ID", user.getUserId());
-				item.put("UPDATE_DTS", strDate);
 
-				fileMapper.delete(item);
-			}
-			for (HashMap<String, Object> item : gridData) {
-				if (item.get("__created__") != null) {
-					item.put("TABLE_KEY", bbsData.get("SEQ"));
-					item.put("COMPANY_CD", user.getCompanyCd());
-					item.put("FILE_PATH", FILE_DIRECTORY_PATH);
-					item.put("INSERT_ID", user.getUserId());
-					item.put("INSERT_DTS", strDate);
-					item.put("UPDATE_ID", user.getUserId());
-					item.put("UPDATE_DTS", strDate);
-
-					fileMapper.insert(item);
-				}
-			}
-		}
 	}
 
-	public void delete(HashMap<String, Object> request) {
-		SessionUser user = SessionUtils.getCurrentUser();
-		String strDate = HammerUtility.nowDate("yyyyMMddHHmmss");
-		request.put("COMPANY_CD", user.getCompanyCd());
-		request.put("INSERT_ID", user.getUserId());
-		request.put("UPDATE_ID", user.getUserId());
-		request.put("INSERT_DTS", strDate);
-		request.put("UPDATE_DTS", strDate);
-
-		webNotice01Mapper.delete(request);
-	}
 }

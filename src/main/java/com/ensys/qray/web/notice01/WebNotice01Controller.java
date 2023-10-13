@@ -26,41 +26,10 @@ public class WebNotice01Controller extends BaseController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = "selectDetailLIK", method = RequestMethod.POST, produces = APPLICATION_JSON)
-	public Responses.ListResponse selectDetailLIK(@RequestBody HashMap<String, Object> request) {
-		return Responses.ListResponse.of(webNotice01Service.selectDetailLIK(request));
-	}
-
-	@ResponseBody
-	@RequestMapping(value = "selectDetail", method = RequestMethod.POST, produces = APPLICATION_JSON)
-	public Responses.MapResponse selectDetail(@RequestBody HashMap<String, Object> request) {
-		return Responses.MapResponse.of(webNotice01Service.selectDetail(request));
-	}
-
-	@ResponseBody
-	@RequestMapping(value = "selectTOT", method = RequestMethod.POST, produces = APPLICATION_JSON)
-	public Responses.MapResponse selectTOT(@RequestBody HashMap<String, Object> request) {
-		return Responses.MapResponse.of(webNotice01Service.selectTOT(request));
-	}
-
-	@ResponseBody
-	@RequestMapping(value = "updateHit", method = {RequestMethod.POST}, produces = APPLICATION_JSON)
-	public ApiResponse updateHit(@RequestBody HashMap<String, Object> param) {
-		webNotice01Service.updateHit(param);
-		return ok();
-	}
-
-	@ResponseBody
 	@RequestMapping(value = "save", method = {RequestMethod.POST}, produces = APPLICATION_JSON)
 	public ApiResponse save(@RequestBody HashMap<String, Object> param) throws Exception {
 		webNotice01Service.save(param);
 		return ok();
 	}
 
-	@ResponseBody
-	@RequestMapping(value = "delete", method = {RequestMethod.PUT}, produces = APPLICATION_JSON)
-	public ApiResponse delete(@RequestBody HashMap<String, Object> param) {
-		webNotice01Service.delete(param);
-		return ok();
-	}
 }
