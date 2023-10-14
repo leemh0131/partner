@@ -184,10 +184,15 @@
                     , TITLE AS "TITLE"
                     , CONTENTS AS "CONTENTS"
                     , MAIN_YN AS "MAIN_YN"
+                    , INSERT_ID AS "INSERT_ID"
+                    , INSERT_DTS AS "INSERT_DTS"
+                    , UPDATE_ID AS "UPDATE_ID"
+                    , UPDATE_DTS AS "UPDATE_DTS"
+                    , TO_CHAR(SUBSTRING(UPDATE_DTS, 1, 8)::date, 'YYYY-MM-DD') AS "DTS"
         FROM ES_BOARD
         WHERE COMPANY_CD = #{COMPANY_CD}
           AND BOARD_TYPE NOT IN ('01')
-        ORDER BY SEQ DESC
+        ORDER BY UPDATE_DTS, SEQ DESC
     </select>
 
     <select id="getNoticePaging" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
@@ -198,11 +203,16 @@
                     , TITLE AS "TITLE"
                     , CONTENTS AS "CONTENTS"
                     , MAIN_YN AS "MAIN_YN"
+                    , INSERT_ID AS "INSERT_ID"
+                    , INSERT_DTS AS "INSERT_DTS"
+                    , UPDATE_ID AS "UPDATE_ID"
+                    , UPDATE_DTS AS "UPDATE_DTS"
+                    , TO_CHAR(SUBSTRING(UPDATE_DTS, 1, 8)::date, 'YYYY-MM-DD') AS "DTS"
         FROM ES_BOARD
         WHERE COMPANY_CD = #{COMPANY_CD}
           AND BOARD_TYPE = '01'
           AND COALESCE(MAIN_YN, '') != 'N'
-        ORDER BY SEQ DESC
+        ORDER BY UPDATE_DTS, SEQ DESC
         LIMIT #{LIMIT} OFFSET (#{OFFSET} * #{LIMIT})
     </select>
 
@@ -217,18 +227,133 @@
 
     <select id="getMainNotice" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
         /*apiMapper.getMainNotice*/
-        SELECT        COMPANY_CD AS "COMPANY_CD"
+        SELECT     COMPANY_CD AS "COMPANY_CD"
                  , BOARD_TYPE AS "BOARD_TYPE"
                  , SEQ AS "SEQ"
                  , TITLE AS "TITLE"
                  , CONTENTS AS "CONTENTS"
                  , MAIN_YN AS "MAIN_YN"
+                 , INSERT_ID AS "INSERT_ID"
+                 , INSERT_DTS AS "INSERT_DTS"
+                 , UPDATE_ID AS "UPDATE_ID"
+                 , UPDATE_DTS AS "UPDATE_DTS"
+                 , TO_CHAR(SUBSTRING(UPDATE_DTS, 1, 8)::date, 'YYYY-MM-DD') AS "DTS"
         FROM ES_BOARD
         WHERE COMPANY_CD = #{COMPANY_CD}
           AND BOARD_TYPE = '01'
           AND COALESCE(MAIN_YN, '') = 'Y'
-        ORDER BY SEQ DESC
+        ORDER BY UPDATE_DTS, SEQ DESC
+        <if test='LIMIT != null and LIMIT != ""'>
+        LIMIT #{LIMIT}
+        </if>
     </select>
 
+    <select id="getCommunityMainPage" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+        /*apiMapper.getCommunityMainPage*/
+        SELECT     COMPANY_CD AS "COMPANY_CD"
+                 , SEQ AS "SEQ"
+                 , COMMUNITY_TP AS "COMMUNITY_TP"
+                 , COMMUNITY_ST AS "COMMUNITY_ST"
+                 , TITLE AS "TITLE"
+                 , CONTENTS AS "CONTENTS"
+                 , HIT AS "HIT"
+                 , INSERT_ID AS "INSERT_ID"
+                 , INSERT_DTS AS "INSERT_DTS"
+                 , UPDATE_ID AS "UPDATE_ID"
+                 , UPDATE_DTS AS "UPDATE_DTS"
+                 , LIKE_NUM AS "LIKE_NUM"
+                 , TO_CHAR(SUBSTRING(UPDATE_DTS, 1, 8)::DATE, 'YYYY-MM-DD') AS "DTS"
+        FROM ES_COMMUNITY
+        WHERE COMPANY_CD = #{COMPANY_CD}
+        AND COMMUNITY_TP = #{COMMUNITY_TP}
+        ORDER BY UPDATE_DTS, SEQ DESC
+        <if test='LIMIT != null and LIMIT != ""'>
+            LIMIT #{LIMIT}
+        </if>
+    </select>
+
+    <insert id="setWrite" parameterType="hashmap" statementType="CALLABLE">
+        /*apiMapper.setWrite*/
+        INSERT INTO ES_COMMUNITY
+        (
+              COMPANY_CD
+            , SEQ
+            , COMMUNITY_TP
+            , COMMUNITY_ST
+            , TITLE
+            , CONTENTS
+            , HIT
+            , INSERT_ID
+            , INSERT_DTS
+            , UPDATE_ID
+            , UPDATE_DTS
+        )
+        VALUES
+        (
+              #{COMPANY_CD}
+            , (SELECT COALESCE(MAX(SEQ), 0) + 1
+               FROM ES_COMMUNITY
+               WHERE COMPANY_CD = #{COMPANY_CD}
+              )
+            , #{COMMUNITY_TP}
+            , #{COMMUNITY_ST}
+            , #{TITLE}
+            , #{CONTENTS}
+            , 0
+            , #{INSERT_ID}
+            , #{INSERT_DTS}
+            , #{UPDATE_ID}
+            , #{UPDATE_DTS}
+       )
+    </insert>
+
+    <update id="hitPlus" parameterType="hashmap" statementType="CALLABLE">
+        /*apiMapper.hitPlus*/
+        UPDATE ES_COMMUNITY
+        SET   HIT = (SELECT COALESCE(HIT, 0) + 1 FROM ES_COMMUNITY WHERE COMPANY_CD = #{COMPANY_CD} AND SEQ = #{SEQ})
+        WHERE  COMPANY_CD    = #{COMPANY_CD}
+          AND    SEQ = #{SEQ}
+    </update>
+
+    <update id="likePlus" parameterType="hashmap" statementType="CALLABLE">
+        /*apiMapper.likePlus*/
+        UPDATE ES_COMMUNITY
+        SET   LIKE_NUM = (SELECT COALESCE(LIKE_NUM, 0) + 1 FROM ES_COMMUNITY WHERE COMPANY_CD = #{COMPANY_CD} AND SEQ = #{SEQ})
+        WHERE  COMPANY_CD    = #{COMPANY_CD}
+          AND    SEQ = #{SEQ}
+    </update>
+
+    <update id="noPlus" parameterType="hashmap" statementType="CALLABLE">
+        /*apiMapper.noPlus*/
+        UPDATE ES_COMMUNITY A
+        SET   NO_NUM = (SELECT COALESCE(A.NO_NUM, 0) + 1 FROM ES_COMMUNITY WHERE COMPANY_CD = #{COMPANY_CD} AND SEQ = #{SEQ})
+        WHERE  COMPANY_CD    = #{COMPANY_CD}
+          AND    SEQ = #{SEQ}
+    </update>
+
+    <select id="getCommonCode" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+        /*apiMapper.getCommonCode*/
+        SELECT   SYSDEF_CD AS "CODE"
+               , SYSDEF_NM AS "NAME"
+        FROM ES_CODEDTL
+        WHERE COMPANY_CD = #{COMPANY_CD}
+          AND FIELD_CD = #{FIELD_CD}
+          AND COALESCE(USE_YN, '') = 'Y'
+    </select>
+
+    <select id="getConsultingPaging" resultType="int" parameterType="hashmap" statementType="CALLABLE">
+        /*apiMapper.getConsultingPaging*/
+        SELECT COUNT(*) AS "PAGING"
+        FROM ES_COMMUNITY
+        WHERE COMPANY_CD = #{COMPANY_CD}
+          AND COMMUNITY_TP = #{COMMUNITY_TP}
+        <if test = "!L_COMMUNITY_ST.get(0).equals('') and L_COMMUNITY_ST.size() > 0">
+            AND COMMUNITY_ST IN (
+            <foreach collection="L_COMMUNITY_ST" item="item" separator=",">
+                #{item}
+            </foreach>
+            )
+        </if>
+    </select>
 
 </mapper>

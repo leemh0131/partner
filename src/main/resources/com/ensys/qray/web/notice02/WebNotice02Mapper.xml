@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ensys.qray.web.notice02.WebNotice02Mapper">
+
+	<select id="select" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*WebNotice01Mapper.select*/
+		SELECT	  A.COMPANY_CD  AS "COMPANY_CD"
+				, A.SEQ  AS "SEQ"
+				, A.COMMUNITY_TP  AS "COMMUNITY_TP"
+				, A.COMMUNITY_ST  AS "COMMUNITY_ST"
+				, A.TITLE  AS "TITLE"
+				, A.CONTENTS  AS "CONTENTS"
+				, A.HIT  AS "HIT"
+				, A.INSERT_ID  AS "INSERT_ID"
+				, A.INSERT_DTS  AS "INSERT_DTS"
+				, A.UPDATE_ID  AS "UPDATE_ID"
+				, A.UPDATE_DTS  AS "UPDATE_DTS"
+				, A.LIKE_NUM  AS "LIKE_NUM"
+				, A.NO_NUM  AS "NO_NUM"
+		FROM ES_COMMUNITY A
+		WHERE a.COMPANY_CD = #{COMPANY_CD}
+		<if test='COMMUNITY_TP != null and COMMUNITY_TP != ""'>
+ 			AND A.COMMUNITY_TP = #{COMMUNITY_TP}
+		</if>
+		<if test='KEYWORD != null and KEYWORD != ""'>
+			AND A.TITLE LIKE  '%' || #{KEYWORD} || '%'
+		</if>
+		ORDER BY SEQ
+	</select>
+
+	<select id="selectDetail" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*WebNotice02Mapper.selectDetail*/
+	</select>
+
+	<delete id="delete" parameterType="hashmap" statementType="CALLABLE">
+		/*WebNotice02Mapper.delete*/
+		DELETE FROM ES_COMMUNITY
+		WHERE COMPANY_CD = #{COMPANY_CD}
+		  AND   SEQ        = #{SEQ}
+	</delete>
+
+	<delete id="deleteD" parameterType="hashmap" statementType="CALLABLE">
+		/*WebNotice02Mapper.deleteD*/
+		DELETE FROM ES_COMMUNITY_DETAIL
+		WHERE COMPANY_CD = #{COMPANY_CD}
+		  AND   SEQ_M        = #{SEQ_M}
+		  AND   SEQ        = #{SEQ}
+	</delete>
+
+</mapper>

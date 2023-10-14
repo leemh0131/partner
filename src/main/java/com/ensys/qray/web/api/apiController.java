@@ -1,6 +1,5 @@
 package com.ensys.qray.web.api;
 
-import com.chequer.axboot.core.api.response.ApiResponse;
 import com.chequer.axboot.core.api.response.Responses;
 import com.chequer.axboot.core.controllers.BaseController;
 import lombok.RequiredArgsConstructor;
@@ -46,10 +45,9 @@ public class apiController extends BaseController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "callClick", method = {RequestMethod.POST}, produces = APPLICATION_JSON)
-    public ApiResponse callClick(@RequestBody HashMap<String, Object> param) {
-        apiService.callClick(param);
-        return ok();
+    @RequestMapping(value = "callClick", method = RequestMethod.POST, produces = APPLICATION_JSON)
+    public Responses.MapResponse callClick(@RequestBody HashMap<String, Object> request) {
+        return Responses.MapResponse.of(apiService.callClick(request));
     }
 
     @ResponseBody
@@ -80,6 +78,42 @@ public class apiController extends BaseController {
     @RequestMapping(value = "getCustomerService", method = RequestMethod.POST, produces = APPLICATION_JSON)
     public Responses.MapResponse getCustomerService(@RequestBody HashMap<String, Object> request) {
         return Responses.MapResponse.of(apiService.getCustomerService(request));
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "setWrite", method = RequestMethod.POST, produces = APPLICATION_JSON)
+    public Responses.MapResponse setWrite(@RequestBody HashMap<String, Object> request) {
+        return Responses.MapResponse.of(apiService.setWrite(request));
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "getCommonCode", method = RequestMethod.POST, produces = APPLICATION_JSON)
+    public Responses.MapResponse getCommonCode(@RequestBody HashMap<String, Object> request) {
+        return Responses.MapResponse.of(apiService.getCommonCode(request));
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "hitPlus", method = RequestMethod.POST, produces = APPLICATION_JSON)
+    public Responses.MapResponse hitPlus(@RequestBody HashMap<String, Object> request) {
+        return Responses.MapResponse.of(apiService.hitPlus(request));
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "likePlus", method = RequestMethod.POST, produces = APPLICATION_JSON)
+    public Responses.MapResponse likePlus(@RequestBody HashMap<String, Object> request) {
+        return Responses.MapResponse.of(apiService.likePlus(request));
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "noPlus", method = RequestMethod.POST, produces = APPLICATION_JSON)
+    public Responses.MapResponse noPlus(@RequestBody HashMap<String, Object> request) {
+        return Responses.MapResponse.of(apiService.noPlus(request));
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "getConsulting", method = RequestMethod.POST, produces = APPLICATION_JSON)
+    public Responses.MapResponse getConsulting(@RequestBody HashMap<String, Object> request) {
+        return Responses.MapResponse.of(apiService.getConsulting(request));
     }
 
 }

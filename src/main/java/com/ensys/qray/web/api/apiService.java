@@ -1,10 +1,9 @@
 package com.ensys.qray.web.api;
 
 import com.chequer.axboot.core.api.ApiException;
+import com.chequer.axboot.core.utils.HttpUtils;
 import com.ensys.qray.setting.base.BaseService;
-import com.ensys.qray.user.SessionUser;
 import com.ensys.qray.utils.HammerUtility;
-import com.ensys.qray.utils.SessionUtils;
 import com.ensys.qray.web.dashboard.DashboardMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -190,11 +189,19 @@ public class apiService extends BaseService {
 
 		result.put("center_banner_img", apimapper.centerBannerImg(map));
 
+		map.put("LIMIT", 3);
+		result.put("getMainNotice", apimapper.getMainNotice(map));
+
+		map.put("COMMUNITY_TP", "01");
+		result.put("getCommunityMainPagePc", apimapper.getCommunityMainPage(map));
+
+		map.put("LIMIT", 5);
+		result.put("getCommunityMainPageMo", apimapper.getCommunityMainPage(map));
+
 		return result;
 	}
 
 	public HashMap<String, Object> getPartnerSearch(HashMap<String, Object> param) {
-
 
 		HashMap<String, Object> result = new HashMap<>();
 
@@ -224,14 +231,16 @@ public class apiService extends BaseService {
 		return DashboardMapper.selectInfo(param).get(0);
 	}
 
-	public void callClick(HashMap<String, Object> param) {
-
+	public HashMap<String, Object> callClick(HashMap<String, Object> param) {
 		if(param.get("PARTNER_CD") == null || "".equals(param.get("PARTNER_CD")) || param.get("COMPANY_CD") == null || "".equals(param.get("COMPANY_CD"))){
 			throw new ApiException("코드또는 회사코드가 파라미터로 필요합니다.");
 		}
-
 		apimapper.callClick(param);
 
+		HashMap<String, Object> result = new HashMap<>();
+		result.put("response", "ok");
+
+		return result;
 	}
 
 	@Transactional(readOnly = true)
@@ -333,5 +342,85 @@ public class apiService extends BaseService {
 		return result;
 	}
 
+	public HashMap<String, Object> setWrite(HashMap<String, Object> param) {
+		if(param.get("COMMUNITY_TP") == null || "".equals(param.get("COMMUNITY_TP"))
+				|| param.get("COMPANY_CD") == null || "".equals(param.get("COMPANY_CD"))
+				|| param.get("COMMUNITY_ST") == null || "".equals(param.get("COMMUNITY_ST"))
+		){
+			throw new ApiException("분류, 타입, 회사코드가 파라미터로 필요합니다.");
+		}
+
+		String strDate = HammerUtility.nowDate("yyyyMMddHHmmss");
+
+		param.put("INSERT_ID", HttpUtils.getRemoteAddress());
+		param.put("INSERT_DTS", strDate);
+		param.put("UPDATE_ID", HttpUtils.getRemoteAddress());
+		param.put("UPDATE_DTS", strDate);
+
+		apimapper.setWrite(param);
+
+		HashMap<String, Object> result = new HashMap<>();
+		result.put("response", "ok");
+
+		return result;
+	}
+
+	public HashMap<String, Object> getCommonCode(HashMap<String, Object> param) {
+		if(param.get("FIELD_CD") == null || "".equals(param.get("FIELD_CD"))
+				|| param.get("COMPANY_CD") == null || "".equals(param.get("COMPANY_CD"))
+		){
+			throw new ApiException("공통코드, 회사코드가 파라미터로 필요합니다.");
+		}
+		HashMap<String, Object> result = new HashMap<>();
+		result.put("list", apimapper.getCommonCode(param));
+
+		return result;
+	}
+
+	public HashMap<String, Object> noPlus(HashMap<String, Object> param) {
+
+		apimapper.noPlus(param);
+
+		HashMap<String, Object> result = new HashMap<>();
+		result.put("response", "ok");
+
+		return result;
+	}
+
+	public HashMap<String, Object> likePlus(HashMap<String, Object> param) {
+
+		apimapper.likePlus(param);
+
+		HashMap<String, Object> result = new HashMap<>();
+		result.put("response", "ok");
+
+		return result;
+	}
+
+	public HashMap<String, Object> hitPlus(HashMap<String, Object> param) {
+
+		apimapper.hitPlus(param);
+
+		HashMap<String, Object> result = new HashMap<>();
+		result.put("response", "ok");
+
+		return result;
+	}
+
+
+	public HashMap<String, Object> getConsulting(HashMap<String, Object> param) {
+
+		HashMap<String, Object> result = new HashMap<>();
+
+		result.put("center_banner_img", apimapper.centerBannerImg(param));
+
+		param.put("L_COMMUNITY_ST", Arrays.asList(param.getOrDefault("COMMUNITY_ST", "").toString().split("\\|")));
+		result.put("getConsultingPaging", apimapper.getConsultingPaging(param));
+
+		param.put("ADV_CD", "ADV2023081700007");
+		result.put("blurbSpecial", apimapper.partnerBlurbList(param));
+
+		return result;
+	}
 
 }

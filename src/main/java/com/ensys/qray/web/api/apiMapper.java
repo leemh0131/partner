@@ -29,7 +29,22 @@ public interface apiMapper extends MyBatisMapper {
 
     List<HashMap<String, Object>> getMainNotice(HashMap<String, Object> param);
 
-    void callClick(HashMap<String, Object> param);
+    List<HashMap<String, Object>> getCommunityMainPage(HashMap<String, Object> param);
+
+    List<HashMap<String, Object>> getCommonCode(HashMap<String, Object> param);
+
+    int callClick(HashMap<String, Object> param);
 
     int getPaging(HashMap<String, Object> param);
+
+    int getConsultingPaging(HashMap<String, Object> param);
+
+    int setWrite(HashMap<String, Object> param);
+
+    int hitPlus(HashMap<String, Object> param);
+
+    int noPlus(HashMap<String, Object> param);
+
+    int likePlus(HashMap<String, Object> param);
+
 }
