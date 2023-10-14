@@ -187,6 +187,7 @@
         FROM ES_BOARD
         WHERE COMPANY_CD = #{COMPANY_CD}
           AND BOARD_TYPE NOT IN ('01')
+        ORDER BY SEQ DESC
     </select>
 
     <select id="getNoticePaging" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
@@ -201,7 +202,8 @@
         WHERE COMPANY_CD = #{COMPANY_CD}
           AND BOARD_TYPE = '01'
           AND COALESCE(MAIN_YN, '') != 'N'
-        LIMIT 7 OFFSET (#{OFFSET} * 7)
+        ORDER BY SEQ DESC
+        LIMIT #{LIMIT} OFFSET (#{OFFSET} * #{LIMIT})
     </select>
 
     <select id="getPaging" resultType="int" parameterType="hashmap" statementType="CALLABLE">
@@ -225,6 +227,7 @@
         WHERE COMPANY_CD = #{COMPANY_CD}
           AND BOARD_TYPE = '01'
           AND COALESCE(MAIN_YN, '') = 'Y'
+        ORDER BY SEQ DESC
     </select>
 
 
