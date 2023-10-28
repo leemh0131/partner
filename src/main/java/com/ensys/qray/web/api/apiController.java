@@ -116,4 +116,22 @@ public class apiController extends BaseController {
         return Responses.MapResponse.of(apiService.getConsulting(request));
     }
 
+    @ResponseBody
+    @RequestMapping(value = "getConsultingList", method = RequestMethod.POST, produces = APPLICATION_JSON)
+    public Responses.MapResponse getConsultingList(@RequestBody HashMap<String, Object> request) {
+        return Responses.MapResponse.of(apiService.getConsultingList(request));
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "reviewWrite", method = RequestMethod.POST, produces = APPLICATION_JSON)
+    public Responses.MapResponse reviewWrite(@RequestBody HashMap<String, Object> request) {
+        return Responses.MapResponse.of(apiService.reviewWrite(request));
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "getReviewList", method = RequestMethod.POST, produces = APPLICATION_JSON)
+    public Responses.MapResponse getReviewList(@RequestBody HashMap<String, Object> request) {
+        return Responses.MapResponse.of(apiService.getReviewList(request));
+    }
+
 }

@@ -23,11 +23,23 @@
              , F_ES_CATEGORY_ICON(A.COMPANY_CD, A.JOB_EP) AS "JOB_EP_ICON"
              , F_ES_CATEGORY_NM(A.COMPANY_CD, A.JOB_ZONE) AS "JOB_ZONE"
              , A.ITEM_INTRO AS "ITEM_INTRO"
+             , C.STAR_SCORE_TOT AS "STAR_SCORE_TOT"
+             , C.COUNT AS "COUNT"
         FROM ES_PARTNER A
         LEFT JOIN ES_PARTNER_PTR B
         ON A.COMPANY_CD = B.COMPANY_CD
         AND A.PARTNER_CD = B.PARTNER_CD
         AND B.MAIN_YN = 'Y'
+        LEFT JOIN (
+                   SELECT         COMPANY_CD AS COMPANY_CD
+                               ,  PARTNER_CD AS PARTNER_CD
+                               ,  COUNT(SEQ) AS COUNT
+                               ,  ROUND(SUM(STAR_SCORE) / COUNT(SEQ)) AS STAR_SCORE_TOT
+                          FROM ES_REVIEW_WRITE
+                          GROUP BY COMPANY_CD, PARTNER_CD
+                ) C
+        ON A.COMPANY_CD = C.COMPANY_CD
+        AND A.PARTNER_CD = C.PARTNER_CD
         WHERE A.COMPANY_CD = #{COMPANY_CD}
           AND A.PARTNER_CD = #{PARTNER_CD}
     </select>
@@ -278,6 +290,7 @@
         (
               COMPANY_CD
             , SEQ
+            , NAME
             , COMMUNITY_TP
             , COMMUNITY_ST
             , TITLE
@@ -295,6 +308,7 @@
                FROM ES_COMMUNITY
                WHERE COMPANY_CD = #{COMPANY_CD}
               )
+            , #{NAME}
             , #{COMMUNITY_TP}
             , #{COMMUNITY_ST}
             , #{TITLE}
@@ -355,5 +369,87 @@
             )
         </if>
     </select>
+
+    <select id="getConsultingList" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+        /*apiMapper.getConsultingList*/
+        SELECT
+               COMPANY_CD AS "COMPANY_CD"
+             , SEQ AS "SEQ"
+             , NAME AS "NAME"
+             , COMMUNITY_TP AS "COMMUNITY_TP"
+             , COMMUNITY_ST AS "COMMUNITY_ST"
+             , TITLE AS "TITLE"
+             , CONTENTS AS "CONTENTS"
+             , HIT AS "HIT"
+             , INSERT_ID AS "INSERT_ID"
+             , UPDATE_ID AS "UPDATE_ID"
+             , UPDATE_DTS AS "UPDATE_DTS"
+             , TO_CHAR(SUBSTRING(UPDATE_DTS, 1, 8)::date, 'YYYY-MM-DD') AS "DTS"
+        FROM ES_COMMUNITY
+        WHERE COMPANY_CD = #{COMPANY_CD}
+          AND COMMUNITY_TP = #{COMMUNITY_TP}
+        <if test = " S_COMMUNITY_ST != null and !S_COMMUNITY_ST.get(0).equals('') and S_COMMUNITY_ST.size() > 0 ">
+            AND COMMUNITY_ST IN
+            <foreach collection="S_COMMUNITY_ST" item="item"  open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        ORDER BY SEQ DESC
+            LIMIT #{LIMIT} OFFSET (#{OFFSET} * #{LIMIT})
+    </select>
+
+    <insert id="reviewWrite" parameterType="hashmap" statementType="CALLABLE">
+        /*apiMapper.reviewWrite*/
+        INSERT INTO ES_REVIEW_WRITE
+        (
+            COMPANY_CD
+        , SEQ
+        , NAME
+        , IP
+        , PARTNER_CD
+        , RMK_DC
+        , STAR_SCORE
+        , INSERT_ID
+        , INSERT_DTS
+        , UPDATE_ID
+        , UPDATE_DTS
+        )
+        VALUES
+            (
+                #{COMPANY_CD}
+            , (SELECT COALESCE(MAX(SEQ), 0) + 1
+               FROM ES_REVIEW_WRITE
+               WHERE COMPANY_CD = #{COMPANY_CD}
+                AND PARTNER_CD = #{PARTNER_CD}
+                )
+            , #{NAME}
+            , #{IP}
+            , #{PARTNER_CD}
+            , #{RMK_DC}
+            , #{STAR_SCORE}
+            , #{INSERT_ID}
+            , #{INSERT_DTS}
+            , #{UPDATE_ID}
+            , #{UPDATE_DTS}
+            )
+    </insert>
+
+    <select id="getReviewList" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+        /*apiMapper.getReviewList*/
+        SELECT     COMPANY_CD AS "COMPANY_CD"
+                 , SEQ AS "SEQ"
+                 , CASE WHEN LENGTH(NAME) > 0 THEN SUBSTRING(NAME FROM 1 FOR 1) || REPEAT('*', LENGTH(NAME) - 1) ELSE NAME END AS "NAME"
+                 , IP AS "IP"
+                 , RMK_DC AS "RMK_DC"
+                 , STAR_SCORE AS "STAR_SCORE"
+                 , INSERT_DTS AS "INSERT_DTS"
+                 , REGEXP_REPLACE(INSERT_DTS, '(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})', '\1.\2.\3 \4:\5') AS "DTS"
+        FROM ES_REVIEW_WRITE
+        WHERE COMPANY_CD = #{COMPANY_CD}
+        AND PARTNER_CD = #{PARTNER_CD}
+        ORDER BY SEQ DESC
+        LIMIT #{LIMIT} OFFSET (#{OFFSET} * #{LIMIT})
+    </select>
+
 
 </mapper>

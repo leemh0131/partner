@@ -33,6 +33,10 @@ public interface apiMapper extends MyBatisMapper {
 
     List<HashMap<String, Object>> getCommonCode(HashMap<String, Object> param);
 
+    List<HashMap<String, Object>> getConsultingList(HashMap<String, Object> param);
+
+    List<HashMap<String, Object>> getReviewList(HashMap<String, Object> param);
+
     int callClick(HashMap<String, Object> param);
 
     int getPaging(HashMap<String, Object> param);
@@ -40,6 +44,8 @@ public interface apiMapper extends MyBatisMapper {
     int getConsultingPaging(HashMap<String, Object> param);
 
     int setWrite(HashMap<String, Object> param);
+
+    int reviewWrite(HashMap<String, Object> param);
 
     int hitPlus(HashMap<String, Object> param);
 

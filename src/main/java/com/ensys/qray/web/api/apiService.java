@@ -423,4 +423,41 @@ public class apiService extends BaseService {
 		return result;
 	}
 
+	public HashMap<String, Object> getConsultingList(HashMap<String, Object> param) {
+
+		HashMap<String, Object> result = new HashMap<>();
+
+		param.put("S_COMMUNITY_ST", Arrays.asList(param.getOrDefault("COMMUNITY_ST", "").toString().split("\\|")));
+		result.put("list", apimapper.getConsultingList(param));
+
+		return result;
+	}
+
+	public HashMap<String, Object> reviewWrite(HashMap<String, Object> param) {
+
+		String strDate = HammerUtility.nowDate("yyyyMMddHHmmss");
+
+		param.put("INSERT_ID", HttpUtils.getRemoteAddress());
+		param.put("IP", HttpUtils.getRemoteAddress());
+		param.put("INSERT_DTS", strDate);
+		param.put("UPDATE_ID", HttpUtils.getRemoteAddress());
+		param.put("UPDATE_DTS", strDate);
+
+		apimapper.reviewWrite(param);
+
+		HashMap<String, Object> result = new HashMap<>();
+		result.put("response", "ok");
+
+		return result;
+	}
+
+	public HashMap<String, Object> getReviewList(HashMap<String, Object> param) {
+
+		HashMap<String, Object> result = new HashMap<>();
+
+		result.put("list", apimapper.getReviewList(param));
+
+		return result;
+	}
+
 }
