@@ -452,4 +452,24 @@
     </select>
 
 
+    <select id="getNoticeDetail" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+        /*apiMapper.getNoticeDetail*/
+        SELECT COMPANY_CD AS "COMPANY_CD"
+             , BOARD_TYPE AS "BOARD_TYPE"
+             , SEQ AS "SEQ"
+             , TITLE AS "TITLE"
+             , CONTENTS AS "CONTENTS"
+             , MAIN_YN AS "MAIN_YN"
+             , INSERT_ID AS "INSERT_ID"
+             , INSERT_DTS AS "INSERT_DTS"
+             , UPDATE_ID AS "UPDATE_ID"
+             , UPDATE_DTS AS "UPDATE_DTS"
+             , TO_CHAR(SUBSTRING(UPDATE_DTS, 1, 8)::date, 'YYYY-MM-DD') AS "DTS"
+        FROM ES_BOARD
+        WHERE COMPANY_CD = #{COMPANY_CD}
+          AND     SEQ = #{SEQ}
+        ORDER BY UPDATE_DTS, SEQ DESC
+    </select>
+
+
 </mapper>

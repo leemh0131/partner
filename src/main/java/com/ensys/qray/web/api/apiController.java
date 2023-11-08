@@ -134,4 +134,16 @@ public class apiController extends BaseController {
         return Responses.MapResponse.of(apiService.getReviewList(request));
     }
 
+    @ResponseBody
+    @RequestMapping(value = "getBannerimg", method = RequestMethod.POST, produces = APPLICATION_JSON)
+    public Responses.MapResponse getBannerimg(@RequestBody HashMap<String, Object> request) {
+        return Responses.MapResponse.of(apiService.getBannerimg(request));
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "getNoticeDetail", method = RequestMethod.POST, produces = APPLICATION_JSON)
+    public Responses.MapResponse getNoticeDetail(@RequestBody HashMap<String, Object> request) {
+        return Responses.MapResponse.of(apiService.getNoticeDetail(request));
+    }
+
 }

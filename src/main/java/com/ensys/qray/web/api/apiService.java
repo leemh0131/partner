@@ -417,7 +417,12 @@ public class apiService extends BaseService {
 		param.put("L_COMMUNITY_ST", Arrays.asList(param.getOrDefault("COMMUNITY_ST", "").toString().split("\\|")));
 		result.put("getConsultingPaging", apimapper.getConsultingPaging(param));
 
-		param.put("ADV_CD", "ADV2023081700007");
+		if("01".equals(param.get("COMMUNITY_TP"))){
+			param.put("ADV_CD", "ADV2023081700007");
+		} else {
+			param.put("ADV_CD", "ADV2023081700009");
+		}
+
 		result.put("blurbSpecial", apimapper.partnerBlurbList(param));
 
 		return result;
@@ -456,6 +461,24 @@ public class apiService extends BaseService {
 		HashMap<String, Object> result = new HashMap<>();
 
 		result.put("list", apimapper.getReviewList(param));
+
+		return result;
+	}
+
+	public HashMap<String, Object> getBannerimg(HashMap<String, Object> param) {
+
+		HashMap<String, Object> result = new HashMap<>();
+
+		result.put("center_banner_img", apimapper.centerBannerImg(param));
+
+		return result;
+	}
+
+	public HashMap<String, Object> getNoticeDetail(HashMap<String, Object> param) {
+
+		HashMap<String, Object> result = new HashMap<>();
+
+		result.put("item", apimapper.getNoticeDetail(param));
 
 		return result;
 	}
