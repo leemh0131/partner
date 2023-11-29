@@ -16,6 +16,5 @@ else
 {
 
 	location.href = "./jsp/login.jsp";
-    a = "test";
 }
 </script>
