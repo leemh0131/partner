@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ensys.qray.fi.notice.FiNotice01Mapper">
+
+	<select id="select" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*FiNotice01Mapper.select*/
+		SELECT
+			  DM_CD			AS "DM_CD"
+			, DM_TYPE		AS "DM_TYPE"
+			, DM_KIND		AS "DM_KIND"
+			, COMP_NM		AS "COMP_NM"
+			, BORW_SITE		AS "BORW_SITE"
+			, DEBTOR_TEL	AS "DEBTOR_TEL"
+			, DEBTOR_KAKAO	AS "DEBTOR_KAKAO"
+			, DEBTOR_TELE	AS "DEBTOR_TELE"
+			, DEBTOR_SNS	AS "DEBTOR_SNS"
+			, WITHDR_LOCA	AS "WITHDR_LOCA"
+			, COMPL_POLICE	AS "COMPL_POLICE"
+			, DM_CONTENTS	AS "DM_CONTENTS"
+			, USE_YN		AS "USE_YN"
+			, WRITE_DATE	AS "WRITE_DATE"
+			, WRITE_IP		AS "WRITE_IP"
+			, INSERT_DATE	AS "INSERT_DATE"
+			, UPDATE_DATE	AS "UPDATE_DATE"
+		FROM PL_DM_M
+		WHERE 1 = 1
+		<if test='KEYWORD != null and KEYWORD != ""'>
+			AND    (
+			COMP_NM    LIKE  '%' || #{KEYWORD} || '%'
+			OR DM_CONTENTS    LIKE  '%' || #{KEYWORD} || '%'
+			)
+		</if>
+	</select>
+
+	<insert id="created" parameterType="hashmap" statementType="CALLABLE">
+		/*FiNotice01Mapper.created*/
+		INSERT INTO PL_DM_M(
+			  DM_CD
+			, DM_TYPE
+			, DM_KIND
+			, COMP_NM
+			, BORW_SITE
+			, DEBTOR_TEL
+			, DEBTOR_KAKAO
+			, DEBTOR_TELE
+			, DEBTOR_SNS
+			, WITHDR_LOCA
+			, COMPL_POLICE
+			, DM_CONTENTS
+			, USE_YN
+			, WRITE_DATE
+			, WRITE_IP
+			, INSERT_DATE
+			, UPDATE_DATE
+		)VALUES(
+		      #{DM_CD}
+			, #{DM_TYPE}
+			, #{DM_KIND}
+			, #{COMP_NM}
+			, #{BORW_SITE}
+			, #{DEBTOR_TEL}
+			, #{DEBTOR_KAKAO}
+			, #{DEBTOR_TELE}
+			, #{DEBTOR_SNS}
+			, #{WITHDR_LOCA}
+			, #{COMPL_POLICE}
+			, #{DM_CONTENTS}
+			, #{USE_YN}
+			, #{WRITE_DATE}
+			, #{WRITE_IP}
+			, #{INSERT_DATE}
+			, #{UPDATE_DATE}
+		)
+	</insert>
+
+    <update id="updated" parameterType="hashmap" statementType="CALLABLE">
+		/*FiNotice01Mapper.updated*/
+		UPDATE PL_DM_M
+		SET
+			DM_TYPE = #{DM_TYPE}
+		  , DM_KIND = #{DM_KIND}
+		  , COMP_NM = #{COMP_NM}
+		  , BORW_SITE = #{BORW_SITE}
+		  , DEBTOR_TEL = #{DEBTOR_TEL}
+		  , DEBTOR_KAKAO = #{DEBTOR_KAKAO}
+		  , DEBTOR_TELE = #{DEBTOR_TELE}
+		  , DEBTOR_SNS = #{DEBTOR_SNS}
+		  , WITHDR_LOCA = #{WITHDR_LOCA}
+		  , COMPL_POLICE = #{COMPL_POLICE}
+		  , DM_CONTENTS = #{DM_CONTENTS}
+		  , USE_YN = #{USE_YN}
+		  , UPDATE_DATE = #{UPDATE_DATE}
+		WHERE DM_CD = #{DM_CD}
+	</update>
+    
+    <delete id="deleted" parameterType="hashmap" statementType="CALLABLE">
+		/*FiNotice01Mapper.deleted*/
+		DELETE FROM PL_DM_M
+		WHERE DM_CD = #{DM_CD}
+	</delete>
+
+	<select id="selectPlDmDeposit" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*FiNotice01Mapper.selectPlDmDeposit*/
+		SELECT
+			  DM_CD			AS "DM_CD"
+			, SEQ			AS "SEQ"
+			, BANK_CD		AS "BANK_CD"
+			, BANK_NM		AS "BANK_NM"
+			, NO_DEPOSIT	AS "NO_DEPOSIT"
+			, NM_DEPOSITOR	AS "NM_DEPOSITOR"
+			, USE_YN		AS "USE_YN"
+			, INSERT_DATE	AS "INSERT_DATE"
+			, UPDATE_DATE	AS "UPDATE_DATE"
+		FROM PL_DM_DEPOSIT
+		WHERE DM_CD = #{DM_CD}
+	</select>
+
+	<insert id="createdPlDmDeposit" parameterType="hashmap" statementType="CALLABLE">
+		/*FiNotice01Mapper.createdPlDmDeposit*/
+		INSERT INTO PL_DM_DEPOSIT (
+			  DM_CD
+			, BANK_CD
+			, BANK_NM
+			, NO_DEPOSIT
+			, NM_DEPOSITOR
+			, USE_YN
+			, INSERT_DATE
+			, UPDATE_DATE
+		)VALUES(
+			  #{DM_CD}
+			, #{BANK_CD}
+			, #{BANK_NM}
+			, #{NO_DEPOSIT}
+			, #{NM_DEPOSITOR}
+			, #{USE_YN}
+			, #{INSERT_DATE}
+			, #{UPDATE_DATE}
+		)
+	</insert>
+
+    <update id="updatedPlDmDeposit" parameterType="hashmap" statementType="CALLABLE">
+		/*FiNotice01Mapper.updatedPlDmDeposit*/
+		UPDATE PL_DM_DEPOSIT
+		SET
+			  BANK_CD = #{BANK_CD}
+			, BANK_NM = #{BANK_NM}
+			, NO_DEPOSIT = #{NO_DEPOSIT}
+			, NM_DEPOSITOR = #{NM_DEPOSITOR}
+			, USE_YN = #{USE_YN}
+			, UPDATE_DATE = #{UPDATE_DATE}
+		WHERE DM_CD = #{DM_CD}
+		AND SEQ = #{SEQ}
+	</update>
+
+    <delete id="deletedPlDmDeposit" parameterType="hashmap" statementType="CALLABLE">
+		/*FiNotice01Mapper.deletedPlDmDeposit*/
+		DELETE FROM PL_DM_DEPOSIT
+		WHERE DM_CD = #{DM_CD}
+		AND SEQ = #{SEQ}
+	</delete>
+
+	<select id="selectPlDmComm" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*FiNotice01Mapper.selectPlDmComm*/
+		SELECT
+			  DM_CD				AS "DM_CD"
+			, COMM_CD			AS "COMM_CD"
+			, PARENT_CD			AS "PARENT_CD"
+			, NICK_NM			AS "NICK_NM"
+			, PASSWORD			AS "PASSWORD"
+			, CONTENTS			AS "CONTENTS"
+			, USE_YN			AS "USE_YN"
+			, REPORT_YN			AS "REPORT_YN"
+			, WRITE_DATE		AS "WRITE_DATE"
+			, WRITE_IP			AS "WRITE_IP"
+			, INSERT_DATE		AS "INSERT_DATE"
+			, UPDATE_DATE		AS "UPDATE_DATE"
+		FROM PL_DM_COMM
+		WHERE DM_CD = #{DM_CD}
+	</select>
+
+	<insert id="createdPlDmComm" parameterType="hashmap" statementType="CALLABLE">
+		/*FiNotice01Mapper.createdPlDmComm*/
+		INSERT INTO PL_DM_COMM (
+			  DM_CD
+			, COMM_CD
+			, PARENT_CD
+			, NICK_NM
+			, PASSWORD
+			, CONTENTS
+			, USE_YN
+			, REPORT_YN
+			, WRITE_DATE
+			, WRITE_IP
+			, INSERT_DATE
+			, UPDATE_DATE
+		)VALUES(
+			  #{DM_CD}
+			, #{COMM_CD}
+			, #{PARENT_CD}
+			, #{NICK_NM}
+			, #{PASSWORD}
+			, #{CONTENTS}
+			, #{USE_YN}
+			, #{REPORT_YN}
+			, #{WRITE_DATE}
+			, #{WRITE_IP}
+			, #{INSERT_DATE}
+			, #{UPDATE_DATE}
+		)
+	</insert>
+
+    <update id="updatedPlDmComm" parameterType="hashmap" statementType="CALLABLE">
+		/*FiNotice01Mapper.updatedPlDmComm*/
+		UPDATE PL_DM_COMM
+		SET
+			  PARENT_CD = #{PARENT_CD}
+			, NICK_NM = #{NICK_NM}
+			, PASSWORD = #{PASSWORD}
+			, CONTENTS = #{CONTENTS}
+			, USE_YN = #{USE_YN}
+			, REPORT_YN = #{REPORT_YN}
+			, UPDATE_DATE = #{UPDATE_DATE}
+		WHERE DM_CD = #{DM_CD}
+		AND COMM_CD = #{COMM_CD}
+	</update>
+
+    <delete id="deletedPlDmComm" parameterType="hashmap" statementType="CALLABLE">
+		/*FiNotice01Mapper.deletedPlDmComm*/
+    	DELETE FROM PL_DM_COMM
+		WHERE DM_CD = #{DM_CD}
+		AND COMM_CD = #{COMM_CD}
+    </delete>
+</mapper>
