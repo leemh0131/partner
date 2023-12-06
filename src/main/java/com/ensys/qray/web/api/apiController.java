@@ -146,4 +146,10 @@ public class apiController extends BaseController {
         return Responses.MapResponse.of(apiService.getNoticeDetail(request));
     }
 
+    @ResponseBody
+    @RequestMapping(value = "regWrite", method = RequestMethod.POST, produces = APPLICATION_JSON)
+    public Responses.MapResponse regWrite(@RequestBody HashMap<String, Object> request) {
+        return Responses.MapResponse.of(apiService.regWrite(request));
+    }
+
 }

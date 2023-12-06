@@ -55,4 +55,6 @@ public interface apiMapper extends MyBatisMapper {
 
     int likePlus(HashMap<String, Object> param);
 
+    int regWrite(HashMap<String, Object> param);
+
 }

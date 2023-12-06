@@ -483,4 +483,20 @@ public class apiService extends BaseService {
 		return result;
 	}
 
+	public HashMap<String, Object> regWrite(HashMap<String, Object> param) {
+
+		String strDate = HammerUtility.nowDate("yyyyMMddHHmmss");
+
+		param.put("WRITE_IP", HttpUtils.getRemoteAddress());
+		param.put("WRITE_DATE", strDate);
+		param.put("INSERT_DATE", strDate);
+
+		apimapper.regWrite(param);
+
+		HashMap<String, Object> result = new HashMap<>();
+		result.put("response", "ok");
+
+		return result;
+	}
+
 }

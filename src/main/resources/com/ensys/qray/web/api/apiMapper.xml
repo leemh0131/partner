@@ -471,5 +471,52 @@
         ORDER BY UPDATE_DTS, SEQ DESC
     </select>
 
+    <insert id="regWrite" parameterType="hashmap" statementType="CALLABLE">
+        /*apiMapper.regWrite*/
+        INSERT INTO PL_DM_M
+        (
+              DM_CD
+            , DM_TYPE
+            , DM_KIND
+            , COMP_NM
+            , BORW_SITE
+            , DEBTOR_TEL
+            , DEBTOR_KAKAO
+            , DEBTOR_TELE
+            , DEBTOR_SNS
+            , WITHDR_LOCA
+            , COMPL_POLICE
+            , DM_CONTENTS
+            , USE_YN
+            , WRITE_DATE
+            , WRITE_IP
+            , INSERT_DATE
+            , UPDATE_DATE
+        )
+        VALUES
+        (
+           (
+               SELECT COALESCE(MAX(DM_CD::INT), 0) + 1
+               FROM PL_DM_M
+            )
+            , #{DM_TYPE}
+            , #{DM_KIND}
+            , #{COMP_NM}
+            , #{BORW_SITE}
+            , #{DEBTOR_TEL}
+            , #{DEBTOR_KAKAO}
+            , #{DEBTOR_TELE}
+            , #{DEBTOR_SNS}
+            , #{WITHDR_LOCA}
+            , #{COMPL_POLICE}
+            , #{DM_CONTENTS}
+            , #{USE_YN}
+            , #{WRITE_DATE}
+            , #{WRITE_IP}
+            , #{INSERT_DATE}
+            , #{UPDATE_DATE}
+        )
+    </insert>
+
 
 </mapper>
