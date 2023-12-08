@@ -58,4 +58,6 @@ public interface apiMapper extends MyBatisMapper {
     int regWrite(HashMap<String, Object> param);
 
     List<HashMap<String, Object>> getPrivateLoanPlDmM(HashMap<String, Object> param);
+
+    List<HashMap<String, Object>> getPrivateLoanPlDmMPaging(HashMap<String, Object> param);
 }

@@ -540,4 +540,27 @@
         ORDER BY A.WRITE_DATE DESC
         LIMIT 6
     </select>
+
+     <select id="getPrivateLoanPlDmMPaging" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+        /*apiMapper.getPrivateLoanPlDmMPaging*/
+        SELECT    A.DM_CD                              AS "DM_CD"
+                , A.COMP_NM                            AS "COMP_NM"
+                , F_NVL_TEXT(A.DEBTOR_TEL, '모름')      AS "DEBTOR_TEL"
+                , F_NVL_TEXT(A.DEBTOR_KAKAO, '모름')    AS "DEBTOR_KAKAO"
+                , F_NVL_TEXT(A.DEBTOR_TELE, '모름')     AS "DEBTOR_TELE"
+                , F_NVL_TEXT(A.DEBTOR_SNS, '모름')      AS "DEBTOR_SNS"
+                , CASE WHEN
+                    CURRENT_DATE - TO_DATE(SUBSTRING(REPLACE(A.WRITE_DATE, '-', ''), 1, 8), 'YYYYMMDD') > F_NVL_NUM(B.SYSDEF_CD::INTEGER, 7) THEN 'N'
+                    ELSE 'Y'
+                END AS "NEW_VALUE"
+        FROM    PL_DM_M A
+        LEFT JOIN (SELECT SYSDEF_CD FROM ES_CODEDTL WHERE FIELD_CD = 'ES_Q0141' AND FLAG1_CD = 'Y' LIMIT 1) B
+        ON 1 = 1
+        WHERE   A.USE_YN = 'Y'
+        <if test='DM_TYPE != null and DM_TYPE != ""'>
+            AND A.DM_TYPE = #{DM_TYPE}
+        </if>
+        ORDER BY A.WRITE_DATE DESC
+        LIMIT 9 OFFSET #{MORE_BTN_COUNT}::INTEGER * 9
+    </select>
 </mapper>

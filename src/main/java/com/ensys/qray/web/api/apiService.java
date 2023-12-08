@@ -507,7 +507,15 @@ public class apiService extends BaseService {
 		param.put("DM_TYPE", "002");
 		result.put("list2", apimapper.getPrivateLoanPlDmM(param));
 
+
 		return result;
 	}
 
+	public HashMap<String, Object> getPrivateLoanPlDmMPaging(HashMap<String, Object> param) {
+		HashMap<String, Object> result = new HashMap<>();
+
+		result.put("list", apimapper.getPrivateLoanPlDmMPaging(param));
+
+		return result;
+	}
 }
