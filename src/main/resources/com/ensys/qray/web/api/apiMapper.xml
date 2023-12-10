@@ -560,7 +560,29 @@
         <if test='DM_TYPE != null and DM_TYPE != ""'>
             AND A.DM_TYPE = #{DM_TYPE}
         </if>
+        <if test='KEYWORD != null and KEYWORD != ""'>
+         AND A.COMP_NM ILIKE CONCAT('%', #{KEYWORD}, '%')
+        </if>
         ORDER BY A.WRITE_DATE DESC
         LIMIT 9 OFFSET #{MORE_BTN_COUNT}::INTEGER * 9
     </select>
+
+    <select id="getPrivateLoanInfoPolice" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+        /*apiMapper.getPrivateLoanInfoPolice*/
+        SELECT CONCAT(STATION_NAME, '', DIVISION) AS "STATION_NAME"
+             , ADDRESS AS "ADDRESS"
+        FROM ES_INFO_POLICE
+        WHERE 1 = 1
+        <if test='SIDO != null and SIDO != ""'>
+            AND SIDO = #{SIDO}
+        </if>
+        <if test='KEYWORD != null and KEYWORD != ""'>
+            AND (
+                STATION_NAME ILIKE CONCAT('%', #{KEYWORD}, '%')
+                OR DIVISION ILIKE CONCAT('%', #{KEYWORD}, '%')
+                OR ADDRESS ILIKE CONCAT('%', #{KEYWORD}, '%')
+            )
+        </if>
+    </select>
+
 </mapper>

@@ -503,10 +503,14 @@ public class apiService extends BaseService {
 		HashMap<String, Object> result = new HashMap<>();
 
 		param.put("DM_TYPE", "001");
-		result.put("list1", apimapper.getPrivateLoanPlDmM(param));
+		result.put("list1", apimapper.getPrivateLoanPlDmM(param));	//실시간 등록 불법사채
 		param.put("DM_TYPE", "002");
-		result.put("list2", apimapper.getPrivateLoanPlDmM(param));
-
+		result.put("list2", apimapper.getPrivateLoanPlDmM(param));	//실시간 등록 기타금전사기
+		param.put("COMPANY_CD", "1000");
+		param.put("FIELD_CD", "ES_Q0142");
+		result.put("ES_Q0142", apimapper.getCommonCode(param));		//경찰청시도 코드
+		param.put("SIDO", "01");//서울청
+		result.put("polices", apimapper.getPrivateLoanInfoPolice(param));//경찰서
 
 		return result;
 	}
@@ -515,6 +519,13 @@ public class apiService extends BaseService {
 		HashMap<String, Object> result = new HashMap<>();
 
 		result.put("list", apimapper.getPrivateLoanPlDmMPaging(param));
+
+		return result;
+	}
+
+	public HashMap<String, Object> getPrivateLoanInfoPolice(HashMap<String, Object> param) {
+		HashMap<String, Object> result = new HashMap<>();
+		result.put("list", apimapper.getPrivateLoanInfoPolice(param));
 
 		return result;
 	}
