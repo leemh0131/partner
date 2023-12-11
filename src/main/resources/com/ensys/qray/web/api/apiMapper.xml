@@ -585,4 +585,39 @@
         </if>
     </select>
 
+     <select id="getPrivateLoanLiveComment" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+        /*apiMapper.getPrivateLoanLiveComment*/
+    </select>
+
+    <select id="getPrivateLoanBoard" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+            /*apiMapper.getPrivateLoanBoard*/
+            SELECT TITLE AS "TITLE"
+                 , TO_CHAR(SUBSTRING(UPDATE_DTS, 1, 8)::date, 'YYYY-MM-DD') AS "DTS"
+            FROM ES_BOARD
+            WHERE   COMPANY_CD = #{COMPANY_CD}
+            AND     BOARD_TYPE = '04'
+            ORDER BY F_NVL_TEXT(MAIN_YN, 'N') DESC, UPDATE_DTS DESC
+            LIMIT 4
+        </select>
+
+    <select id="getPrivateLoanCommunity" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+        /*apiMapper.getPrivateLoanCommunity*/
+        SELECT TITLE AS "TITLE"
+             , TO_CHAR(SUBSTRING(UPDATE_DTS, 1, 8)::DATE, 'YYYY-MM-DD') AS "DTS"
+        FROM ES_COMMUNITY
+        ORDER BY UPDATE_DTS DESC
+        LIMIT 4
+    </select>
+
+
+    <select id="getPrivateLoanCommunityPaging" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+        /*apiMapper.getPrivateLoanCommunityPaging*/
+        SELECT    SEQ               AS "SEQ"
+                , SUBSTRING(TITLE, 1, 50)             AS "TITLE"
+                , CONCAT(SUBSTRING(NAME, 1, 1), 'OO')              AS "NAME"
+                , TO_CHAR(SUBSTRING(UPDATE_DTS, 1, 8)::DATE, 'YYYY-MM-DD') AS "DTS"
+        FROM ES_COMMUNITY
+        ORDER BY UPDATE_DTS DESC
+        LIMIT 15 OFFSET #{MORE_BTN_COUNT}::INTEGER * 15
+    </select>
 </mapper>

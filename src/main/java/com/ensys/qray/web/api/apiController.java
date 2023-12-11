@@ -169,4 +169,16 @@ public class apiController extends BaseController {
     public Responses.MapResponse getPrivateLoanInfoPolice(@RequestBody HashMap<String, Object> request) {
         return Responses.MapResponse.of(apiService.getPrivateLoanInfoPolice(request));
     }
+
+    @ResponseBody
+    @RequestMapping(value = "getPrivateLoanSubInfo", method = RequestMethod.POST, produces = APPLICATION_JSON)
+    public Responses.MapResponse getPrivateLoanSubInfo(@RequestBody HashMap<String, Object> request) {
+        return Responses.MapResponse.of(apiService.getPrivateLoanSubInfo(request));
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "getPrivateLoanCommunityPaging", method = RequestMethod.POST, produces = APPLICATION_JSON)
+    public Responses.MapResponse getPrivateLoanCommunityPaging(@RequestBody HashMap<String, Object> request) {
+        return Responses.MapResponse.of(apiService.getPrivateLoanCommunityPaging(request));
+    }
 }
