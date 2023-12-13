@@ -471,6 +471,12 @@
         ORDER BY UPDATE_DTS, SEQ DESC
     </select>
 
+    <select id="plDmMKey" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+        /*apiMapper.plDmMKey*/
+        SELECT (COALESCE(MAX(DM_CD::INT), 0) + 1)::VARCHAR(10) AS "DM_CD"
+        FROM PL_DM_M
+    </select>
+
     <insert id="regWrite" parameterType="hashmap" statementType="CALLABLE">
         /*apiMapper.regWrite*/
         INSERT INTO PL_DM_M
@@ -487,6 +493,7 @@
             , WITHDR_LOCA
             , COMPL_POLICE
             , DM_CONTENTS
+            , PW
             , USE_YN
             , WRITE_DATE
             , WRITE_IP
@@ -495,10 +502,7 @@
         )
         VALUES
         (
-           (
-               SELECT COALESCE(MAX(DM_CD::INT), 0) + 1
-               FROM PL_DM_M
-            )
+              #{DM_CD}
             , #{DM_TYPE}
             , #{DM_KIND}
             , #{COMP_NM}
@@ -510,9 +514,38 @@
             , #{WITHDR_LOCA}
             , #{COMPL_POLICE}
             , #{DM_CONTENTS}
+            , #{PW}
             , #{USE_YN}
             , #{WRITE_DATE}
             , #{WRITE_IP}
+            , #{INSERT_DATE}
+            , #{UPDATE_DATE}
+        )
+    </insert>
+
+    <insert id="regWriteDeposit" parameterType="hashmap" statementType="CALLABLE">
+        /*apiMapper.regWriteDeposit*/
+        INSERT INTO PL_DM_DEPOSIT
+        (
+              DM_CD
+            , SEQ
+            , BANK_CD
+            , BANK_NM
+            , NO_DEPOSIT
+            , NM_DEPOSITOR
+            , USE_YN
+            , INSERT_DATE
+            , UPDATE_DATE
+        )
+        VALUES
+        (
+              #{DM_CD}
+            , #{SEQ}
+            , #{BANK_CD}
+            , #{BANK_NM}
+            , #{NO_DEPOSIT}
+            , #{NM_DEPOSITOR}
+            , #{USE_YN}
             , #{INSERT_DATE}
             , #{UPDATE_DATE}
         )
@@ -620,4 +653,30 @@
         ORDER BY UPDATE_DTS DESC
         LIMIT 15 OFFSET #{MORE_BTN_COUNT}::INTEGER * 15
     </select>
+
+
+    <select id="getPrivateNotice" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+        /*apiMapper.getPrivateNotice*/
+        SELECT COMPANY_CD AS "COMPANY_CD"
+             , BOARD_TYPE AS "BOARD_TYPE"
+             , SEQ AS "SEQ"
+             , TITLE AS "TITLE"
+             , CONTENTS AS "CONTENTS"
+             , F_ES_CODE_DETAIL(COMPANY_CD, 'ES_Q0143', BOARD_ST) AS "BOARD_ST_NM"
+             , BOARD_ST AS "BOARD_ST"
+             , MAIN_YN AS "MAIN_YN"
+             , INSERT_ID AS "INSERT_ID"
+             , INSERT_DTS AS "INSERT_DTS"
+             , UPDATE_ID AS "UPDATE_ID"
+             , UPDATE_DTS AS "UPDATE_DTS"
+             , TO_CHAR(SUBSTRING(UPDATE_DTS, 1, 8)::date, 'YYYY-MM-DD') AS "DTS"
+        FROM ES_BOARD
+        WHERE COMPANY_CD = #{COMPANY_CD}
+        AND BOARD_TYPE = #{BOARD_TYPE}
+        ORDER BY UPDATE_DTS, SEQ DESC
+        LIMIT #{LIMIT}::INTEGER OFFSET #{OFFSET}::INTEGER * #{LIMIT}::INTEGER
+    </select>
+
+
 </mapper>
+

@@ -11,6 +11,7 @@
 			,	BOARD_TYPE AS "BOARD_TYPE"
 			,	SEQ AS "SEQ"
             ,	TITLE AS "TITLE"
+            ,	BOARD_ST AS "BOARD_ST"
             ,	CONTENTS AS "CONTENTS"
             ,	MAIN_YN AS "MAIN_YN"
 		FROM ES_BOARD
@@ -40,6 +41,7 @@
 		, CONTENTS
 		, HIT
 		, MAIN_YN
+		, BOARD_ST
 		, INSERT_ID
 		, INSERT_DTS
 		, UPDATE_ID
@@ -57,6 +59,7 @@
 		, #{CONTENTS}
 		, 0
 		, #{MAIN_YN}
+		, #{BOARD_ST}
 		, #{INSERT_ID}
 		, #{INSERT_DTS}
 		, #{UPDATE_ID}
@@ -69,6 +72,7 @@
 		SET TITLE      =   #{TITLE}
 		  ,	CONTENTS   =   #{CONTENTS}
 		  ,	MAIN_YN   =   #{MAIN_YN}
+		  ,	BOARD_ST   =   #{BOARD_ST}
 		  ,	BOARD_TYPE   =   #{BOARD_TYPE}
 		  ,	UPDATE_ID  =   #{UPDATE_ID}
 		  ,	UPDATE_DTS =   #{UPDATE_DTS}

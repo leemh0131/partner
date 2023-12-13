@@ -491,7 +491,24 @@ public class apiService extends BaseService {
 		param.put("WRITE_DATE", strDate);
 		param.put("INSERT_DATE", strDate);
 
+		HashMap<String, Object> plDmMKey = apimapper.plDmMKey(param);
+		String key = (String) plDmMKey.get("DM_CD");
+		param.put("DM_CD", key);
+
 		apimapper.regWrite(param);
+
+		List<HashMap<String, Object>> deposit = (List<HashMap<String, Object>>) param.get("DEPOSIT");
+
+		int seq = 0;
+		for(HashMap<String, Object> item : deposit){
+			item.put("WRITE_IP", HttpUtils.getRemoteAddress());
+			item.put("DM_CD", key);
+			item.put("WRITE_DATE", strDate);
+			item.put("INSERT_DATE", strDate);
+			item.put("SEQ", seq++);
+			apimapper.regWriteDeposit(item);
+		}
+
 
 		HashMap<String, Object> result = new HashMap<>();
 		result.put("response", "ok");
@@ -549,4 +566,14 @@ public class apiService extends BaseService {
 
 		return result;
 	}
+
+	public HashMap<String, Object> getPrivateNotice(HashMap<String, Object> param) {
+		HashMap<String, Object> result = new HashMap<>();
+
+		result.put("list", apimapper.getPrivateNotice(param));
+
+		return result;
+	}
+
+
 }

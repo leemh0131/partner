@@ -56,6 +56,7 @@ public interface apiMapper extends MyBatisMapper {
     int likePlus(HashMap<String, Object> param);
 
     int regWrite(HashMap<String, Object> param);
+    int regWriteDeposit(HashMap<String, Object> param);
 
     List<HashMap<String, Object>> getPrivateLoanPlDmM(HashMap<String, Object> param);
 
@@ -70,4 +71,8 @@ public interface apiMapper extends MyBatisMapper {
     List<HashMap<String, Object>> getPrivateLoanCommunity(HashMap<String, Object> param);
 
     List<HashMap<String, Object>> getPrivateLoanCommunityPaging(HashMap<String, Object> param);
+
+    List<HashMap<String, Object>> getPrivateNotice(HashMap<String, Object> param);
+
+    HashMap<String, Object> plDmMKey(HashMap<String, Object> param);
 }

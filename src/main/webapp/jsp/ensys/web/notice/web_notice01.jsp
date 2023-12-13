@@ -14,14 +14,16 @@
             var selectRow = 0; // 포커스 전역번수
             var userCallBack;
 
-            var ES_CODES = $.SELECT_COMMON_ARRAY_CODE('ES_Q0136', 'ES_Q0001');
+            var ES_CODES = $.SELECT_COMMON_ARRAY_CODE('ES_Q0136', 'ES_Q0001', 'ES_Q0143');
 
             var BOARD_TYPE = $.SELECT_COMMON_GET_CODE(ES_CODES, "ES_Q0136", false);
             var ES_Q0001 = $.SELECT_COMMON_GET_CODE(ES_CODES, "ES_Q0001", false);   //사용여부
+            var ES_Q0143 = $.SELECT_COMMON_GET_CODE(ES_CODES, "ES_Q0143", false);
             //엘리먼트값 id="column2" 제이쿼리로 정의 $("#column2")의 콤보박스는 ES_Q0001 로 정의해주는 부분
             $("#BOARD_TYPE").ax5select({options: BOARD_TYPE});
             $("#S_BOARD_TYPE").ax5select({options: BOARD_TYPE});
             $("#MAIN_YN").ax5select({options: ES_Q0001});
+            $("#BOARD_ST").ax5select({options: ES_Q0143});
 
             var ACTIONS = axboot.actionExtend(fnObj, {
                 PAGE_SEARCH: function(caller, act, data) {
@@ -376,6 +378,10 @@
                                          data-ax5select="BOARD_TYPE"
                                          data-ax5select-config='{}'>
                                     </div>
+                                </ax:td>
+                                <ax:td label='[사패패치]고객센터분류' width="33%">
+                                    <div class="BOARD_ST" id="BOARD_ST" name="BOARD_ST" data-ax5select="BOARD_ST" data-ax5select-config='{}'
+                                         form-bind-text='BOARD_ST' form-bind-type="selectBox"></div>
                                 </ax:td>
                                 <ax:td label='메인여부' width="33%">
                                     <div class="MAIN_YN" id="MAIN_YN" name="MAIN_YN" data-ax5select="MAIN_YN" data-ax5select-config='{}'
