@@ -2,7 +2,10 @@ package com.ensys.qray.web.api;
 
 import com.chequer.axboot.core.api.ApiException;
 import com.chequer.axboot.core.utils.HttpUtils;
+import com.ensys.qray.fi.notice.FiNotice01Mapper;
 import com.ensys.qray.setting.base.BaseService;
+import com.ensys.qray.sys.information08.SysInformation08Mapper;
+import com.ensys.qray.sys.information08.SysInformation08Service;
 import com.ensys.qray.utils.HammerUtility;
 import com.ensys.qray.web.dashboard.DashboardMapper;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+
+import static com.chequer.axboot.core.utils.HttpUtils.getRemoteAddress;
+import static com.ensys.qray.utils.HammerUtility.*;
 
 @Service
 @Transactional
@@ -19,6 +25,10 @@ public class apiService extends BaseService {
 	private final apiMapper apimapper;
 
 	private final DashboardMapper DashboardMapper;
+
+	private final FiNotice01Mapper fiNotice01Mapper;
+
+	private final SysInformation08Mapper sysInformation08Mapper;
 
 	public HashMap<String, Object> partnerDetail(HashMap<String, Object> param) {
 
@@ -350,11 +360,11 @@ public class apiService extends BaseService {
 			throw new ApiException("분류, 타입, 회사코드가 파라미터로 필요합니다.");
 		}
 
-		String strDate = HammerUtility.nowDate("yyyyMMddHHmmss");
+		String strDate = nowDate("yyyyMMddHHmmss");
 
-		param.put("INSERT_ID", HttpUtils.getRemoteAddress());
+		param.put("INSERT_ID", getRemoteAddress());
 		param.put("INSERT_DTS", strDate);
-		param.put("UPDATE_ID", HttpUtils.getRemoteAddress());
+		param.put("UPDATE_ID", getRemoteAddress());
 		param.put("UPDATE_DTS", strDate);
 
 		apimapper.setWrite(param);
@@ -440,12 +450,12 @@ public class apiService extends BaseService {
 
 	public HashMap<String, Object> reviewWrite(HashMap<String, Object> param) {
 
-		String strDate = HammerUtility.nowDate("yyyyMMddHHmmss");
+		String strDate = nowDate("yyyyMMddHHmmss");
 
-		param.put("INSERT_ID", HttpUtils.getRemoteAddress());
-		param.put("IP", HttpUtils.getRemoteAddress());
+		param.put("INSERT_ID", getRemoteAddress());
+		param.put("IP", getRemoteAddress());
 		param.put("INSERT_DTS", strDate);
-		param.put("UPDATE_ID", HttpUtils.getRemoteAddress());
+		param.put("UPDATE_ID", getRemoteAddress());
 		param.put("UPDATE_DTS", strDate);
 
 		apimapper.reviewWrite(param);
@@ -485,9 +495,9 @@ public class apiService extends BaseService {
 
 	public HashMap<String, Object> regWrite(HashMap<String, Object> param) {
 
-		String strDate = HammerUtility.nowDate("yyyyMMddHHmmss");
+		String strDate = nowDate("yyyyMMddHHmmss");
 
-		param.put("WRITE_IP", HttpUtils.getRemoteAddress());
+		param.put("WRITE_IP", getRemoteAddress());
 		param.put("WRITE_DATE", strDate);
 		param.put("INSERT_DATE", strDate);
 
@@ -501,7 +511,7 @@ public class apiService extends BaseService {
 
 		int seq = 0;
 		for(HashMap<String, Object> item : deposit){
-			item.put("WRITE_IP", HttpUtils.getRemoteAddress());
+			item.put("WRITE_IP", getRemoteAddress());
 			item.put("DM_CD", key);
 			item.put("WRITE_DATE", strDate);
 			item.put("INSERT_DATE", strDate);
@@ -575,5 +585,45 @@ public class apiService extends BaseService {
 		return result;
 	}
 
+
+	public HashMap<String, Object> getPrivateLoanPlDmMDetail(HashMap<String, Object> param) {
+		HashMap<String, Object> result = new HashMap<>();
+
+		result.put("item", apimapper.getPrivateLoanPlDmMDetail(param));
+		result.put("comm_list", apimapper.getPrivateLoanPlDmCommList(param));
+		result.put("list", apimapper.getPrivateLoanPlDmMRandom(param));
+
+		return result;
+	}
+
+
+	public HashMap<String, Object> getPrivateLoanPlDmCommList(HashMap<String, Object> param) {
+		HashMap<String, Object> result = new HashMap<>();
+
+		result.put("list", apimapper.getPrivateLoanPlDmCommList(param));
+
+		return result;
+	}
+
+	public void setPrivateLoanPlDmComm(HashMap<String, Object> param) {
+		String nowDate = nowDate("yyyyMMddHHmmss");
+		HashMap<String, Object> getNoMap = new HashMap<>();
+		getNoMap.put("COMPANY_CD", "1000");
+		getNoMap.put("MODULE_CD", "MA");
+		getNoMap.put("CLASS_CD", "26");
+		getNoMap.put("strDate", nowDate);
+
+		sysInformation08Mapper.upsertNo(getNoMap);
+		HashMap<String, Object> getNo = sysInformation08Mapper.getNo(getNoMap);
+
+		param.put("COMM_CD", getNo.get("NO"));
+		param.put("WRITE_DATE", nowDate);
+		param.put("WRITE_IP", getRemoteAddress());
+		param.put("INSERT_DATE", nowDate);
+		param.put("UPDATE_DATE", nowDate);
+		param.put("USE_YN", "Y");
+		param.put("REPORT_YN", "N");
+		fiNotice01Mapper.createdPlDmComm(param);
+	}
 
 }

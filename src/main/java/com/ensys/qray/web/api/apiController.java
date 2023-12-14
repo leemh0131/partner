@@ -1,5 +1,6 @@
 package com.ensys.qray.web.api;
 
+import com.chequer.axboot.core.api.response.ApiResponse;
 import com.chequer.axboot.core.api.response.Responses;
 import com.chequer.axboot.core.controllers.BaseController;
 import lombok.RequiredArgsConstructor;
@@ -187,5 +188,25 @@ public class apiController extends BaseController {
     public Responses.MapResponse getPrivateNotice(@RequestBody HashMap<String, Object> request) {
         return Responses.MapResponse.of(apiService.getPrivateNotice(request));
     }
+
+    @ResponseBody
+    @RequestMapping(value = "getPrivateLoanPlDmMDetail", method = RequestMethod.POST, produces = APPLICATION_JSON)
+    public Responses.MapResponse getPrivateLoanPlDmMDetail(@RequestBody HashMap<String, Object> request) {
+        return Responses.MapResponse.of(apiService.getPrivateLoanPlDmMDetail(request));
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "getPrivateLoanPlDmCommList", method = RequestMethod.POST, produces = APPLICATION_JSON)
+    public Responses.MapResponse getPrivateLoanPlDmCommList(@RequestBody HashMap<String, Object> request) {
+        return Responses.MapResponse.of(apiService.getPrivateLoanPlDmCommList(request));
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "setPrivateLoanPlDmComm", method = RequestMethod.POST, produces = APPLICATION_JSON)
+    public ApiResponse setPrivateLoanPlDmComm(@RequestBody HashMap<String, Object> request) {
+        apiService.setPrivateLoanPlDmComm(request);
+        return ok();
+    }
+
 
 }
