@@ -500,10 +500,8 @@ public class apiService extends BaseService {
 		param.put("WRITE_IP", getRemoteAddress());
 		param.put("WRITE_DATE", strDate);
 		param.put("INSERT_DATE", strDate);
-
-		HashMap<String, Object> plDmMKey = apimapper.plDmMKey(param);
-		String key = (String) plDmMKey.get("DM_CD");
-		param.put("DM_CD", key);
+		String dmCd = getNo("1000", "MA", "25");
+		param.put("DM_CD", dmCd);
 
 		apimapper.regWrite(param);
 
@@ -512,7 +510,7 @@ public class apiService extends BaseService {
 		int seq = 0;
 		for(HashMap<String, Object> item : deposit){
 			item.put("WRITE_IP", getRemoteAddress());
-			item.put("DM_CD", key);
+			item.put("DM_CD", dmCd);
 			item.put("WRITE_DATE", strDate);
 			item.put("INSERT_DATE", strDate);
 			item.put("SEQ", seq++);
@@ -522,6 +520,7 @@ public class apiService extends BaseService {
 
 		HashMap<String, Object> result = new HashMap<>();
 		result.put("response", "ok");
+		result.put("DM_CD", dmCd);
 
 		return result;
 	}
@@ -607,16 +606,8 @@ public class apiService extends BaseService {
 
 	public void setPrivateLoanPlDmComm(HashMap<String, Object> param) {
 		String nowDate = nowDate("yyyyMMddHHmmss");
-		HashMap<String, Object> getNoMap = new HashMap<>();
-		getNoMap.put("COMPANY_CD", "1000");
-		getNoMap.put("MODULE_CD", "MA");
-		getNoMap.put("CLASS_CD", "26");
-		getNoMap.put("strDate", nowDate);
 
-		sysInformation08Mapper.upsertNo(getNoMap);
-		HashMap<String, Object> getNo = sysInformation08Mapper.getNo(getNoMap);
-
-		param.put("COMM_CD", getNo.get("NO"));
+		param.put("COMM_CD", getNo("1000", "MA", "26"));
 		param.put("WRITE_DATE", nowDate);
 		param.put("WRITE_IP", getRemoteAddress());
 		param.put("INSERT_DATE", nowDate);
@@ -624,6 +615,19 @@ public class apiService extends BaseService {
 		param.put("USE_YN", "Y");
 		param.put("REPORT_YN", "N");
 		fiNotice01Mapper.createdPlDmComm(param);
+	}
+
+	private String getNo(String companyCd, String moduleCd, String classCd) {
+		String nowDate = nowDate("yyyyMMddHHmmss");
+		HashMap<String, Object> getNoMap = new HashMap<>();
+		getNoMap.put("COMPANY_CD", companyCd);
+		getNoMap.put("MODULE_CD", moduleCd);
+		getNoMap.put("CLASS_CD", classCd);
+		getNoMap.put("strDate", nowDate);
+
+		sysInformation08Mapper.upsertNo(getNoMap);
+		HashMap<String, Object> getNo = sysInformation08Mapper.getNo(getNoMap);
+		return (String) getNo.get("NO");
 	}
 
 }

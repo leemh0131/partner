@@ -471,12 +471,6 @@
         ORDER BY UPDATE_DTS, SEQ DESC
     </select>
 
-    <select id="plDmMKey" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
-        /*apiMapper.plDmMKey*/
-        SELECT (COALESCE(MAX(DM_CD::INT), 0) + 1)::VARCHAR(10) AS "DM_CD"
-        FROM PL_DM_M
-    </select>
-
     <insert id="regWrite" parameterType="hashmap" statementType="CALLABLE">
         /*apiMapper.regWrite*/
         INSERT INTO PL_DM_M
@@ -622,7 +616,7 @@
         /*apiMapper.getPrivateLoanLiveComment*/
         SELECT DM_CD AS "CODE"
              , SUBSTRING(CONTENTS, 1, 12) AS "TITLE"
-             , SUBSTRING(WRITE_DATE, 1, 10) AS "DTS"
+             , SUBSTRING(INSERT_DATE, 1, 8) AS "DTS"
         FROM PL_DM_COMM
         ORDER BY WRITE_DATE DESC
         LIMIT 4
@@ -631,7 +625,7 @@
     <select id="getPrivateLoanBoard" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
             /*apiMapper.getPrivateLoanBoard*/
             SELECT SUBSTRING(TITLE, 1, 12) AS "TITLE"
-                 , TO_CHAR(SUBSTRING(UPDATE_DTS, 1, 8)::date, 'YYYY-MM-DD') AS "DTS"
+                 , SUBSTRING(INSERT_DTS, 1, 8) AS "DTS"
             FROM ES_BOARD
             WHERE   COMPANY_CD = #{COMPANY_CD}
             AND     BOARD_TYPE = '04'
@@ -642,7 +636,7 @@
     <select id="getPrivateLoanCommunity" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
         /*apiMapper.getPrivateLoanCommunity*/
         SELECT SUBSTRING(TITLE, 1, 12) AS "TITLE"
-             , TO_CHAR(SUBSTRING(UPDATE_DTS, 1, 8)::DATE, 'YYYY-MM-DD') AS "DTS"
+             , SUBSTRING(INSERT_DTS, 1, 8) AS "DTS"
         FROM ES_COMMUNITY
         ORDER BY UPDATE_DTS DESC
         LIMIT 4
