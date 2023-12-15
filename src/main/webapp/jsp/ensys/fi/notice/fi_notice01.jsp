@@ -76,18 +76,6 @@
                             qray.alert("피해 정보의 피해 구분을 선택해주세요.");
                             return false;
                         }
-                        if (nvl(gridView01.verify[i].DM_KIND) == "") {
-                            qray.alert("피해 정보의 피해 구분을 선택해주세요.");
-                            return false;
-                        }
-                        if (nvl(gridView01.verify[i].COMP_NM) == "") {
-                            qray.alert("피해 정보의 업체명을 입력해주세요.");
-                            return false;
-                        }
-                        if (nvl(gridView01.verify[i].DM_CONTENTS) == "") {
-                            qray.alert("피해 정보의 피해 내용을 입력해주세요.");
-                            return false;
-                        }
                         if (nvl(gridView01.verify[i].USE_YN) == "") {
                             qray.alert("피해 정보의 사용여부를 선택해주세요.");
                             return false;
