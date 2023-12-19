@@ -300,6 +300,8 @@
             , INSERT_DTS
             , UPDATE_ID
             , UPDATE_DTS
+            , COMMUNITY_GB
+            , PW
         )
         VALUES
         (
@@ -318,7 +320,12 @@
             , #{INSERT_DTS}
             , #{UPDATE_ID}
             , #{UPDATE_DTS}
+            , F_NVL_TEXT(#{COMMUNITY_GB}, '01')
+            , #{PW}
        )
+        <selectKey resultType="int" keyProperty="iq" order="AFTER">
+            SELECT MAX(SEQ) FROM ES_COMMUNITY WHERE COMPANY_CD = #{COMPANY_CD}
+        </selectKey>
     </insert>
 
     <update id="hitPlus" parameterType="hashmap" statementType="CALLABLE">
@@ -649,6 +656,7 @@
                 , CONCAT(SUBSTRING(NAME, 1, 1), 'OO')              AS "NAME"
                 , TO_CHAR(SUBSTRING(UPDATE_DTS, 1, 8)::DATE, 'YYYY-MM-DD') AS "DTS"
         FROM ES_COMMUNITY
+        WHERE COMMUNITY_GB = '02'
         ORDER BY UPDATE_DTS DESC
         LIMIT 15 OFFSET #{MORE_BTN_COUNT}::INTEGER * 15
     </select>
@@ -690,6 +698,15 @@
                 , F_NVL_TEXT(COMPL_POLICE, '모름')     AS "COMPL_POLICE"
                 , F_NVL_TEXT(DM_CONTENTS, '모름')      AS "DM_CONTENTS"
         FROM PL_DM_M
+        WHERE DM_CD = #{DM_CD}
+    </select>
+
+    <select id="getPrivateLoanPlDmDeposit" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+        /*apiMapper.getPrivateLoanPlDmDeposit*/
+        SELECT
+            BANK_NM      AS "BANK_NM"
+             , NO_DEPOSIT   AS "NO_DEPOSIT"
+        FROM PL_DM_DEPOSIT
         WHERE DM_CD = #{DM_CD}
     </select>
 

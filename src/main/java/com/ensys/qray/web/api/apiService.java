@@ -371,6 +371,7 @@ public class apiService extends BaseService {
 
 		HashMap<String, Object> result = new HashMap<>();
 		result.put("response", "ok");
+		result.put("SEQ", param.get("iq"));
 
 		return result;
 	}
@@ -589,6 +590,7 @@ public class apiService extends BaseService {
 		HashMap<String, Object> result = new HashMap<>();
 
 		result.put("item", apimapper.getPrivateLoanPlDmMDetail(param));
+		result.put("item_detail", apimapper.getPrivateLoanPlDmDeposit(param));
 		result.put("comm_list", apimapper.getPrivateLoanPlDmCommList(param));
 		result.put("list", apimapper.getPrivateLoanPlDmMRandom(param));
 

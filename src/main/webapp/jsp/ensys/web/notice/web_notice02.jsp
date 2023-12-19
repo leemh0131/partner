@@ -14,10 +14,12 @@
             var selectRow2 = 0;
             var userCallBack;
 
-            var ES_CODES = $.SELECT_COMMON_ARRAY_CODE('ES_Q0137', 'ES_Q0138');
+            var ES_CODES = $.SELECT_COMMON_ARRAY_CODE('ES_Q0137', 'ES_Q0138', 'ES_Q0144');
             var ES_Q0137 = $.SELECT_COMMON_GET_CODE(ES_CODES, "ES_Q0137", true);   //주제
             var ES_Q0138 = $.SELECT_COMMON_GET_CODE(ES_CODES, "ES_Q0138", true);   //형태
+            var ES_Q0144 = $.SELECT_COMMON_GET_CODE(ES_CODES, "ES_Q0144");   //구분
 
+            $("#S_COMMUNITY_GB").ax5select({options: ES_Q0144});
             var fnObj = {}, CODE = {};
             var ACTIONS = axboot.actionExtend(fnObj, {
                 //조회
@@ -183,11 +185,17 @@
                         async : false,
                         param : function(){
                             var param = {
-
-                            }
+                                KEYWORD: nvl($("#KEYWORD").val()),
+                                COMMUNITY_GB : nvl($("select[name='S_COMMUNITY_GB']").val())
+                            };
                             return JSON.stringify(param);
                         },
                         columns: [
+                            {key: "COMMUNITY_GB", label: "구분", width: 80, align: "center", sortable: true,
+                                formatter : function() {
+                                    return $.changeTextValue(ES_Q0144, this.value);
+                                },
+                            },
                             {key: "COMMUNITY_TP", label: "형태", width: 80, align: "center", sortable: true,
                                 formatter : function() {
                                     return $.changeTextValue(ES_Q0138, this.value);
@@ -374,13 +382,30 @@
                 <button type="button" class="btn btn-reload" data-page-btn="reload" onclick="window.location.reload();"
                         style="width:80px;">
                     <i class="icon_reload"></i></button>
-                <button type="button" class="btn btn-info" data-page-btn="search" style="width:80px;"><i
+                <button type="button" class="btn btn-info" data-page-btn="search" TRIGGER_NAME="SEARCH" style="width:80px;"><i
                         class="icon_search"></i>조회
                 </button>
                 <button type="button" class="btn btn-info" data-page-btn="save" style="width:80px;"><i
                         class="icon_save"></i>저장
                 </button>
             </div>
+        </div>
+
+        <div role="page-header" id="pageheader">
+            <ax:form name="searchView0">
+                <ax:tbl clazz="ax-search-tbl" minWidth="500px">
+                    <ax:tr>
+                        <ax:td label='제목 검색' width="400px">
+                            <input type="text" class="form-control" name="KEYWORD"  id="KEYWORD" TRIGGER_TARGET="SEARCH"/>
+                        </ax:td>
+                        <ax:td label='구분' width="300px">
+                            <div id="S_COMMUNITY_GB" name="S_COMMUNITY_GB" data-ax5select="S_COMMUNITY_GB" data-ax5select-config='{}'>
+                            </div>
+                        </ax:td>
+                    </ax:tr>
+                </ax:tbl>
+            </ax:form>
+            <div class="H10"></div>
         </div>
 
         <div style="width:100%;overflow:hidden">
