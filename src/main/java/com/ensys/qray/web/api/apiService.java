@@ -589,10 +589,11 @@ public class apiService extends BaseService {
 	public HashMap<String, Object> getPrivateLoanPlDmMDetail(HashMap<String, Object> param) {
 		HashMap<String, Object> result = new HashMap<>();
 
-		result.put("item", apimapper.getPrivateLoanPlDmMDetail(param));
+		HashMap<String, Object> item = apimapper.getPrivateLoanPlDmMDetail(param);
+		result.put("item", item);
 		result.put("item_detail", apimapper.getPrivateLoanPlDmDeposit(param));
 		result.put("comm_list", apimapper.getPrivateLoanPlDmCommList(param));
-		result.put("list", apimapper.getPrivateLoanPlDmMRandom(param));
+		result.put("list", apimapper.getPrivateLoanPlDmMRandom(item));
 
 		return result;
 	}
@@ -617,6 +618,16 @@ public class apiService extends BaseService {
 		param.put("USE_YN", "Y");
 		param.put("REPORT_YN", "N");
 		fiNotice01Mapper.createdPlDmComm(param);
+	}
+
+	public HashMap<String, Object> getPrivateLoanCommunityDetail(HashMap<String, Object> param) {
+		HashMap<String, Object> result = new HashMap<>();
+
+		result.put("item", apimapper.getPrivateLoanCommunityDetail(param));
+		param.put("DM_CD", param.get("SEQ"));
+		result.put("comm_list", apimapper.getPrivateLoanPlDmCommList(param));
+
+		return result;
 	}
 
 	private String getNo(String companyCd, String moduleCd, String classCd) {

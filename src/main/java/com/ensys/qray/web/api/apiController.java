@@ -208,5 +208,9 @@ public class apiController extends BaseController {
         return ok();
     }
 
-
+    @ResponseBody
+    @RequestMapping(value = "getPrivateLoanCommunityDetail", method = RequestMethod.POST, produces = APPLICATION_JSON)
+    public Responses.MapResponse getPrivateLoanCommunityDetail(@RequestBody HashMap<String, Object> request) {
+        return Responses.MapResponse.of(apiService.getPrivateLoanCommunityDetail(request));
+    }
 }

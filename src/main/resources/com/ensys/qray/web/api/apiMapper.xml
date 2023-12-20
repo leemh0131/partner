@@ -360,6 +360,7 @@
         WHERE COMPANY_CD = #{COMPANY_CD}
           AND FIELD_CD = #{FIELD_CD}
           AND COALESCE(USE_YN, '') = 'Y'
+
     </select>
 
     <select id="getConsultingPaging" resultType="int" parameterType="hashmap" statementType="CALLABLE">
@@ -631,7 +632,8 @@
 
     <select id="getPrivateLoanBoard" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
             /*apiMapper.getPrivateLoanBoard*/
-            SELECT SUBSTRING(TITLE, 1, 12) AS "TITLE"
+            SELECT  SEQ AS "SEQ"
+                 , SUBSTRING(TITLE, 1, 12) AS "TITLE"
                  , SUBSTRING(INSERT_DTS, 1, 8) AS "DTS"
             FROM ES_BOARD
             WHERE   COMPANY_CD = #{COMPANY_CD}
@@ -642,7 +644,8 @@
 
     <select id="getPrivateLoanCommunity" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
         /*apiMapper.getPrivateLoanCommunity*/
-        SELECT SUBSTRING(TITLE, 1, 12) AS "TITLE"
+        SELECT  SEQ AS "SEQ"
+             , SUBSTRING(TITLE, 1, 12) AS "TITLE"
              , SUBSTRING(INSERT_DTS, 1, 8) AS "DTS"
         FROM ES_COMMUNITY
         ORDER BY UPDATE_DTS DESC
@@ -686,26 +689,29 @@
 
     <select id="getPrivateLoanPlDmMDetail" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
         /*apiMapper.getPrivateLoanPlDmMDetail*/
-        SELECT    DM_CD            AS "DM_CD"
-                , F_NVL_TEXT(F_ES_CODE_DETAIL('1000', 'ES_Q0140', DM_KIND), '모름')          AS "DM_KIND"
-                , F_NVL_TEXT(COMP_NM, '모름')          AS "COMP_NM"
-                , F_NVL_TEXT(BORW_SITE, '모름')        AS "BORW_SITE"
-                , F_NVL_TEXT(DEBTOR_TEL, '모름')       AS "DEBTOR_TEL"
-                , F_NVL_TEXT(DEBTOR_KAKAO, '모름')     AS "DEBTOR_KAKAO"
-                , F_NVL_TEXT(DEBTOR_TELE, '모름')      AS "DEBTOR_TELE"
-                , F_NVL_TEXT(DEBTOR_SNS, '모름')       AS "DEBTOR_SNS"
-                , F_NVL_TEXT(WITHDR_LOCA, '모름')      AS "WITHDR_LOCA"
-                , F_NVL_TEXT(COMPL_POLICE, '모름')     AS "COMPL_POLICE"
-                , F_NVL_TEXT(DM_CONTENTS, '모름')      AS "DM_CONTENTS"
-        FROM PL_DM_M
-        WHERE DM_CD = #{DM_CD}
+        SELECT    A.DM_CD            AS "DM_CD"
+                , F_NVL_TEXT(F_ES_CODE_DETAIL('1000', 'ES_Q0140', A.DM_KIND), '모름')          AS "DM_KIND"
+                , F_NVL_TEXT(A.COMP_NM, '모름')          AS "COMP_NM"
+                , F_NVL_TEXT(A.BORW_SITE, '모름')        AS "BORW_SITE"
+                , F_NVL_TEXT(A.DEBTOR_TEL, '모름')       AS "DEBTOR_TEL"
+                , F_NVL_TEXT(A.DEBTOR_KAKAO, '모름')     AS "DEBTOR_KAKAO"
+                , F_NVL_TEXT(A.DEBTOR_TELE, '모름')      AS "DEBTOR_TELE"
+                , F_NVL_TEXT(A.DEBTOR_SNS, '모름')       AS "DEBTOR_SNS"
+                , F_NVL_TEXT(A.WITHDR_LOCA, '모름')      AS "WITHDR_LOCA"
+                , F_NVL_TEXT(A.COMPL_POLICE, '모름')     AS "COMPL_POLICE"
+                , F_NVL_TEXT(A.DM_CONTENTS, '모름')      AS "DM_CONTENTS"
+                , F_NVL_TEXT(B.NO_DEPOSIT, '모름')      AS "NO_DEPOSIT"
+        FROM PL_DM_M A
+        LEFT JOIN PL_DM_DEPOSIT B
+            ON A.DM_CD = B.DM_CD
+        WHERE A.DM_CD = #{DM_CD}
     </select>
 
     <select id="getPrivateLoanPlDmDeposit" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
         /*apiMapper.getPrivateLoanPlDmDeposit*/
-        SELECT
-            BANK_NM      AS "BANK_NM"
-             , NO_DEPOSIT   AS "NO_DEPOSIT"
+        SELECT    F_NVL_TEXT(BANK_NM, '은행모름')      AS "BANK_NM"
+                , F_NVL_TEXT(NO_DEPOSIT, '계좌모름')   AS "NO_DEPOSIT"
+                , F_NVL_TEXT(NM_DEPOSITOR, '예금주모름') AS "NM_DEPOSITOR"
         FROM PL_DM_DEPOSIT
         WHERE DM_CD = #{DM_CD}
     </select>
@@ -728,22 +734,68 @@
 
     <select id="getPrivateLoanPlDmMRandom" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
         /*apiMapper.getPrivateLoanPlDmMRandom*/
-
-        SELECT    A.DM_CD                              AS "DM_CD"
-            , A.COMP_NM                            AS "COMP_NM"
-            , F_NVL_TEXT(A.DEBTOR_TEL, '모름')      AS "DEBTOR_TEL"
-            , F_NVL_TEXT(A.DEBTOR_KAKAO, '모름')    AS "DEBTOR_KAKAO"
-            , F_NVL_TEXT(A.DEBTOR_TELE, '모름')     AS "DEBTOR_TELE"
-            , F_NVL_TEXT(A.DEBTOR_SNS, '모름')      AS "DEBTOR_SNS"
-            , CASE WHEN CURRENT_DATE - TO_DATE(SUBSTRING(REPLACE(A.WRITE_DATE, '-', ''), 1, 8), 'YYYYMMDD') > F_NVL_NUM(B.SYSDEF_CD::INTEGER, 7) THEN 'N' ELSE 'Y'
-              END AS "NEW_VALUE"
-        FROM    PL_DM_M A
-        LEFT JOIN (SELECT SYSDEF_CD FROM ES_CODEDTL WHERE FIELD_CD = 'ES_Q0141' AND FLAG1_CD = 'Y' LIMIT 1) B
-        ON 1 = 1
-        WHERE   A.USE_YN = 'Y'
-        ORDER BY RANDOM()
+        SELECT
+              DM_CD          AS "DM_CD"
+            , COMP_NM        AS "COMP_NM"
+            , DEBTOR_TEL     AS "DEBTOR_TEL"
+            , DEBTOR_KAKAO   AS "DEBTOR_KAKAO"
+            , DEBTOR_TELE    AS "DEBTOR_TELE"
+            , DEBTOR_SNS     AS "DEBTOR_SNS"
+            , NEW_VALUE      AS "NEW_VALUE"
+            , NO_DEPOSIT     AS "NO_DEPOSIT"
+        FROM (
+            (SELECT   A.DM_CD                              AS DM_CD
+                    , A.COMP_NM                            AS COMP_NM
+                    , F_NVL_TEXT(A.DEBTOR_TEL, '모름')      AS DEBTOR_TEL
+                    , F_NVL_TEXT(A.DEBTOR_KAKAO, '모름')    AS DEBTOR_KAKAO
+                    , F_NVL_TEXT(A.DEBTOR_TELE, '모름')     AS DEBTOR_TELE
+                    , F_NVL_TEXT(A.DEBTOR_SNS, '모름')      AS DEBTOR_SNS
+                    , CASE WHEN CURRENT_DATE - TO_DATE(SUBSTRING(REPLACE(A.WRITE_DATE, '-', ''), 1, 8), 'YYYYMMDD') > F_NVL_NUM(B.SYSDEF_CD::INTEGER, 7) THEN 'N' ELSE 'Y' END AS NEW_VALUE
+                    , C.NO_DEPOSIT AS NO_DEPOSIT
+            FROM    PL_DM_M A
+            LEFT JOIN (SELECT SYSDEF_CD FROM ES_CODEDTL WHERE FIELD_CD = 'ES_Q0141' AND FLAG1_CD = 'Y' LIMIT 1) B
+                ON 1 = 1
+            LEFT JOIN PL_DM_DEPOSIT C
+                ON A.DM_CD = C.DM_CD
+            WHERE   A.USE_YN = 'Y'
+            AND (
+                A.COMP_NM LIKE SUBSTRING(#{COMP_NM}, 1, 2) || '%'
+                OR  A.DEBTOR_TEL LIKE '%' || SUBSTRING(#{DEBTOR_TEL} FROM LENGTH(#{DEBTOR_TEL}) - 4)
+                OR C.NO_DEPOSIT LIKE '%' || SUBSTRING(#{NO_DEPOSIT} FROM LENGTH(#{NO_DEPOSIT}) - 4)
+            )
+            LIMIT 3
+            )
+        UNION
+            (SELECT   A.DM_CD                              AS DM_CD
+                    , A.COMP_NM                            AS COMP_NM
+                    , F_NVL_TEXT(A.DEBTOR_TEL, '모름')      AS DEBTOR_TEL
+                    , F_NVL_TEXT(A.DEBTOR_KAKAO, '모름')    AS DEBTOR_KAKAO
+                    , F_NVL_TEXT(A.DEBTOR_TELE, '모름')     AS DEBTOR_TELE
+                    , F_NVL_TEXT(A.DEBTOR_SNS, '모름')      AS DEBTOR_SNS
+                    , CASE WHEN CURRENT_DATE - TO_DATE(SUBSTRING(REPLACE(A.WRITE_DATE, '-', ''), 1, 8), 'YYYYMMDD') > F_NVL_NUM(B.SYSDEF_CD::INTEGER, 7) THEN 'N' ELSE 'Y' END AS NEW_VALUE
+                    , C.NO_DEPOSIT AS NO_DEPOSIT
+            FROM    PL_DM_M A
+            LEFT JOIN (SELECT SYSDEF_CD FROM ES_CODEDTL WHERE FIELD_CD = 'ES_Q0141' AND FLAG1_CD = 'Y' LIMIT 1) B
+                ON 1 = 1
+            LEFT JOIN PL_DM_DEPOSIT C
+                ON A.DM_CD = C.DM_CD
+            WHERE   A.USE_YN = 'Y'
+            ORDER BY RANDOM()
+            LIMIT 3)
+        ) AS A
+        ORDER BY CASE WHEN A.COMP_NM LIKE SUBSTRING(#{COMP_NM}, 1, 2) || '%'   THEN 0
+        WHEN A.DEBTOR_TEL LIKE '%' || SUBSTRING(#{DEBTOR_TEL} FROM LENGTH(#{DEBTOR_TEL}) - 4) THEN 1
+        WHEN A.NO_DEPOSIT LIKE '%' || SUBSTRING(#{NO_DEPOSIT} FROM LENGTH(#{NO_DEPOSIT}) - 4) THEN 2 END
         LIMIT 3
     </select>
 
+    <select id="getPrivateLoanCommunityDetail" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+        /*apiMapper.getPrivateLoanCommunityDetail*/
+        SELECT    SEQ       AS "SEQ"
+                , TITLE     AS "TITLE"
+                , CONTENTS  AS "CONTENTS"
+        FROM ES_COMMUNITY
+        WHERE SEQ = #{SEQ}::INTEGER
+    </select>
 </mapper>
 
