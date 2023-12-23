@@ -656,10 +656,14 @@
         /*apiMapper.getPrivateLoanCommunityPaging*/
         SELECT    SEQ               AS "SEQ"
                 , SUBSTRING(TITLE, 1, 50)             AS "TITLE"
+                , F_ES_CODE_DETAIL(COMPANY_CD, 'ES_Q0138', COMMUNITY_TP) AS "COMMUNITY_TP"
                 , CONCAT(SUBSTRING(NAME, 1, 1), 'OO')              AS "NAME"
                 , TO_CHAR(SUBSTRING(UPDATE_DTS, 1, 8)::DATE, 'YYYY-MM-DD') AS "DTS"
         FROM ES_COMMUNITY
-        WHERE COMMUNITY_GB = '02'
+        WHERE COMPANY_CD = #{COMPANY_CD}
+        AND COMMUNITY_GB = '02'
+        AND COMMUNITY_ST = #{COMMUNITY_ST}
+        AND COMMUNITY_TP = #{COMMUNITY_TP}
         ORDER BY UPDATE_DTS DESC
         LIMIT 15 OFFSET #{MORE_BTN_COUNT}::INTEGER * 15
     </select>
@@ -683,7 +687,7 @@
         FROM ES_BOARD
         WHERE COMPANY_CD = #{COMPANY_CD}
         AND BOARD_TYPE = #{BOARD_TYPE}
-        ORDER BY UPDATE_DTS, SEQ DESC
+        ORDER BY CASE WHEN MAIN_YN = 'Y' THEN 1 ELSE 2 END, UPDATE_DTS DESC, SEQ DESC
         LIMIT #{LIMIT}::INTEGER OFFSET #{OFFSET}::INTEGER * #{LIMIT}::INTEGER
     </select>
 
@@ -732,61 +736,48 @@
         LIMIT 5 OFFSET F_NVL_NUM(#{MORE_BTN_COUNT}, 0)::INTEGER * 5
     </select>
 
+    <select id="getPrivateLoanPlDmMRelation" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+        /*apiMapper.getPrivateLoanPlDmMRelation*/
+        SELECT    A.DM_CD                              AS "DM_CD"
+                , A.COMP_NM                            AS "COMP_NM"
+                , F_NVL_TEXT(A.DEBTOR_TEL, '모름')      AS "DEBTOR_TEL"
+                , F_NVL_TEXT(A.DEBTOR_KAKAO, '모름')    AS "DEBTOR_KAKAO"
+                , F_NVL_TEXT(A.DEBTOR_TELE, '모름')     AS "DEBTOR_TELE"
+                , F_NVL_TEXT(A.DEBTOR_SNS, '모름')      AS "DEBTOR_SNS"
+                , CASE WHEN CURRENT_DATE - TO_DATE(SUBSTRING(REPLACE(A.WRITE_DATE, '-', ''), 1, 8), 'YYYYMMDD') > F_NVL_NUM(B.SYSDEF_CD::INTEGER, 7) THEN 'N' ELSE 'Y' END AS "NEW_VALUE"
+                , C.NO_DEPOSIT AS "NO_DEPOSIT"
+        FROM    PL_DM_M A
+        LEFT JOIN (SELECT SYSDEF_CD FROM ES_CODEDTL WHERE FIELD_CD = 'ES_Q0141' AND FLAG1_CD = 'Y' LIMIT 1) B
+            ON 1 = 1
+        LEFT JOIN PL_DM_DEPOSIT C
+            ON A.DM_CD = C.DM_CD
+        WHERE   A.USE_YN = 'Y'
+        AND A.DM_CD != #{DM_CD}
+        AND (
+            A.COMP_NM LIKE SUBSTRING(#{COMP_NM}, 1, 2) || '%'
+            OR  A.DEBTOR_TEL LIKE '%' || SUBSTRING(#{DEBTOR_TEL} FROM LENGTH(#{DEBTOR_TEL}) - 4)
+            OR C.NO_DEPOSIT LIKE '%' || SUBSTRING(#{NO_DEPOSIT} FROM LENGTH(#{NO_DEPOSIT}) - 4)
+        )
+        LIMIT 3
+    </select>
+
     <select id="getPrivateLoanPlDmMRandom" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
         /*apiMapper.getPrivateLoanPlDmMRandom*/
-        SELECT
-              DM_CD          AS "DM_CD"
-            , COMP_NM        AS "COMP_NM"
-            , DEBTOR_TEL     AS "DEBTOR_TEL"
-            , DEBTOR_KAKAO   AS "DEBTOR_KAKAO"
-            , DEBTOR_TELE    AS "DEBTOR_TELE"
-            , DEBTOR_SNS     AS "DEBTOR_SNS"
-            , NEW_VALUE      AS "NEW_VALUE"
-            , NO_DEPOSIT     AS "NO_DEPOSIT"
-        FROM (
-            (SELECT   A.DM_CD                              AS DM_CD
-                    , A.COMP_NM                            AS COMP_NM
-                    , F_NVL_TEXT(A.DEBTOR_TEL, '모름')      AS DEBTOR_TEL
-                    , F_NVL_TEXT(A.DEBTOR_KAKAO, '모름')    AS DEBTOR_KAKAO
-                    , F_NVL_TEXT(A.DEBTOR_TELE, '모름')     AS DEBTOR_TELE
-                    , F_NVL_TEXT(A.DEBTOR_SNS, '모름')      AS DEBTOR_SNS
-                    , CASE WHEN CURRENT_DATE - TO_DATE(SUBSTRING(REPLACE(A.WRITE_DATE, '-', ''), 1, 8), 'YYYYMMDD') > F_NVL_NUM(B.SYSDEF_CD::INTEGER, 7) THEN 'N' ELSE 'Y' END AS NEW_VALUE
-                    , C.NO_DEPOSIT AS NO_DEPOSIT
-            FROM    PL_DM_M A
-            LEFT JOIN (SELECT SYSDEF_CD FROM ES_CODEDTL WHERE FIELD_CD = 'ES_Q0141' AND FLAG1_CD = 'Y' LIMIT 1) B
-                ON 1 = 1
-            LEFT JOIN PL_DM_DEPOSIT C
-                ON A.DM_CD = C.DM_CD
-            WHERE   A.USE_YN = 'Y'
-            AND (
-                A.COMP_NM LIKE SUBSTRING(#{COMP_NM}, 1, 2) || '%'
-                OR  A.DEBTOR_TEL LIKE '%' || SUBSTRING(#{DEBTOR_TEL} FROM LENGTH(#{DEBTOR_TEL}) - 4)
-                OR C.NO_DEPOSIT LIKE '%' || SUBSTRING(#{NO_DEPOSIT} FROM LENGTH(#{NO_DEPOSIT}) - 4)
-            )
-            LIMIT 3
-            )
-        UNION
-            (SELECT   A.DM_CD                              AS DM_CD
-                    , A.COMP_NM                            AS COMP_NM
-                    , F_NVL_TEXT(A.DEBTOR_TEL, '모름')      AS DEBTOR_TEL
-                    , F_NVL_TEXT(A.DEBTOR_KAKAO, '모름')    AS DEBTOR_KAKAO
-                    , F_NVL_TEXT(A.DEBTOR_TELE, '모름')     AS DEBTOR_TELE
-                    , F_NVL_TEXT(A.DEBTOR_SNS, '모름')      AS DEBTOR_SNS
-                    , CASE WHEN CURRENT_DATE - TO_DATE(SUBSTRING(REPLACE(A.WRITE_DATE, '-', ''), 1, 8), 'YYYYMMDD') > F_NVL_NUM(B.SYSDEF_CD::INTEGER, 7) THEN 'N' ELSE 'Y' END AS NEW_VALUE
-                    , C.NO_DEPOSIT AS NO_DEPOSIT
-            FROM    PL_DM_M A
-            LEFT JOIN (SELECT SYSDEF_CD FROM ES_CODEDTL WHERE FIELD_CD = 'ES_Q0141' AND FLAG1_CD = 'Y' LIMIT 1) B
-                ON 1 = 1
-            LEFT JOIN PL_DM_DEPOSIT C
-                ON A.DM_CD = C.DM_CD
-            WHERE   A.USE_YN = 'Y'
-            ORDER BY RANDOM()
-            LIMIT 3)
-        ) AS A
-        WHERE A.DM_CD != #{DM_CD}
-        ORDER BY CASE WHEN A.COMP_NM LIKE SUBSTRING(#{COMP_NM}, 1, 2) || '%'   THEN 0
-        WHEN A.DEBTOR_TEL LIKE '%' || SUBSTRING(#{DEBTOR_TEL} FROM LENGTH(#{DEBTOR_TEL}) - 4) THEN 1
-        WHEN A.NO_DEPOSIT LIKE '%' || SUBSTRING(#{NO_DEPOSIT} FROM LENGTH(#{NO_DEPOSIT}) - 4) THEN 2 END
+        SELECT    A.DM_CD                              AS "DM_CD"
+                , A.COMP_NM                            AS "COMP_NM"
+                , F_NVL_TEXT(A.DEBTOR_TEL, '모름')      AS "DEBTOR_TEL"
+                , F_NVL_TEXT(A.DEBTOR_KAKAO, '모름')    AS "DEBTOR_KAKAO"
+                , F_NVL_TEXT(A.DEBTOR_TELE, '모름')     AS "DEBTOR_TELE"
+                , F_NVL_TEXT(A.DEBTOR_SNS, '모름')      AS "DEBTOR_SNS"
+                , CASE WHEN CURRENT_DATE - TO_DATE(SUBSTRING(REPLACE(A.WRITE_DATE, '-', ''), 1, 8), 'YYYYMMDD') > F_NVL_NUM(B.SYSDEF_CD::INTEGER, 7) THEN 'N' ELSE 'Y' END AS "NEW_VALUE"
+                , C.NO_DEPOSIT AS "NO_DEPOSIT"
+        FROM    PL_DM_M A
+        LEFT JOIN (SELECT SYSDEF_CD FROM ES_CODEDTL WHERE FIELD_CD = 'ES_Q0141' AND FLAG1_CD = 'Y' LIMIT 1) B
+            ON 1 = 1
+        LEFT JOIN PL_DM_DEPOSIT C
+            ON A.DM_CD = C.DM_CD
+        WHERE   A.USE_YN = 'Y'
+        ORDER BY RANDOM()
         LIMIT 3
     </select>
 

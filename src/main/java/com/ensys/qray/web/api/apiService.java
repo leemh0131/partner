@@ -1,12 +1,9 @@
 package com.ensys.qray.web.api;
 
 import com.chequer.axboot.core.api.ApiException;
-import com.chequer.axboot.core.utils.HttpUtils;
 import com.ensys.qray.fi.notice.FiNotice01Mapper;
 import com.ensys.qray.setting.base.BaseService;
 import com.ensys.qray.sys.information08.SysInformation08Mapper;
-import com.ensys.qray.sys.information08.SysInformation08Service;
-import com.ensys.qray.utils.HammerUtility;
 import com.ensys.qray.web.dashboard.DashboardMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,6 +13,7 @@ import java.util.*;
 
 import static com.chequer.axboot.core.utils.HttpUtils.getRemoteAddress;
 import static com.ensys.qray.utils.HammerUtility.*;
+import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Service
 @Transactional
@@ -593,7 +591,12 @@ public class apiService extends BaseService {
 		result.put("item", item);
 		result.put("item_detail", apimapper.getPrivateLoanPlDmDeposit(param));
 		result.put("comm_list", apimapper.getPrivateLoanPlDmCommList(param));
-		result.put("list", apimapper.getPrivateLoanPlDmMRandom(item));
+		List<HashMap<String, Object>> dmMRelation = apimapper.getPrivateLoanPlDmMRelation(item);
+		if (isEmpty(dmMRelation)) {
+			result.put("list", apimapper.getPrivateLoanPlDmMRandom(item));
+		} else {
+			result.put("list", dmMRelation);
+		}
 
 		return result;
 	}

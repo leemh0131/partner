@@ -83,6 +83,8 @@ public interface apiMapper extends MyBatisMapper {
 
     List<HashMap<String, Object>> getPrivateLoanPlDmCommList(HashMap<String, Object> param);
 
+    List<HashMap<String, Object>> getPrivateLoanPlDmMRelation(HashMap<String, Object> param);
+
     List<HashMap<String, Object>> getPrivateLoanPlDmMRandom(HashMap<String, Object> param);
 
 }
