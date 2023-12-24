@@ -306,10 +306,7 @@
         VALUES
         (
               #{COMPANY_CD}
-            , (SELECT COALESCE(MAX(SEQ), 0) + 1
-               FROM ES_COMMUNITY
-               WHERE COMPANY_CD = #{COMPANY_CD}
-              )
+            , #{SEQ}
             , #{NAME}
             , #{COMMUNITY_TP}
             , #{COMMUNITY_ST}
@@ -323,9 +320,6 @@
             , F_NVL_TEXT(#{COMMUNITY_GB}, '01')
             , #{PW}
        )
-        <selectKey resultType="int" keyProperty="iq" order="AFTER">
-            SELECT MAX(SEQ) FROM ES_COMMUNITY WHERE COMPANY_CD = #{COMPANY_CD}
-        </selectKey>
     </insert>
 
     <update id="hitPlus" parameterType="hashmap" statementType="CALLABLE">
@@ -648,6 +642,8 @@
              , SUBSTRING(TITLE, 1, 12) AS "TITLE"
              , SUBSTRING(INSERT_DTS, 1, 8) AS "DTS"
         FROM ES_COMMUNITY
+        WHERE COMMUNITY_TP = '03'
+        AND COMMUNITY_ST = '14'
         ORDER BY UPDATE_DTS DESC
         LIMIT 4
     </select>
@@ -787,7 +783,7 @@
                 , TITLE     AS "TITLE"
                 , CONTENTS  AS "CONTENTS"
         FROM ES_COMMUNITY
-        WHERE SEQ = #{SEQ}::INTEGER
+        WHERE SEQ = #{SEQ}
     </select>
 </mapper>
 

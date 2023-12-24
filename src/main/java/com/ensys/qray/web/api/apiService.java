@@ -359,7 +359,12 @@ public class apiService extends BaseService {
 		}
 
 		String strDate = nowDate("yyyyMMddHHmmss");
+		param.put("WRITE_IP", getRemoteAddress());
+		param.put("WRITE_DATE", strDate);
+		param.put("INSERT_DATE", strDate);
+		String seq = getNo("1000", "MA", "27");
 
+		param.put("SEQ", seq);
 		param.put("INSERT_ID", getRemoteAddress());
 		param.put("INSERT_DTS", strDate);
 		param.put("UPDATE_ID", getRemoteAddress());
@@ -369,7 +374,7 @@ public class apiService extends BaseService {
 
 		HashMap<String, Object> result = new HashMap<>();
 		result.put("response", "ok");
-		result.put("SEQ", param.get("iq"));
+		result.put("SEQ", seq);
 
 		return result;
 	}
