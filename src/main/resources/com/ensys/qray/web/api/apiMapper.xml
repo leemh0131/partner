@@ -729,7 +729,6 @@
                  , WRITE_DATE     AS "WRITE_DATE"
             FROM PL_DM_COMM
         WHERE DM_CD = #{DM_CD}
-        LIMIT 5 OFFSET F_NVL_NUM(#{MORE_BTN_COUNT}, 0)::INTEGER * 5
     </select>
 
     <select id="getPrivateLoanPlDmMRelation" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
