@@ -662,7 +662,7 @@
                 , CONCAT(SUBSTRING(NAME, 1, 1), 'OO')              AS "NAME"
                 , TO_CHAR(SUBSTRING(UPDATE_DTS, 1, 8)::DATE, 'YYYY-MM-DD') AS "DTS"
                 , (SELECT count(*) FROM pl_dm_comm WHERE dm_cd = SEQ) AS "COMM_CUT"
-                , CASE WHEN HIT BETWEEN 0 AND 999 THEN HIT::VARCHAR ELSE '999↑'  AS "HIT"
+                , CASE WHEN HIT BETWEEN 0 AND 999 THEN HIT::VARCHAR ELSE '999↑' END AS "HIT"
         FROM ES_COMMUNITY
         WHERE COMPANY_CD = #{COMPANY_CD}
         AND COMMUNITY_GB = '02'
