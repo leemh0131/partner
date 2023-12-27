@@ -16,7 +16,7 @@
 
             var ES_CODES = $.SELECT_COMMON_ARRAY_CODE('ES_Q0137', 'ES_Q0138', 'ES_Q0144');
             var ES_Q0137 = $.SELECT_COMMON_GET_CODE(ES_CODES, "ES_Q0137", true);   //주제
-            var ES_Q0138 = $.SELECT_COMMON_GET_CODE(ES_CODES, "ES_Q0138", true);   //형태
+            var ES_Q0138 = $.SELECT_COMMON_GET_CODE(ES_CODES, "ES_Q0138");   //형태
             var ES_Q0144 = $.SELECT_COMMON_GET_CODE(ES_CODES, "ES_Q0144");   //구분
 
             $("#S_COMMUNITY_TP").ax5select({options: ES_Q0138});
