@@ -19,6 +19,8 @@
             var ES_Q0138 = $.SELECT_COMMON_GET_CODE(ES_CODES, "ES_Q0138", true);   //형태
             var ES_Q0144 = $.SELECT_COMMON_GET_CODE(ES_CODES, "ES_Q0144");   //구분
 
+            $("#S_COMMUNITY_TP").ax5select({options: ES_Q0138});
+
             $("#S_COMMUNITY_GB").ax5select({options: ES_Q0144});
             var fnObj = {}, CODE = {};
             var ACTIONS = axboot.actionExtend(fnObj, {
@@ -186,7 +188,8 @@
                         param : function(){
                             var param = {
                                 KEYWORD: nvl($("#KEYWORD").val()),
-                                COMMUNITY_GB : nvl($("select[name='S_COMMUNITY_GB']").val())
+                                COMMUNITY_GB : nvl($("select[name='S_COMMUNITY_GB']").val()),
+                                COMMUNITY_TP : nvl($("select[name='S_COMMUNITY_TP']").val()),
                             };
                             return JSON.stringify(param);
                         },
@@ -402,6 +405,11 @@
                             <div id="S_COMMUNITY_GB" name="S_COMMUNITY_GB" data-ax5select="S_COMMUNITY_GB" data-ax5select-config='{}'>
                             </div>
                         </ax:td>
+                        <ax:td label='형태' width="300px">
+                            <div id="S_COMMUNITY_TP" name="S_COMMUNITY_TP" data-ax5select="S_COMMUNITY_TP" data-ax5select-config='{}'>
+                            </div>
+                        </ax:td>
+
                     </ax:tr>
                 </ax:tbl>
             </ax:form>
