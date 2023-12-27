@@ -590,7 +590,13 @@
             AND A.DM_TYPE = #{DM_TYPE}
         </if>
         <if test='KEYWORD != null and KEYWORD != ""'>
-         AND A.COMP_NM ILIKE CONCAT('%', #{KEYWORD}, '%')
+         AND (
+            A.COMP_NM ILIKE CONCAT('%', #{KEYWORD}, '%')
+            OR F_NVL_TEXT(A.DEBTOR_TEL, '')    LIKE  '%' || #{KEYWORD} || '%'
+            OR F_NVL_TEXT(A.DEBTOR_KAKAO, '')    LIKE  '%' || #{KEYWORD} || '%'
+            OR F_NVL_TEXT(A.DEBTOR_TELE, '')    LIKE  '%' || #{KEYWORD} || '%'
+            OR F_NVL_TEXT(A.DEBTOR_SNS, '')    LIKE  '%' || #{KEYWORD} || '%'
+            )
         </if>
         ORDER BY A.WRITE_DATE DESC
         LIMIT 9 OFFSET #{MORE_BTN_COUNT}::INTEGER * 9
@@ -655,6 +661,8 @@
                 , F_ES_CODE_DETAIL(COMPANY_CD, 'ES_Q0138', COMMUNITY_TP) AS "COMMUNITY_TP"
                 , CONCAT(SUBSTRING(NAME, 1, 1), 'OO')              AS "NAME"
                 , TO_CHAR(SUBSTRING(UPDATE_DTS, 1, 8)::DATE, 'YYYY-MM-DD') AS "DTS"
+                , (SELECT count(*) FROM pl_dm_comm WHERE dm_cd = SEQ) AS "COMM_CUT"
+                , CASE WHEN HIT BETWEEN 0 AND 999 THEN HIT::VARCHAR ELSE '999↑'  AS "HIT"
         FROM ES_COMMUNITY
         WHERE COMPANY_CD = #{COMPANY_CD}
         AND COMMUNITY_GB = '02'
@@ -784,5 +792,17 @@
         FROM ES_COMMUNITY
         WHERE SEQ = #{SEQ}
     </select>
+
+    <insert id="insertEsCommunityHit" parameterType="hashmap" statementType="CALLABLE">
+        /*apiMapper.insertEsCommunityHit*/
+        INSERT INTO ES_COMMUNITY_HIT
+        (COMPANY_CD, SEQ, IP)
+        VALUES
+        (#{COMPANY_CD}, #{SEQ}, #{IP})
+        ON CONFLICT (COMPANY_CD, SEQ, IP) DO NOTHING
+    </insert>
+
+
+
 </mapper>
 

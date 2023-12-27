@@ -1,6 +1,7 @@
 package com.ensys.qray.web.api;
 
 import com.chequer.axboot.core.api.ApiException;
+import com.chequer.axboot.core.utils.HttpUtils;
 import com.ensys.qray.fi.notice.FiNotice01Mapper;
 import com.ensys.qray.setting.base.BaseService;
 import com.ensys.qray.sys.information08.SysInformation08Mapper;
@@ -8,7 +9,11 @@ import com.ensys.qray.web.dashboard.DashboardMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 import static com.chequer.axboot.core.utils.HttpUtils.getRemoteAddress;
@@ -633,7 +638,15 @@ public class apiService extends BaseService {
 
 		result.put("item", apimapper.getPrivateLoanCommunityDetail(param));
 		param.put("DM_CD", param.get("SEQ"));
+		param.put("COMPANY_CD", "1000");
+		param.put("IP", getRemoteAddress());
 		result.put("comm_list", apimapper.getPrivateLoanPlDmCommList(param));
+
+		//IP로 조회수 체크 후 업데이트
+		int chk = apimapper.insertEsCommunityHit(param);
+		if(chk > 0){
+			apimapper.hitPlus(param);
+		}
 
 		return result;
 	}
