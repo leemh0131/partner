@@ -133,6 +133,8 @@
 							var moudleHtml = '<p class="dtpth01" ><button id="depth01_' + item.MENU_ID + '"><img src="' + mac_module + '" alt=""></button></p>'
 						}else if(item.MENU_ID == 'HR_MODULE'){
 							var moudleHtml = '<p class="dtpth01" ><button id="depth01_' + item.MENU_ID + '"><img src="' + hr_module + '" alt=""></button></p>'
+						}else if(item.MENU_ID == 'COMMON'){
+							var moudleHtml = '<p class="dtpth01" ><button id="depth01_' + item.MENU_ID + '"><img src="' + hr_module + '" alt=""></button></p>'
 						}
 		    	        
 		    	        $('.depth01-warp').append(moudleHtml)
@@ -152,6 +154,8 @@
 						menuboxHtml +=	'<img src="/assets/images/common/ico_file_on.svg" alt="관리회계모듈">'
 					}else if(item.MENU_ID == 'HR_MODULE'){
 						menuboxHtml +=	'<img src="/assets/images/common/ico_user_on.svg" alt="인사모듈">'
+					}else if(item.MENU_ID == 'COMMON'){
+						menuboxHtml +=	'<img src="/assets/images/common/ico_user_on.svg" alt="COMMON">'
 					}
 	    	        	menuboxHtml +=	'</p>'
   	        		menuboxHtml +=   '<p class="menu-title">' + item.MENU_NM + '</p>'
