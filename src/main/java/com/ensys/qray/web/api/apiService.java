@@ -664,4 +664,14 @@ public class apiService extends BaseService {
 		return (String) getNo.get("NO");
 	}
 
+	public HashMap<String, Object> getPrivateJobList(HashMap<String, Object> param) {
+		HashMap<String, Object> result = new HashMap<>();
+
+		param.put("L_JOB_ZONE", Arrays.asList(param.getOrDefault("L_JOB_ZONE", "").toString().split("\\|")));
+
+		result.put("list", apimapper.getPrivateJobList(param));
+
+		return result;
+	}
+
 }

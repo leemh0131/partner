@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ensys.qray.fi.notice2.FiNotice02Mapper">
+
+	<select id="select" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*FiNotice02Mapper.select*/
+		SELECT	  JOB_CD AS "JOB_CD"
+				, JOB_NM AS "JOB_NM"
+				, TEL_NO AS "TEL_NO"
+				, JOB_ZONE AS "JOB_ZONE"
+		        , F_ES_CATEGORY_NM(COMPANY_CD, JOB_ZONE) AS "JOB_ZONE_NM"
+				, JOB_TEXT AS "JOB_TEXT"
+				, IMG_URL AS "IMG_URL"
+				, PREMIUM_YN AS "PREMIUM_YN"
+				, USE_YN AS "USE_YN"
+		FROM ES_JOB
+		WHERE 1 = 1
+		<if test='KEYWORD != null and KEYWORD != ""'>
+			AND    (
+			JOB_CD    LIKE  '%' || #{KEYWORD} || '%'
+			OR JOB_NM    LIKE  '%' || #{KEYWORD} || '%'
+			)
+		</if>
+		ORDER BY JOB_CD
+	</select>
+
+	<insert id="created" parameterType="hashmap" statementType="CALLABLE">
+		/*FiNotice02Mapper.created*/
+		INSERT INTO ES_JOB
+		(
+			COMPANY_CD
+			, JOB_CD
+			, JOB_NM
+			, TEL_NO
+			, JOB_ZONE
+			, JOB_TEXT
+			, PREMIUM_YN
+			, USE_YN
+			, IMG_URL
+			, INSERT_ID
+			, INSERT_DTS
+			, UPDATE_ID
+			, UPDATE_DTS
+		)VALUES(
+				 #{COMPANY_CD}
+			   , #{JOB_CD}
+			   , #{JOB_NM}
+			   , #{TEL_NO}
+			   , #{JOB_ZONE}
+			   , #{JOB_TEXT}
+			   , #{PREMIUM_YN}
+			   , #{USE_YN}
+			   , #{IMG_URL}
+			   , #{INSERT_ID}
+			   , #{INSERT_DTS}
+			   , #{UPDATE_ID}
+			   , #{UPDATE_DTS}
+		)
+	</insert>
+
+    <update id="updated" parameterType="hashmap" statementType="CALLABLE">
+		/*FiNotice02Mapper.updated*/
+		UPDATE ES_JOB
+		SET		  JOB_NM	= #{JOB_NM}
+				, TEL_NO	= #{TEL_NO}
+				, IMG_URL	= #{IMG_URL}
+				, JOB_ZONE	= #{JOB_ZONE}
+				, JOB_TEXT	= #{JOB_TEXT}
+				, PREMIUM_YN	= #{PREMIUM_YN}
+				, USE_YN	= #{USE_YN}
+				, UPDATE_ID	= #{UPDATE_ID}
+				, UPDATE_DTS	= #{UPDATE_DTS}
+		WHERE COMPANY_CD = #{COMPANY_CD}
+		AND JOB_CD = #{JOB_CD}
+	</update>
+    
+    <delete id="deleted" parameterType="hashmap" statementType="CALLABLE">
+		/*FiNotice02Mapper.deleted*/
+		DELETE FROM ES_JOB
+		WHERE COMPANY_CD = #{COMPANY_CD}
+		  AND JOB_CD = #{JOB_CD}
+	</delete>
+
+</mapper>

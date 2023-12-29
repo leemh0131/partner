@@ -213,4 +213,11 @@ public class apiController extends BaseController {
     public Responses.MapResponse getPrivateLoanCommunityDetail(@RequestBody HashMap<String, Object> request) {
         return Responses.MapResponse.of(apiService.getPrivateLoanCommunityDetail(request));
     }
+
+    @ResponseBody
+    @RequestMapping(value = "getPrivateJobList", method = RequestMethod.POST, produces = APPLICATION_JSON)
+    public Responses.MapResponse getPrivateJobList(@RequestBody HashMap<String, Object> request) {
+        return Responses.MapResponse.of(apiService.getPrivateJobList(request));
+    }
+
 }

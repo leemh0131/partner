@@ -802,6 +802,34 @@
         ON CONFLICT (COMPANY_CD, SEQ, IP) DO NOTHING
     </insert>
 
+    <select id="getPrivateJobList" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+        /*apiMapper.getPrivateJobList*/
+        SELECT    CONCAT(#{IMG_URL}, REPLACE(IMG_URL, 'C:', '')) AS "IMG_URL"
+                , JOB_CD AS "JOB_CD"
+                , JOB_NM AS "JOB_NM"
+                , TEL_NO AS "TEL_NO"
+                , JOB_ZONE AS "JOB_ZONE"
+                , REPLACE(F_ES_CATEGORY_NM(COMPANY_CD, JOB_ZONE), '|', '/') AS "JOB_ZONE_NM"
+                , JOB_TEXT AS "JOB_TEXT"
+                , PREMIUM_YN AS "PREMIUM_YN"
+                , USE_YN AS "USE_YN"
+                , INSERT_ID AS "INSERT_ID"
+                , INSERT_DTS AS "INSERT_DTS"
+                , UPDATE_ID AS "UPDATE_ID"
+                , UPDATE_DTS AS "UPDATE_DTS"
+        FROM ES_JOB
+        WHERE COMPANY_CD = #{COMPANY_CD}
+        <if test = "L_JOB_ZONE != null and L_JOB_ZONE.size() > 0 and !L_JOB_ZONE.get(0).equals('')">
+            AND ( F_ES_CATEGORY_NM(COMPANY_CD, JOB_ZONE) LIKE
+            <foreach collection="L_JOB_ZONE" item="item" separator="OR F_ES_CATEGORY_NM(COMPANY_CD, JOB_ZONE) LIKE ">
+                <![CDATA[ CONCAT('%', #{item}, '%')  ]]>
+            </foreach>
+            )
+        </if>
+        ORDER BY RANDOM()
+        LIMIT #{LIMIT}::INTEGER OFFSET #{OFFSET}::INTEGER * #{LIMIT}::INTEGER
+    </select>
+
 
 
 </mapper>
