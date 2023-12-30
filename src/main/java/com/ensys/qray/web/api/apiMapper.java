@@ -47,6 +47,8 @@ public interface apiMapper extends MyBatisMapper {
 
     int setWrite(HashMap<String, Object> param);
 
+    int setUpdate(HashMap<String, Object> param);
+
     int reviewWrite(HashMap<String, Object> param);
 
     int hitPlus(HashMap<String, Object> param);
@@ -90,4 +92,8 @@ public interface apiMapper extends MyBatisMapper {
     List<HashMap<String, Object>> getPrivateJobList(HashMap<String, Object> param);
 
     int insertEsCommunityHit(HashMap<String, Object> param);
+
+    HashMap<String, Object> checkCommunityPwd(HashMap<String, Object> param);
+
+    HashMap<String, Object> selectCommunityDetail(HashMap<String, Object> param);
 }

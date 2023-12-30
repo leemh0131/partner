@@ -322,6 +322,20 @@
        )
     </insert>
 
+    <update id="setUpdate" parameterType="hashmap" statementType="CALLABLE">
+        /*apiMapper.setUpdate*/
+        UPDATE  ES_COMMUNITY
+        SET
+            TITLE = #{TITLE},
+            CONTENTS = #{CONTENTS},
+            UPDATE_ID = #{UPDATE_ID},
+            UPDATE_DTS = #{UPDATE_DTS},
+            NAME = #{NAME},
+            PW = #{PW}
+        WHERE COMPANY_CD = #{COMPANY_CD}
+        AND   SEQ = #{SEQ}
+    </update>
+
     <update id="hitPlus" parameterType="hashmap" statementType="CALLABLE">
         /*apiMapper.hitPlus*/
         UPDATE ES_COMMUNITY
@@ -622,11 +636,18 @@
 
      <select id="getPrivateLoanLiveComment" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
         /*apiMapper.getPrivateLoanLiveComment*/
-        SELECT DM_CD AS "CODE"
-             , SUBSTRING(CONTENTS, 1, 12) AS "TITLE"
-             , SUBSTRING(INSERT_DATE, 1, 8) AS "DTS"
-        FROM PL_DM_COMM
-        ORDER BY WRITE_DATE DESC
+        SELECT    A.DM_CD AS "CODE"
+                , SUBSTRING(A.CONTENTS, 1, 12) AS "TITLE"
+                , SUBSTRING(A.INSERT_DATE, 1, 8) AS "DTS"
+                , CASE WHEN COALESCE(B.DM_CD, '') != '' THEN '01' -- 01 대부업체
+                WHEN COALESCE(C.SEQ, '') != '' THEN '02' -- 커뮤니티
+                ELSE '' END AS "COM_TP"
+        FROM PL_DM_COMM A
+        LEFT JOIN PL_DM_M B
+            ON A.DM_CD = B.DM_CD
+        LEFT JOIN ES_COMMUNITY C
+            ON A.DM_CD = C.SEQ
+        ORDER BY A.WRITE_DATE DESC
         LIMIT 4
     </select>
 
@@ -830,7 +851,23 @@
         LIMIT #{LIMIT}::INTEGER OFFSET #{OFFSET}::INTEGER * #{LIMIT}::INTEGER
     </select>
 
+    <select id="checkCommunityPwd" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+        /*apiMapper.checkCommunityPwd*/
+        SELECT SEQ AS "SEQ"
+        FROM ES_COMMUNITY
+        WHERE   COMPANY_CD =  #{COMPANY_CD}
+        AND     SEQ = #{SEQ}
+        AND     PW =  #{PW}
+    </select>
 
-
+    <select id="selectCommunityDetail" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+        /*apiMapper.selectCommunityDetail*/
+        SELECT  TITLE AS "TITLE",
+                CONTENTS AS "CONTENTS",
+                NAME AS "NAME"
+        FROM ES_COMMUNITY
+        WHERE   COMPANY_CD =  #{COMPANY_CD}
+          AND     SEQ = #{SEQ}
+    </select>
 </mapper>
 

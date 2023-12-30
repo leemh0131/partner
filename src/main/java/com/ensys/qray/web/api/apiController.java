@@ -88,6 +88,18 @@ public class apiController extends BaseController {
     }
 
     @ResponseBody
+    @RequestMapping(value = "setUpdate", method = RequestMethod.POST, produces = APPLICATION_JSON)
+    public Responses.MapResponse setUpdate(@RequestBody HashMap<String, Object> request) {
+        return Responses.MapResponse.of(apiService.setUpdate(request));
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "getCsReg", method = RequestMethod.POST, produces = APPLICATION_JSON)
+    public Responses.MapResponse getCsReg(@RequestBody HashMap<String, Object> request) {
+        return Responses.MapResponse.of(apiService.getCsReg(request));
+    }
+
+    @ResponseBody
     @RequestMapping(value = "getCommonCode", method = RequestMethod.POST, produces = APPLICATION_JSON)
     public Responses.MapResponse getCommonCode(@RequestBody HashMap<String, Object> request) {
         return Responses.MapResponse.of(apiService.getCommonCode(request));
@@ -218,6 +230,12 @@ public class apiController extends BaseController {
     @RequestMapping(value = "getPrivateJobList", method = RequestMethod.POST, produces = APPLICATION_JSON)
     public Responses.MapResponse getPrivateJobList(@RequestBody HashMap<String, Object> request) {
         return Responses.MapResponse.of(apiService.getPrivateJobList(request));
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "checkCommnityPwd", method = RequestMethod.POST, produces = APPLICATION_JSON)
+    public Responses.MapResponse checkCommnityPwd(@RequestBody HashMap<String, Object> request) {
+        return Responses.MapResponse.of(apiService.checkCommunityPwd(request));
     }
 
 }

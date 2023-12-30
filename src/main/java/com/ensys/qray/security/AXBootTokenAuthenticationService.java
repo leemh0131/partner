@@ -22,7 +22,7 @@ public class AXBootTokenAuthenticationService {
 	private final JWTSessionHandler jwtSessionHandler;
 
 	public AXBootTokenAuthenticationService() {
-		jwtSessionHandler = new JWTSessionHandler(DatatypeConverter.parseBase64Binary("YXhib290"));
+		jwtSessionHandler = new JWTSessionHandler();
 	}
 
 	public int tokenExpiry() {

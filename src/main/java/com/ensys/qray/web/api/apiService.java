@@ -1,24 +1,20 @@
 package com.ensys.qray.web.api;
 
 import com.chequer.axboot.core.api.ApiException;
-import com.chequer.axboot.core.utils.HttpUtils;
 import com.ensys.qray.fi.notice.FiNotice01Mapper;
 import com.ensys.qray.setting.base.BaseService;
 import com.ensys.qray.sys.information08.SysInformation08Mapper;
+import com.ensys.qray.utils.JWTSessionHandler;
 import com.ensys.qray.web.dashboard.DashboardMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.util.ObjectUtils;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 import static com.chequer.axboot.core.utils.HttpUtils.getRemoteAddress;
 import static com.ensys.qray.utils.HammerUtility.*;
-import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Service
 @Transactional
@@ -32,6 +28,8 @@ public class apiService extends BaseService {
 	private final FiNotice01Mapper fiNotice01Mapper;
 
 	private final SysInformation08Mapper sysInformation08Mapper;
+
+	private final JWTSessionHandler jwtSessionHandler = new JWTSessionHandler();
 
 	public HashMap<String, Object> partnerDetail(HashMap<String, Object> param) {
 
@@ -641,7 +639,6 @@ public class apiService extends BaseService {
 		param.put("COMPANY_CD", "1000");
 		param.put("IP", getRemoteAddress());
 		result.put("comm_list", apimapper.getPrivateLoanPlDmCommList(param));
-
 		//IP로 조회수 체크 후 업데이트
 		int chk = apimapper.insertEsCommunityHit(param);
 		if(chk > 0){
@@ -649,6 +646,46 @@ public class apiService extends BaseService {
 		}
 
 		return result;
+	}
+	public HashMap<String, Object> checkCommunityPwd(HashMap<String, Object> param) {
+		HashMap<String, Object> result = new HashMap<>();
+		HashMap<String, Object> pwd = apimapper.checkCommunityPwd(param);
+		result.put("COMPANY_CD", param.get("COMPANY_CD"));
+		result.put("SEQ", param.get("SEQ"));
+		if (ObjectUtils.isEmpty(pwd)) {
+			result.put("ITE", "fail");
+		} else {
+			result.put("ITE", "success");
+			result.put("token", jwtSessionHandler.createTokenForMap(result));
+		}
+		return result;
+	}
+
+	public HashMap<String, Object> setUpdate(HashMap<String, Object> param) {
+		String strDate = nowDate("yyyyMMddHHmmss");
+		HashMap<String, Object> tk = jwtSessionHandler.parseUserFromTokenMap(param);
+
+		param.put("COMPANY_CD", tk.get("COMPANY_CD"));
+		param.put("SEQ", tk.get("SEQ"));
+		param.put("UPDATE_ID", getRemoteAddress());
+		param.put("UPDATE_DTS", strDate);
+
+		apimapper.setUpdate(param);
+
+		HashMap<String, Object> result = new HashMap<>();
+		result.put("response", "ok");
+		result.put("SEQ", tk.get("SEQ"));
+
+ 		return result;
+	}
+
+	public HashMap<String, Object> getCsReg(HashMap<String, Object> param) {
+		HashMap<String, Object> tk = jwtSessionHandler.parseUserFromTokenMap(param);
+
+		param.put("COMPANY_CD", tk.get("COMPANY_CD"));
+		param.put("SEQ", tk.get("SEQ"));
+
+		return apimapper.selectCommunityDetail(param);
 	}
 
 	private String getNo(String companyCd, String moduleCd, String classCd) {
