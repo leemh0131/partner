@@ -648,7 +648,7 @@
         LEFT JOIN ES_COMMUNITY C
             ON A.DM_CD = C.SEQ
         ORDER BY A.WRITE_DATE DESC
-        LIMIT 4
+        LIMIT 10
     </select>
 
     <select id="getPrivateLoanBoard" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
