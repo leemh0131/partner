@@ -729,10 +729,7 @@
                 , F_NVL_TEXT(A.WITHDR_LOCA, '모름')      AS "WITHDR_LOCA"
                 , F_NVL_TEXT(A.COMPL_POLICE, '모름')     AS "COMPL_POLICE"
                 , F_NVL_TEXT(A.DM_CONTENTS, '모름')      AS "DM_CONTENTS"
-                , F_NVL_TEXT(B.NO_DEPOSIT, '모름')      AS "NO_DEPOSIT"
         FROM PL_DM_M A
-        LEFT JOIN PL_DM_DEPOSIT B
-            ON A.DM_CD = B.DM_CD
         WHERE A.DM_CD = #{DM_CD}
     </select>
 
