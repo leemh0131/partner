@@ -283,7 +283,7 @@
                             data: formData,
                             success: function (result) {
                                 if(nvl(result) != ''){
-                                    let imgUrl = result[1].FILE_PATH + uuid + '.' + fileExtension;
+                                    let imgUrl = result[1].FILE_PATH + "/" + uuid + '.' + fileExtension;
                                     fnObj.gridView01.target.setValue(selected.__index, 'IMG_URL', imgUrl);
                                     $('#preview').html(`<img src="` + imgUrl + `" alt="Preview Image">`);
                                     $('#imageInput').val(null);
