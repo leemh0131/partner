@@ -651,6 +651,22 @@
         LIMIT 10
     </select>
 
+    <select id="getPrivateLoanMainJob" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+        /*apiMapper.getPrivateLoanMainJob*/
+        SELECT	   JOB_CD AS "JOB_CD"
+                 , JOB_NM AS "JOB_NM"
+                 , TEL_NO AS "TEL_NO"
+                 , JOB_ZONE AS "JOB_ZONE"
+                 , F_ES_CATEGORY_NM(COMPANY_CD, JOB_ZONE) AS "JOB_ZONE_NM"
+                 , JOB_TEXT AS "JOB_TEXT"
+                 , CONCAT(#{IMG_URL}, FILE_NAME, '.', FILE_EXT) AS img_url
+                 , IMG_URL AS "IMG_URL"
+        FROM ES_JOB
+        WHERE 1 = 1
+          AND PREMIUM_YN = 'Y'
+        ORDER BY JOB_CD
+    </select>
+
     <select id="getPrivateLoanBoard" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
             /*apiMapper.getPrivateLoanBoard*/
             SELECT  SEQ AS "SEQ"

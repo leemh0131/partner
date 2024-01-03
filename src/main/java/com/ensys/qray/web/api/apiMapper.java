@@ -69,6 +69,8 @@ public interface apiMapper extends MyBatisMapper {
 
     List<HashMap<String, Object>> getPrivateLoanLiveComment(HashMap<String, Object> param);
 
+    List<HashMap<String, Object>> getPrivateLoanMainJob(HashMap<String, Object> param);
+
     List<HashMap<String, Object>> getPrivateLoanBoard(HashMap<String, Object> param);
 
     List<HashMap<String, Object>> getPrivateLoanCommunity(HashMap<String, Object> param);

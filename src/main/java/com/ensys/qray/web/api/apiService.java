@@ -570,6 +570,7 @@ public class apiService extends BaseService {
 		result.put("list1", apimapper.getPrivateLoanLiveComment(param));
 		result.put("list2", apimapper.getPrivateLoanBoard(param));
 		result.put("list3", apimapper.getPrivateLoanCommunity(param));
+		result.put("list4", apimapper.getPrivateLoanMainJob(param));
 
 		return result;
 	}
