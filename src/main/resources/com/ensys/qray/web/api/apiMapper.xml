@@ -852,6 +852,7 @@
                 , UPDATE_DTS AS "UPDATE_DTS"
         FROM ES_JOB
         WHERE COMPANY_CD = #{COMPANY_CD}
+        AND COALESCE(USE_YN, 'N') = 'Y'
         <if test = "L_JOB_ZONE != null and L_JOB_ZONE.size() > 0 and !L_JOB_ZONE.get(0).equals('')">
             AND ( F_ES_CATEGORY_NM(COMPANY_CD, JOB_ZONE) LIKE
             <foreach collection="L_JOB_ZONE" item="item" separator="OR F_ES_CATEGORY_NM(COMPANY_CD, JOB_ZONE) LIKE ">

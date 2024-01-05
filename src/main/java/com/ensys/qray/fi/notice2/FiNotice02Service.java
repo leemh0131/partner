@@ -39,6 +39,7 @@ public class FiNotice02Service extends BaseService {
 		HashMap<String, Object> gridView01 = (HashMap<String, Object>) param.get("gridView01");
 
     	for(HashMap<String, Object> item : (List<HashMap<String, Object>>)gridView01.get("deleted")) {
+			item.put("COMPANY_CD", user.getCompanyCd());
 			fiNotice02Mapper.deleted(item);
     	}
 		for(HashMap<String, Object> item : (List<HashMap<String, Object>>)gridView01.get("created")) {
