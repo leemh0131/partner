@@ -882,5 +882,20 @@
         WHERE   COMPANY_CD =  #{COMPANY_CD}
           AND     SEQ = #{SEQ}
     </select>
+
+    <select id="getPrivateImg" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+        /*apiMapper.getPrivateImg*/
+        SELECT  CONCAT(#{IMG_URL}, FILE_PATH, FILE_NAME, '.', FILE_EXT) AS "IMG_URL"
+              , TABLE_ID AS "TABLE_ID"
+              , LINK AS "LINK"
+        FROM ES_FILE
+        WHERE   COMPANY_CD =  #{COMPANY_CD}
+          AND TABLE_ID IN ('PATH_BANNER_PC', 'PATH_BANNER_MO')
+
+    </select>
+
+
+
+
 </mapper>
 

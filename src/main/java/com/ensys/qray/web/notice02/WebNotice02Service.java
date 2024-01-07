@@ -67,4 +67,28 @@ public class WebNotice02Service extends BaseService {
 
 	}
 
+	public void saveImg(HashMap<String, Object> param) throws Exception {
+		SessionUser user = SessionUtils.getCurrentUser();
+		String strDate = HammerUtility.nowDate("yyyyMMddHHmmss");
+
+		HashMap<String, Object> gridView01 = (HashMap<String, Object>) param.get("gridView01");
+
+		for(HashMap<String, Object> item : (List<HashMap<String, Object>>)gridView01.get("updated")) {
+			item.put("COMPANY_CD", user.getCompanyCd());
+			item.put("UPDATE_ID", user.getUserId());
+			item.put("UPDATE_DTS", strDate);
+			webNotice02Mapper.imgUpdate(item);
+		}
+
+	}
+
+	@Transactional(readOnly = true)
+	public List<HashMap<String, Object>> selectImg(HashMap<String, Object> param) {
+		SessionUser user = SessionUtils.getCurrentUser();
+		param.put("COMPANY_CD", user.getCompanyCd());
+
+
+		return webNotice02Mapper.selectImg(param);
+	}
+
 }

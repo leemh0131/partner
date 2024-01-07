@@ -238,4 +238,10 @@ public class apiController extends BaseController {
         return Responses.MapResponse.of(apiService.checkCommunityPwd(request));
     }
 
+    @ResponseBody
+    @RequestMapping(value = "getPrivateImg", method = RequestMethod.POST, produces = APPLICATION_JSON)
+    public Responses.MapResponse getPrivateImg(@RequestBody HashMap<String, Object> request) {
+        return Responses.MapResponse.of(apiService.getPrivateImg(request));
+    }
+
 }

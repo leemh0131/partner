@@ -93,6 +93,8 @@ public interface apiMapper extends MyBatisMapper {
 
     List<HashMap<String, Object>> getPrivateJobList(HashMap<String, Object> param);
 
+    List<HashMap<String, Object>> getPrivateImg(HashMap<String, Object> param);
+
     int insertEsCommunityHit(HashMap<String, Object> param);
 
     HashMap<String, Object> checkCommunityPwd(HashMap<String, Object> param);

@@ -53,4 +53,42 @@
 		  AND   SEQ        = #{SEQ}
 	</delete>
 
+	<select id="selectImg" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*WebNotice02Mapper.selectImg*/
+		SELECT
+			  COMPANY_CD	 AS "COMPANY_CD"
+			, TABLE_ID	 AS "TABLE_ID"
+			, TABLE_KEY	 AS "TABLE_KEY"
+            , FILE_SEQ	 AS "FILE_SEQ"
+            , FILE_NAME	 AS "FILE_NAME"
+            , ORGN_FILE_NAME	 AS "ORGN_FILE_NAME"
+            , FILE_PATH	 AS "FILE_PATH"
+            , FILE_EXT	 AS "FILE_EXT"
+            , FILE_BYTE	 AS "FILE_BYTE"
+            , FILE_SIZE	 AS "FILE_SIZE"
+            , FILE_DIVISION	 AS "FILE_DIVISION"
+            , INSERT_ID	 AS "INSERT_ID"
+            , INSERT_DTS	 AS "INSERT_DTS"
+            , UPDATE_ID	 AS "UPDATE_ID"
+            , UPDATE_DTS	 AS "UPDATE_DTS"
+            , MAIN_YN	 AS "MAIN_YN"
+            , LINK	 AS "LINK"
+            , REMARK	 AS "REMARK"
+			, CONCAT(#{IMG_URL}, FILE_PATH, FILE_NAME, '.', FILE_EXT) AS "IMG_URL"
+		FROM ES_FILE
+		WHERE COMPANY_CD = #{COMPANY_CD}
+		AND TABLE_ID IN ('CENTER_BANNER_MO', 'CENTER_BANNER_PC', 'PATH_BANNER_PC', 'PATH_BANNER_MO')
+	</select>
+
+	<update id="imgUpdate" parameterType="hashmap" statementType="CALLABLE">
+		/*WebNotice02Mapper.imgUpdate*/
+		UPDATE ES_FILE
+		SET	  ORGN_FILE_NAME = #{ORGN_FILE_NAME}
+			, FILE_PATH = #{FILE_PATH}
+			, FILE_EXT = #{FILE_EXT}
+			, LINK = #{LINK}
+		WHERE COMPANY_CD = #{COMPANY_CD}
+		AND TABLE_ID = #{TABLE_ID}
+	</update>
+
 </mapper>

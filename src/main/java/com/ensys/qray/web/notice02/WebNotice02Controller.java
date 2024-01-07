@@ -39,4 +39,17 @@ public class WebNotice02Controller extends BaseController {
 		return ok();
 	}
 
+	@ResponseBody
+	@RequestMapping(value = "selectImg", method = RequestMethod.POST, produces = APPLICATION_JSON)
+	public Responses.ListResponse selectImg(@RequestBody HashMap<String, Object> request) {
+		return Responses.ListResponse.of(webNotice02Service.selectImg(request));
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "saveImg", method = {RequestMethod.POST}, produces = APPLICATION_JSON)
+	public ApiResponse saveImg(@RequestBody HashMap<String, Object> param) throws Exception {
+		webNotice02Service.saveImg(param);
+		return ok();
+	}
+
 }

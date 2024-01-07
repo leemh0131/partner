@@ -712,4 +712,10 @@ public class apiService extends BaseService {
 		return result;
 	}
 
+	public HashMap<String, Object> getPrivateImg(HashMap<String, Object> param) {
+		HashMap<String, Object> result = new HashMap<>();
+		result.put("list", apimapper.getPrivateImg(param));
+		return result;
+	}
+
 }
