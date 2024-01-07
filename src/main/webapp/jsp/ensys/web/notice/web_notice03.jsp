@@ -29,8 +29,8 @@
                         type: "POST",
                         url: ["/api/web/notice02", "selectImg"],
                         data: JSON.stringify({
-                            /*IMG_URL : window.location.origin*/
-                            IMG_URL : "http://117.52.84.88:8080"
+                            IMG_URL : window.location.origin
+                            /*IMG_URL : "http://117.52.84.88:8080"*/
                         }),
                         callback: function(res) {
 
@@ -58,11 +58,6 @@
                 PAGE_SAVE : function (caller, act, data) {
 
                     let saveData = fnObj.gridView01.target.getDirtyData();
-
-                    if(saveData.count == 0){
-                        qray.alert("변경된 데이터가 없습니다.");
-                        return;
-                    }
 
                     qray.confirm({
                         msg: "저장하시겠습니까?"
@@ -223,6 +218,7 @@
                     }];
 
                     fnObj.gridView01.target.setValue(selected.__index, 'FILE_EXT', fileExtension);
+                    fnObj.gridView01.target.setValue(selected.__index, 'FILE_SEQ', '1');
 
                     var formData = new FormData();
                     formData.append('files', file);
@@ -240,12 +236,7 @@
                             url: '/api/file/fileUpload',
                             data: formData,
                             success: function (result) {
-                                /*if(nvl(result) != ''){
-                                    let imgUrl = result[1].FILE_PATH + "/" + uuid + '.' + fileExtension;
-                                    fnObj.gridView01.target.setValue(selected.__index, 'IMG_URL', imgUrl);
-                                    $('#preview').html(`<img src="` + imgUrl + `" alt="Preview Image">`);
-                                    $('#imageInput').val(null);
-                                }*/
+                                ACTIONS.dispatch(ACTIONS.PAGE_SAVE);
                             },
                             error: function(error){
                                 qray.loading.hide();
