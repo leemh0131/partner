@@ -642,11 +642,14 @@
                 , CASE WHEN COALESCE(B.DM_CD, '') != '' THEN '01' -- 01 대부업체
                 WHEN COALESCE(C.SEQ, '') != '' THEN '02' -- 커뮤니티
                 ELSE '' END AS "COM_TP"
+                , CASE WHEN CURRENT_DATE - TO_DATE(SUBSTRING(REPLACE(A.INSERT_DATE, '-', ''), 1, 8), 'YYYYMMDD') > F_NVL_NUM(D.SYSDEF_CD::INTEGER, 7) THEN 'N' ELSE 'Y' END AS "NEW_VALUE"
         FROM PL_DM_COMM A
         LEFT JOIN PL_DM_M B
             ON A.DM_CD = B.DM_CD
         LEFT JOIN ES_COMMUNITY C
             ON A.DM_CD = C.SEQ
+        LEFT JOIN (SELECT SYSDEF_CD FROM ES_CODEDTL WHERE FIELD_CD = 'ES_Q0141' AND FLAG1_CD = 'Y' LIMIT 1) D
+            ON 1 = 1
         ORDER BY A.WRITE_DATE DESC
         LIMIT 10
     </select>
@@ -668,25 +671,31 @@
 
     <select id="getPrivateLoanBoard" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
             /*apiMapper.getPrivateLoanBoard*/
-            SELECT  SEQ AS "SEQ"
-                 , SUBSTRING(TITLE, 1, 12) AS "TITLE"
-                 , SUBSTRING(INSERT_DTS, 1, 8) AS "DTS"
-            FROM ES_BOARD
-            WHERE   COMPANY_CD = #{COMPANY_CD}
-            AND     BOARD_TYPE = '04'
-            ORDER BY F_NVL_TEXT(MAIN_YN, 'N') DESC, UPDATE_DTS DESC
+            SELECT  A.SEQ AS "SEQ"
+                 , SUBSTRING(A.TITLE, 1, 12) AS "TITLE"
+                 , SUBSTRING(A.INSERT_DTS, 1, 8) AS "DTS"
+                 , CASE WHEN CURRENT_DATE - TO_DATE(SUBSTRING(REPLACE(A.INSERT_DTS, '-', ''), 1, 8), 'YYYYMMDD') > F_NVL_NUM(B.SYSDEF_CD::INTEGER, 7) THEN 'N' ELSE 'Y' END AS "NEW_VALUE"
+            FROM ES_BOARD A
+            LEFT JOIN (SELECT SYSDEF_CD FROM ES_CODEDTL WHERE FIELD_CD = 'ES_Q0141' AND FLAG1_CD = 'Y' LIMIT 1) B
+                ON 1 = 1
+            WHERE   A.COMPANY_CD = #{COMPANY_CD}
+            AND     A.BOARD_TYPE = '04'
+            ORDER BY F_NVL_TEXT(A.MAIN_YN, 'N') DESC, A.UPDATE_DTS DESC
             LIMIT 4
         </select>
 
     <select id="getPrivateLoanCommunity" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
         /*apiMapper.getPrivateLoanCommunity*/
-        SELECT  SEQ AS "SEQ"
-             , SUBSTRING(TITLE, 1, 12) AS "TITLE"
-             , SUBSTRING(INSERT_DTS, 1, 8) AS "DTS"
-        FROM ES_COMMUNITY
-        WHERE COMMUNITY_TP = '03'
-        AND COMMUNITY_ST = '14'
-        ORDER BY UPDATE_DTS DESC
+        SELECT  A.SEQ AS "SEQ"
+             , SUBSTRING(A.TITLE, 1, 12) AS "TITLE"
+             , SUBSTRING(A.INSERT_DTS, 1, 8) AS "DTS"
+             , CASE WHEN CURRENT_DATE - TO_DATE(SUBSTRING(REPLACE(A.INSERT_DTS, '-', ''), 1, 8), 'YYYYMMDD') > F_NVL_NUM(B.SYSDEF_CD::INTEGER, 7) THEN 'N' ELSE 'Y' END AS "NEW_VALUE"
+        FROM ES_COMMUNITY A
+        LEFT JOIN (SELECT SYSDEF_CD FROM ES_CODEDTL WHERE FIELD_CD = 'ES_Q0141' AND FLAG1_CD = 'Y' LIMIT 1) B
+            ON 1 = 1
+        WHERE A.COMMUNITY_TP = '03'
+        AND A.COMMUNITY_ST = '14'
+        ORDER BY A.UPDATE_DTS DESC
         LIMIT 4
     </select>
 
@@ -761,15 +770,20 @@
 
     <select id="getPrivateLoanPlDmCommList" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
         /*apiMapper.getPrivateLoanPlDmCommList*/
-        SELECT     DM_CD          AS "DM_CD"
-                 , COMM_CD        AS "COMM_CD"
-                 , PARENT_CD      AS "PARENT_CD"
-                 , NICK_NM        AS "NICK_NM"
-                 , CONTENTS       AS "CONTENTS"
-                 , USE_YN         AS "USE_YN"
-                 , REPORT_YN      AS "REPORT_YN"
-                 , WRITE_DATE     AS "WRITE_DATE"
-            FROM PL_DM_COMM
+        SELECT    A.DM_CD          AS "DM_CD"
+                , A.COMM_CD        AS "COMM_CD"
+                , A.PARENT_CD      AS "PARENT_CD"
+                , A.NICK_NM        AS "NICK_NM"
+                , A.CONTENTS       AS "CONTENTS"
+                , A.USE_YN         AS "USE_YN"
+                , A.REPORT_YN      AS "REPORT_YN"
+                , A.WRITE_DATE     AS "WRITE_DATE"
+                , CASE WHEN
+                CURRENT_DATE - TO_DATE(SUBSTRING(REPLACE(A.WRITE_DATE, '-', ''), 1, 8), 'YYYYMMDD') > F_NVL_NUM(B.SYSDEF_CD::INTEGER, 7) THEN 'N'
+                ELSE 'Y' END AS "NEW_VALUE"
+        FROM PL_DM_COMM A
+        LEFT JOIN (SELECT SYSDEF_CD FROM ES_CODEDTL WHERE FIELD_CD = 'ES_Q0141' AND FLAG1_CD = 'Y' LIMIT 1) B
+        ON 1 = 1
         WHERE DM_CD = #{DM_CD}
     </select>
 
