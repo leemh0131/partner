@@ -358,7 +358,7 @@
                                     <input type="text" class="form-control" data-ax-path="REMARK" name="REMARK"
                                            id="REMARK" form-bind-text='REMARK' form-bind-type='text' readonly/>
                                 </ax:td>
-                                <ax:td label='링크' width="300px">
+                                <ax:td label='링크' width="700px">
                                     <input type="text" class="form-control" data-ax-path="LINK" name="LINK"
                                            id="LINK" form-bind-text='LINK' form-bind-type='text'/>
                                 </ax:td>

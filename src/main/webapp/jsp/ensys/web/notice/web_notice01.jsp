@@ -366,10 +366,12 @@
                     <ax:form name="binder-form">
                         <ax:tbl clazz="ax-search-tb2" minWidth="600px">
                             <ax:tr>
-                                <ax:td label='제목' width="33%">
+                                <ax:td label='제목' width="100%">
                                     <input type="text" class="form-control" data-ax-path="TITLE" name="TITLE"
                                            id="TITLE" form-bind-text='TITLE' form-bind-type='text'/>
                                 </ax:td>
+                            </ax:tr>
+                            <ax:tr>
                                 <ax:td label='형태' width="33%">
                                     <div id="BOARD_TYPE"
                                          name="BOARD_TYPE"
