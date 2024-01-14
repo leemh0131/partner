@@ -9,7 +9,7 @@ public interface FiNotice01Mapper extends MyBatisMapper {
 
 	List<HashMap<String, Object>> select(HashMap<String, Object> param);
 
-	void created(HashMap<String, Object> item);
+	int created(HashMap<String, Object> item);
 
 	void updated(HashMap<String, Object> item);
 

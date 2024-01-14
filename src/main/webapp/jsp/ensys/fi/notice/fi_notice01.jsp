@@ -1,4 +1,3 @@
-<%@ page import="com.chequer.axboot.core.utils.MessageUtils" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="ax" tagdir="/WEB-INF/tags" %>
@@ -160,7 +159,18 @@
                 },
                 //피해 삭제
                 ITEM_DEL: function(caller, act, data){
+                    var beforeIdx = fnObj.gridView01.target.selectedDataIndexs[0];
+                    var dataLen = fnObj.gridView01.target.getList().length;
+
+                    if ((beforeIdx + 1) == dataLen) {
+                        beforeIdx = beforeIdx - 1;
+                    }
+                    selectRow = beforeIdx;
                     caller.gridView01.delRow("selected");
+                    if (beforeIdx > 0 || beforeIdx == 0) {
+                        fnObj.gridView01.target.select(selectRow);
+                        fnObj.gridView01.target.focus(selectRow);
+                    }
                 },
                 //피해 계좌 추가
                 ITEM_ADD2: function(caller, act, data){
@@ -212,6 +222,64 @@
                 ITEM_DEL3: function(caller, act, data){
                     caller.gridView03.delRow("selected");
                 },
+                EXCEL_UPLOAD: function(caller, act, data){
+                    var fileTag = document.createElement("INPUT");
+                    fileTag.setAttribute("type", "file");
+                    fileTag.setAttribute("id", "ExcelUploadFileTag");
+
+                    $(fileTag).change(function () {
+                        var fileName = $(this).val();
+                        fileName = fileName.slice(fileName.indexOf(".") + 1).toLowerCase();
+                        if (fileName != "xls" && fileName != "xlsx") {
+                            $(this).val("");
+                            qray.alert("xls, xlsx 확장자의 파일만 사용 가능합니다.");
+                            return false;
+                        }
+                        var target = this;
+
+                        qray.confirm({
+                            msg: "엑셀업로드 하시겠습니까?" + "<br><span style='color:red;'>이미 중복된 피해마스터코드가 있을 경우<br> 업로드 제외됩니다.</span>"
+                        }, function () {
+                            if (this.key == "ok") {
+                                qray.loading.show('엑셀업로드 중입니다.').then(function () {
+                                    var formData = new FormData();
+                                    formData.append('files', target.files[0]);
+
+                                    axboot.ajax({
+                                        type: 'POST',
+                                        async: false,
+                                        enctype: 'multipart/form-data',
+                                        processData: false,
+                                        contentType: false,
+                                        cache: false,
+                                        url: ["/api/fi/notice01", "excelUpload"],
+                                        data: formData,
+                                        callback: function(res){
+                                            console.log(res);
+                                            fileTag.remove();
+                                            qray.loading.hide();
+                                            qray.alert('엑셀 업로드를 하였습니다.').then(function(){
+                                                if (nvl(res.map) != '' && nvl(res.map.DM_CD) != '') {
+                                                    $('#KEYWORD2').val(res.map.DM_CD.substr(0,10));
+                                                }
+                                                ACTIONS.dispatch(ACTIONS.PAGE_SEARCH);
+                                            });
+                                        },
+                                        options: {
+                                            onError: function (error) {
+                                                fileTag.remove();
+                                                qray.loading.hide();
+                                                qray.alert(error);
+                                                return;
+                                            }
+                                        }
+                                    })
+                                });
+                            }
+                        });
+                    });
+                    fileTag.click();
+                }
             });
 
             fnObj.pageButtonView = axboot.viewExtend({
@@ -239,7 +307,8 @@
                         async : false,
                         param : function(){
                             return JSON.stringify({
-                                KEYWORD: nvl($("#KEYWORD").val())
+                                KEYWORD: nvl($("#KEYWORD").val()),
+                                KEYWORD2: nvl($("#KEYWORD2").val())
                             });
                         },
                         callback : function(res){
@@ -376,8 +445,8 @@
                                     },
                                 }
                             },
-                            {key: "NO_DEPOSIT", label: "계좌번호", width: 100, align: "left", sortable: true, editor: "text"},
-                            {key: "NM_DEPOSITOR", label: "예금주명", width: "*", align: "left", sortable: true, editor: "text"},
+                            {key: "NO_DEPOSIT", label: "계좌번호", width: 200, align: "left", sortable: true, editor: "text"},
+                            {key: "NM_DEPOSITOR", label: "예금주명", width: 100, align: "left", sortable: true, editor: "text"},
                             { key: "USE_YN",            label: "사용여부", width: 80, align: "center", sortable: true,
                                 formatter : function() {
                                     return $.changeTextValue(ES_Q0001, this.value)
@@ -541,6 +610,9 @@
                         },
                         "save": function () {
                             ACTIONS.dispatch(ACTIONS.PAGE_SAVE);
+                        },
+                        "excelUpload": function () {
+                            ACTIONS.dispatch(ACTIONS.EXCEL_UPLOAD);
                         }
                     });
                 }
@@ -586,15 +658,10 @@
     <jsp:body>
         <div data-page-buttons="">
             <div class="button-warp">
-                <button type="button" class="btn btn-reload" data-page-btn="reload" onclick="window.location.reload();"
-                        style="width:80px;">
-                    <i class="icon_reload"></i></button>
-                <button type="button" class="btn btn-info" data-page-btn="search" style="width:80px;"><i
-                        class="icon_search" TRIGGER_NAME="SEARCH" ></i>조회
-                </button>
-                    <button type="button" class="btn btn-info" data-page-btn="save" style="width:80px;"><i
-                            class="icon_save"></i>저장
-                    </button>
+                <button type="button" class="btn btn-reload" data-page-btn="reload" onclick="window.location.reload();" style="width:80px;"><i class="icon_reload"></i></button>
+                <button type="button" class="btn btn-info" data-page-btn="excelUpload" style="width:100px;"><i class="icon_save"></i>엑셀업로드</button>
+                <button type="button" class="btn btn-info" data-page-btn="search" style="width:80px;"><i class="icon_search" TRIGGER_NAME="SEARCH" ></i>조회</button>
+                <button type="button" class="btn btn-info" data-page-btn="save" style="width:80px;"><i class="icon_save"></i>저장</button>
             </div>
         </div>
 
@@ -604,6 +671,9 @@
                     <ax:tr>
                         <ax:td label='피해 검색' width="400px">
                             <input type="text" class="form-control" name="KEYWORD"  id="KEYWORD" TRIGGER_TARGET="SEARCH"/>
+                        </ax:td>
+                        <ax:td label='피해 코드' width="400px">
+                            <input type="text" class="form-control" name="KEYWORD2"  id="KEYWORD2" TRIGGER_TARGET="SEARCH"/>
                         </ax:td>
                     </ax:tr>
                 </ax:tbl>

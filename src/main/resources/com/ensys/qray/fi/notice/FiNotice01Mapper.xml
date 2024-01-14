@@ -32,6 +32,9 @@
 			OR DM_CONTENTS    LIKE  '%' || #{KEYWORD} || '%'
 			)
 		</if>
+		<if test='KEYWORD2 != null and KEYWORD2 != ""'>
+			AND DM_CD    LIKE  '%' || #{KEYWORD2} || '%'
+		</if>
 	</select>
 
 	<insert id="created" parameterType="hashmap" statementType="CALLABLE">
@@ -73,6 +76,8 @@
 			, #{INSERT_DATE}
 			, #{UPDATE_DATE}
 		)
+		ON CONFLICT (DM_CD)
+		DO NOTHING;
 	</insert>
 
     <update id="updated" parameterType="hashmap" statementType="CALLABLE">
@@ -97,8 +102,17 @@
     
     <delete id="deleted" parameterType="hashmap" statementType="CALLABLE">
 		/*FiNotice01Mapper.deleted*/
-		DELETE FROM PL_DM_M
-		WHERE DM_CD = #{DM_CD}
+		WITH PL_DM_M_AS AS
+		(
+			DELETE FROM PL_DM_M
+			WHERE DM_CD = #{DM_CD}
+		),
+		PL_DM_DEPOSIT_AS AS
+		(
+			DELETE FROM PL_DM_DEPOSIT
+			WHERE DM_CD = #{DM_CD}
+		)
+		SELECT 'DELETE'
 	</delete>
 
 	<select id="selectPlDmDeposit" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
