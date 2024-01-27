@@ -15,5 +15,6 @@ public interface WebNotice02Mapper extends MyBatisMapper {
 	void delete(HashMap<String, Object> param);
 	void deleteD(HashMap<String, Object> param);
 	int imgUpdate(HashMap<String, Object> param);
+	int updateCommunity(HashMap<String, Object> param);
 
 }

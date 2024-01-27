@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashMap;
 import java.util.List;
 
+import static com.ensys.qray.utils.SessionUtils.*;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -21,7 +23,7 @@ public class WebNotice02Service extends BaseService {
 
 	@Transactional(readOnly = true)
 	public List<HashMap<String, Object>> select(HashMap<String, Object> param) {
-		SessionUser user = SessionUtils.getCurrentUser();
+		SessionUser user = getCurrentUser();
 		param.put("COMPANY_CD", user.getCompanyCd());
 
 		return webNotice02Mapper.select(param);
@@ -29,14 +31,14 @@ public class WebNotice02Service extends BaseService {
 
 	@Transactional(readOnly = true)
 	public List<HashMap<String, Object>> selectDetail(HashMap<String, Object> param) {
-		SessionUser user = SessionUtils.getCurrentUser();
+		SessionUser user = getCurrentUser();
 		param.put("COMPANY_CD", user.getCompanyCd());
 
 		return webNotice02Mapper.selectDetail(param);
 	}
 
 	public void save(HashMap<String, Object> param) throws Exception {
-		SessionUser user = SessionUtils.getCurrentUser();
+		SessionUser user = getCurrentUser();
 		String strDate = HammerUtility.nowDate("yyyyMMddHHmmss");
 
 		HashMap<String, Object> gridView01 = (HashMap<String, Object>) param.get("gridView01");
@@ -68,7 +70,7 @@ public class WebNotice02Service extends BaseService {
 	}
 
 	public void saveImg(HashMap<String, Object> param) throws Exception {
-		SessionUser user = SessionUtils.getCurrentUser();
+		SessionUser user = getCurrentUser();
 		String strDate = HammerUtility.nowDate("yyyyMMddHHmmss");
 
 		HashMap<String, Object> gridView01 = (HashMap<String, Object>) param.get("gridView01");
@@ -84,11 +86,17 @@ public class WebNotice02Service extends BaseService {
 
 	@Transactional(readOnly = true)
 	public List<HashMap<String, Object>> selectImg(HashMap<String, Object> param) {
-		SessionUser user = SessionUtils.getCurrentUser();
+		SessionUser user = getCurrentUser();
 		param.put("COMPANY_CD", user.getCompanyCd());
 
 
 		return webNotice02Mapper.selectImg(param);
 	}
 
+
+	public void updateCommunity(HashMap<String, Object> param) {
+		SessionUser user = getCurrentUser();
+		param.put("COMPANY_CD", user.getCompanyCd());
+		webNotice02Mapper.updateCommunity(param);
+	}
 }

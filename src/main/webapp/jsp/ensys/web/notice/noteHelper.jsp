@@ -43,12 +43,38 @@
 	                    return;
 	                }
 	                parent.modal.close();
-	            }
+	            },
+                PAGE_SAVE: function (caller, act, data) {
+
+                    axboot.ajax({
+                        type: "POST",
+                        url: ["/api/web/notice02", "updateCommunity"],
+                        data: JSON.stringify({
+                            SEQ: initData.initData.SEQ,
+                            ANSWER: $("#ANSWER").val()
+                        }),
+                        callback: function (res) {
+                            qray.alert('저장이 완료되었습니다.');
+                            if (param.modalName) {
+                                parent[param.callBack]();
+                                eval("parent." + param.modalName + ".close()");
+                                return;
+                            }
+                            parent.modal.close();
+                        }
+                    });
+                },
 	        });
 	
 	        // fnObj 기본 함수 스타트와 리사이즈
 	        fnObj.pageStart = function () {
 	            this.pageButtonView.initView();
+
+                //정보요청 일경우 답변 창 오픈
+                if (nvl(initData.initData.COMMUNITY_TP) == '06') {
+                    $('#ANSWER').removeAttr("readonly");
+                    $('#ANSWER').val(nvl(initData.initData.ANSWER))
+                }
 	        };
 	
 	        fnObj.pageResize = function () {};
@@ -59,6 +85,9 @@
 	                    "close": function () {
 	                        ACTIONS.dispatch(ACTIONS.PAGE_CLOSE);
 	                    },
+                        "save": function () {
+                            ACTIONS.dispatch(ACTIONS.PAGE_SAVE);
+                        }
 	                });
 	            }
 	        });
@@ -98,8 +127,8 @@
     <jsp:body>
         <div data-page-buttons="">
             <div class="button-warp">
-                <button type="button" class="btn btn-popup-close" data-page-btn="close"><ax:lang
-                        id="ax.admin.sample.modal.button.close"/></button>
+                <button type="button" class="btn btn-popup-default" data-page-btn="save" ><i class="icon_save"></i>저장</button>
+                <button type="button" class="btn btn-popup-close" data-page-btn="close"><ax:lang id="ax.admin.sample.modal.button.close"/></button>
             </div>
         </div>
       <div class="H10"></div>
@@ -110,7 +139,7 @@
             <ax:form name="binder-form">
                 <ax:tbl clazz="ax-search-tb2" minWidth="800px">
                     <ax:tr id="titleTr">
-                        <ax:td label='제목' width="750px">
+                        <ax:td label='제목' width="787px">
                             <input type="text"
                                    class="form-control"
                                    style="background-color: #FFFFFF"
@@ -122,7 +151,12 @@
                     </ax:tr>
                     <ax:tr>
                         <ax:td label='내용' width="300px">
-                             <textarea readonly id="CONTENTS" form-bind-text='CONTENTS' form-bind-type='CONTENTS', style="font-size:15px; resize: none;", cols="65", rows="18" spellcheck="false"></textarea>
+                            <textarea readonly id="CONTENTS" form-bind-text='CONTENTS' form-bind-type='CONTENTS' style="font-size:15px; resize: none;" cols="77" rows="9" spellcheck="false"></textarea>
+                        </ax:td>
+                    </ax:tr>
+                    <ax:tr>
+                        <ax:td label='답변' width="300px">
+                            <textarea readonly id="ANSWER" form-bind-text='ANSWER' form-bind-type='ANSWER' id="ANSWER" style="font-size:15px; resize: none;" cols="77" rows="9" spellcheck="false" maxlength="1000"></textarea>
                         </ax:td>
                     </ax:tr>
                 </ax:tbl>

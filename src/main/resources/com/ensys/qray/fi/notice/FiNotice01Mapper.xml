@@ -7,33 +7,44 @@
 	<select id="select" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
 		/*FiNotice01Mapper.select*/
 		SELECT
-			  DM_CD			AS "DM_CD"
-			, DM_TYPE		AS "DM_TYPE"
-			, DM_KIND		AS "DM_KIND"
-			, COMP_NM		AS "COMP_NM"
-			, BORW_SITE		AS "BORW_SITE"
-			, DEBTOR_TEL	AS "DEBTOR_TEL"
-			, DEBTOR_KAKAO	AS "DEBTOR_KAKAO"
-			, DEBTOR_TELE	AS "DEBTOR_TELE"
-			, DEBTOR_SNS	AS "DEBTOR_SNS"
-			, WITHDR_LOCA	AS "WITHDR_LOCA"
-			, COMPL_POLICE	AS "COMPL_POLICE"
-			, DM_CONTENTS	AS "DM_CONTENTS"
-			, USE_YN		AS "USE_YN"
-			, WRITE_DATE	AS "WRITE_DATE"
-			, WRITE_IP		AS "WRITE_IP"
-			, INSERT_DATE	AS "INSERT_DATE"
-			, UPDATE_DATE	AS "UPDATE_DATE"
-		FROM PL_DM_M
+			  A.DM_CD			AS "DM_CD"
+			, A.DM_TYPE		AS "DM_TYPE"
+			, A.DM_KIND		AS "DM_KIND"
+			, A.COMP_NM		AS "COMP_NM"
+			, A.BORW_SITE		AS "BORW_SITE"
+			, A.DEBTOR_TEL	AS "DEBTOR_TEL"
+			, A.DEBTOR_KAKAO	AS "DEBTOR_KAKAO"
+			, A.DEBTOR_TELE	AS "DEBTOR_TELE"
+			, A.DEBTOR_SNS	AS "DEBTOR_SNS"
+			, A.WITHDR_LOCA	AS "WITHDR_LOCA"
+			, A.COMPL_POLICE	AS "COMPL_POLICE"
+			, A.DM_CONTENTS	AS "DM_CONTENTS"
+			, A.USE_YN		AS "USE_YN"
+			, A.WRITE_DATE	AS "WRITE_DATE"
+			, A.WRITE_IP		AS "WRITE_IP"
+			, A.INSERT_DATE	AS "INSERT_DATE"
+			, A.UPDATE_DATE	AS "UPDATE_DATE"
+		FROM PL_DM_M A
+		<if test='KEYWORD3 != null and KEYWORD3 != ""'>
+			JOIN (
+				SELECT DM_CD FROM PL_DM_DEPOSIT
+				WHERE (
+					NM_DEPOSITOR    LIKE  '%' || #{KEYWORD3} || '%'
+					OR NO_DEPOSIT    LIKE  '%' || #{KEYWORD3} || '%'
+				)
+				GROUP BY DM_CD
+			) B
+			ON A.DM_CD = B.DM_CD
+		</if>
 		WHERE 1 = 1
 		<if test='KEYWORD != null and KEYWORD != ""'>
 			AND    (
-			COMP_NM    LIKE  '%' || #{KEYWORD} || '%'
-			OR DM_CONTENTS    LIKE  '%' || #{KEYWORD} || '%'
+			A.COMP_NM    LIKE  '%' || #{KEYWORD} || '%'
+			OR A.DM_CONTENTS    LIKE  '%' || #{KEYWORD} || '%'
 			)
 		</if>
 		<if test='KEYWORD2 != null and KEYWORD2 != ""'>
-			AND DM_CD    LIKE  '%' || #{KEYWORD2} || '%'
+			AND A.DM_CD    LIKE  '%' || #{KEYWORD2} || '%'
 		</if>
 	</select>
 

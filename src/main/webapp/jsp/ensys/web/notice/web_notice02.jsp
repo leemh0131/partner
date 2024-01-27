@@ -13,6 +13,7 @@
             var selectRow = 0;
             var selectRow2 = 0;
             var userCallBack;
+            var CallBack;
 
             var ES_CODES = $.SELECT_COMMON_ARRAY_CODE('ES_Q0137', 'ES_Q0138', 'ES_Q0144');
             var ES_Q0137 = $.SELECT_COMMON_GET_CODE(ES_CODES, "ES_Q0137", true);   //주제
@@ -238,6 +239,9 @@
 
                             },
                             onDBLClick: function () {
+                                CallBack = function (e){
+                                    ACTIONS.dispatch(ACTIONS.PAGE_SEARCH);
+                                }
                                 $.openCommonPopup("/jsp/ensys/web/notice/noteHelper.jsp", "CallBack", '', '', this.item, 830, 750);
                             }
                         }

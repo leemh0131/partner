@@ -52,4 +52,11 @@ public class WebNotice02Controller extends BaseController {
 		return ok();
 	}
 
+	//상담/커뮤니티 관리 - 보기 답변 저장
+	@ResponseBody
+	@RequestMapping(value = "updateCommunity", method = {RequestMethod.POST}, produces = APPLICATION_JSON)
+	public ApiResponse updateCommunity(@RequestBody HashMap<String, Object> param) throws Exception {
+		webNotice02Service.updateCommunity(param);
+		return ok();
+	}
 }

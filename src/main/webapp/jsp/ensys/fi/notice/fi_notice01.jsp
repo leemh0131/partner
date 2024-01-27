@@ -308,7 +308,8 @@
                         param : function(){
                             return JSON.stringify({
                                 KEYWORD: nvl($("#KEYWORD").val()),
-                                KEYWORD2: nvl($("#KEYWORD2").val())
+                                KEYWORD2: nvl($("#KEYWORD2").val()),
+                                KEYWORD3: nvl($("#KEYWORD3").val())
                             });
                         },
                         callback : function(res){
@@ -674,6 +675,9 @@
                         </ax:td>
                         <ax:td label='피해 코드' width="400px">
                             <input type="text" class="form-control" name="KEYWORD2"  id="KEYWORD2" TRIGGER_TARGET="SEARCH"/>
+                        </ax:td>
+                        <ax:td label='계좌 검색' width="400px">
+                            <input type="text" class="form-control" name="KEYWORD3"  id="KEYWORD3" TRIGGER_TARGET="SEARCH"/>
                         </ax:td>
                     </ax:tr>
                 </ax:tbl>

@@ -20,6 +20,7 @@
 				, A.UPDATE_DTS  AS "UPDATE_DTS"
 				, A.LIKE_NUM  AS "LIKE_NUM"
 				, A.NO_NUM  AS "NO_NUM"
+				, A.ANSWER	AS "ANSWER"
 		FROM ES_COMMUNITY A
 		WHERE a.COMPANY_CD = #{COMPANY_CD}
 		<if test='COMMUNITY_TP != null and COMMUNITY_TP != ""'>
@@ -91,4 +92,11 @@
 		AND TABLE_ID = #{TABLE_ID}
 	</update>
 
+	<update id="updateCommunity" parameterType="hashmap" statementType="CALLABLE">
+		/*WebNotice02Mapper.updateCommunity*/
+		UPDATE ES_COMMUNITY
+		SET	  ANSWER = #{ANSWER}
+		WHERE COMPANY_CD = #{COMPANY_CD}
+		  AND SEQ = #{SEQ}
+	</update>
 </mapper>
