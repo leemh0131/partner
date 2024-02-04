@@ -39,7 +39,7 @@ public class FiNotice01ExcelService {
             throw new RuntimeException("파일이 없습니다. 다시 업로드 해주세요");
         }
         List<String> columns1 = asList("DM_CD", "DM_TYPE", "DM_KIND", "COMP_NM", "BORW_SITE"
-                , "DEBTOR_TEL", "DEBTOR_KAKAO", "DEBTOR_TELE", "DEBTOR_SNS", "COMPL_POLICE", "WITHDR_LOCA", "DM_CONTENTS");
+                , "DEBTOR_TEL", "DEBTOR_KAKAO", "DEBTOR_TELE", "DEBTOR_SNS", "WITHDR_LOCA", "DM_CONTENTS");
         List<String> columns2 = asList("BANK_CD", "BANK_NM", "NO_DEPOSIT", "NM_DEPOSITOR");
         Workbook workbook = null;
         try {
@@ -60,7 +60,7 @@ public class FiNotice01ExcelService {
 
                 if (row != null) {
                     // A~K 열 처리 (HashMap1)
-                    for (int cellNum = 0; cellNum <= 11; cellNum++) {
+                    for (int cellNum = 0; cellNum <= 10; cellNum++) {
                         Cell cell = row.getCell(cellNum);
 
                         if (row.getCell(0, CREATE_NULL_AS_BLANK).getStringCellValue().trim().isEmpty()) {
@@ -89,7 +89,7 @@ public class FiNotice01ExcelService {
                     }
 
                     // L~O, P~S, T~W 열 처리 (HashMap2)
-                    for (int cellNum = 12; cellNum <= 22; cellNum += 4) {
+                    for (int cellNum = 11; cellNum <= 14; cellNum += 4) {
                         for (int i = 0; i < 4; i++) {
                             Cell cell = row.getCell(cellNum + i);
                             String cellValue = "";
@@ -128,6 +128,10 @@ public class FiNotice01ExcelService {
                     int created = fiNotice01Mapper.created(hashMap1);
                     if (!list2.isEmpty() && created == 1) {
                         for (HashMap<String, Object> item2 : list2) {
+                            if ("".equals(item2.get("BANK_CD")) && "".equals(item2.get("NO_DEPOSIT"))
+                                    && "".equals(item2.get("BANK_NM")) && "".equals(item2.get("NM_DEPOSITOR")) ) {
+                                continue;
+                            }
                             item2.put("DM_CD", hashMap1.get("DM_CD"));
                             item2.put("USE_YN", "Y");
                             item2.put("INSERT_DATE", nowDate);

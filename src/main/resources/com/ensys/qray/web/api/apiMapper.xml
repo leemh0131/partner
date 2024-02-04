@@ -710,7 +710,7 @@
                 , SUBSTRING(TITLE, 1, 50)             AS "TITLE"
                 , ROW_NUMBER() OVER (ORDER BY UPDATE_DTS) AS "COMM_NUM"
                 , F_ES_CODE_DETAIL(COMPANY_CD, 'ES_Q0138', COMMUNITY_TP) AS "COMMUNITY_TP"
-                , CONCAT(SUBSTRING(NAME, 1, 1), 'OO')              AS "NAME"
+                , NAME              AS "NAME"
                 , TO_CHAR(SUBSTRING(UPDATE_DTS, 1, 8)::DATE, 'YYYY-MM-DD') AS "DTS"
                 , (SELECT count(*) FROM pl_dm_comm WHERE dm_cd = SEQ) AS "COMM_CUT"
                 , CASE WHEN HIT BETWEEN 0 AND 999 THEN HIT::VARCHAR ELSE '999↑' END AS "HIT"
