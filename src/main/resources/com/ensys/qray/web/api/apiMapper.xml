@@ -732,6 +732,7 @@
              , SEQ AS "SEQ"
              , TITLE AS "TITLE"
              , CONTENTS AS "CONTENTS"
+             , ROW_NUMBER() OVER () AS "COMM_NUM"
              , F_ES_CODE_DETAIL(COMPANY_CD, 'ES_Q0143', BOARD_ST) AS "BOARD_ST_NM"
              , BOARD_ST AS "BOARD_ST"
              , MAIN_YN AS "MAIN_YN"
