@@ -708,7 +708,7 @@
         /*apiMapper.getPrivateLoanCommunityPaging*/
         SELECT    SEQ               AS "SEQ"
                 , SUBSTRING(TITLE, 1, 50)             AS "TITLE"
-                , ROW_NUMBER() OVER (ORDER BY UPDATE_DTS) AS "COMM_NUM"
+                , ROW_NUMBER() OVER (ORDER BY INSERT_DTS) AS "COMM_NUM"
                 , F_ES_CODE_DETAIL(COMPANY_CD, 'ES_Q0138', COMMUNITY_TP) AS "COMMUNITY_TP"
                 , NAME              AS "NAME"
                 , TO_CHAR(SUBSTRING(UPDATE_DTS, 1, 8)::DATE, 'YYYY-MM-DD') AS "DTS"
@@ -720,7 +720,7 @@
         AND COMMUNITY_GB = '02'
         AND COMMUNITY_ST = #{COMMUNITY_ST}
         AND COMMUNITY_TP = #{COMMUNITY_TP}
-        ORDER BY UPDATE_DTS DESC
+        ORDER BY INSERT_DTS DESC
         LIMIT 15 OFFSET #{MORE_BTN_COUNT}::INTEGER * 15
     </select>
 
