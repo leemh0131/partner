@@ -8,6 +8,7 @@
 		/*WebNotice02Mapper.select*/
 		SELECT	  A.COMPANY_CD  AS "COMPANY_CD"
 				, A.SEQ  AS "SEQ"
+				, A.SEQ  AS "DM_CD"
 				, A.COMMUNITY_TP  AS "COMMUNITY_TP"
 				, A.COMMUNITY_ST  AS "COMMUNITY_ST"
 				, A.COMMUNITY_GB  AS "COMMUNITY_GB"

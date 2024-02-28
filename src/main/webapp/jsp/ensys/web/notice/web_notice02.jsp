@@ -288,8 +288,18 @@
                             return JSON.stringify($.extend({}, selected));
                         },
                         columns: [
-
-
+                            {key: "DM_CD", label: "", width: 150, align: "center", sortable: true, hidden : true},
+                            {key: "COMM_CD", label: "", width: 150, align: "center", sortable: true, hidden : true},
+                            {key: "PARENT_CD", label: "", width: 150, align: "center", sortable: true, hidden : true},
+                            {key: "NICK_NM", label: "닉네임", width: 100, align: "left", sortable: true,},
+                            {key: "PASSWORD", label: "댓글비밀번호", width: 100, align: "left", sortable: true,},
+                            {key: "CONTENTS", label: "내용", width: 250, align: "left", sortable: true,},
+                            {key: "USE_YN", label: "", width: 150, align: "center", sortable: true, hidden : true},
+                            {key: "REPORT_YN", label: "", width: 150, align: "center", sortable: true, hidden : true},
+                            {key: "WRITE_DATE", label: "작성날짜", width: 150, align: "center", sortable: true},
+                            {key: "WRITE_IP", label: "작성아이피", width: 150, align: "center", sortable: true,},
+                            {key: "INSERT_DATE", label: "", width: 150, align: "center", sortable: true, hidden : true},
+                            {key: "UPDATE_DATE", label: "", width: 150, align: "center", sortable: true, hidden : true},
                         ],
                         body: {
                             onClick: function () {

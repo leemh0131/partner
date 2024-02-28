@@ -1,5 +1,6 @@
 package com.ensys.qray.web.notice02;
 
+import com.ensys.qray.fi.notice.FiNotice01Mapper;
 import com.ensys.qray.setting.base.BaseService;
 import com.ensys.qray.user.SessionUser;
 import com.ensys.qray.utils.HammerUtility;
@@ -21,6 +22,8 @@ public class WebNotice02Service extends BaseService {
 
 	private final WebNotice02Mapper webNotice02Mapper;
 
+	private final FiNotice01Mapper fiNotice01Mapper;
+
 	@Transactional(readOnly = true)
 	public List<HashMap<String, Object>> select(HashMap<String, Object> param) {
 		SessionUser user = getCurrentUser();
@@ -34,7 +37,7 @@ public class WebNotice02Service extends BaseService {
 		SessionUser user = getCurrentUser();
 		param.put("COMPANY_CD", user.getCompanyCd());
 
-		return webNotice02Mapper.selectDetail(param);
+		return fiNotice01Mapper.selectPlDmComm(param);
 	}
 
 	public void save(HashMap<String, Object> param) throws Exception {
@@ -56,6 +59,7 @@ public class WebNotice02Service extends BaseService {
 
 		}
 
+
 		for(HashMap<String, Object> item : (List<HashMap<String, Object>>)gridView02.get("deleted")) {
 
 			item.put("COMPANY_CD", user.getCompanyCd());
@@ -63,7 +67,7 @@ public class WebNotice02Service extends BaseService {
 			item.put("UPDATE_ID", user.getUserId());
 			item.put("INSERT_DTS", strDate);
 			item.put("UPDATE_DTS", strDate);
-			webNotice02Mapper.deleteD(item);
+			fiNotice01Mapper.deletedPlDmComm(item);
 
 		}
 
