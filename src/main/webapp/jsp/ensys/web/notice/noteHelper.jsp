@@ -71,7 +71,7 @@
 	            this.pageButtonView.initView();
 
                 //정보요청 일경우 답변 창 오픈
-                if (nvl(initData.initData.COMMUNITY_TP) == '04') {
+                if (nvl(initData.initData.COMMUNITY_TP) == '04' || nvl(initData.initData.COMMUNITY_TP) == '06') {
                     $('#ANSWER').removeAttr("readonly");
                     $('#ANSWER').val(nvl(initData.initData.ANSWER))
                 }
