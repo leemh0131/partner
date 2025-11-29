@@ -177,7 +177,7 @@ if ( location.protocol.substr(0,4)  === 'file' ||
 	var fixLinks = function() {
 		$( "a[href$='/'], a[href='.'], a[href='..']" ).not( "[rel='external']" ).each( function() {
 			if( !$( this ).attr( "href" ).match("http") ){
-				this.href = $( this ).attr( "href" ).replace( /\/$/, "" ) + "/index.html";
+				this.href = $( this ).attr( "href" ).replace( /\/$/, "" ) + "/home.jsp";
 			}
 		});
 	};

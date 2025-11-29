@@ -5632,7 +5632,7 @@
                             this.messages.dataStreamError = "Stream error occurred while loading '{0}'";
                             this.messages.unableToOpenFile = "Unable to open file {0}.<br/><br/>It seems that this file doesn't exist or 'Access-Control-Allow-Origin' header is absent in the resource requested.";
                             this.messages.unableTwoFileBrowsingSessions = "Browse file dialog is already opened.";
-                            this.messages.noGoogleClientKey = "Please enter Google Client Key in index.html file.";
+                            this.messages.noGoogleClientKey = "Please enter Google Client Key in home.jsp file.";
                             this.messages.wrongFormulaFormat = "Wrong formula format. Please check.";
                             this.messages.inappropriateFileFormat = "The data file is of inappropriate format.";
                             this.messages.invalidJSONdata = "JSON data is invalid.";

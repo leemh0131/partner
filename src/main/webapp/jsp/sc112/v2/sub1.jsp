@@ -1,34 +1,9 @@
-
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!doctype html>
 <html>
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0, user-scalable=yes">
-    <title>사채패치</title>
-    <link rel="stylesheet" type="text/css" href="./css/swiper.css">
-    <link rel="stylesheet" type="text/css" href="./css/common.css">
-    <link rel="stylesheet" type="text/css" href="./css/layout.css">
-    <script type="text/javascript" src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script type="text/javascript" src="./js/swiper.js"></script>
-    <script type="text/javascript" src="./js/common.js"></script>
-</head>
 <body id="wrap">
-<div id="include-header"></div>
-
-<script>
-        $(function () {
-            $("#include-header").load("./header.html", function() {
-              console.log("✅ 헤더 로드 완료");
-            });
-        });
-        $(function () {
-            $("#include-footer").load("./footer.html", function() {
-              console.log("✅ 풋터 로드 완료");
-            });
-        });
-
-
-</script>
+<%@ include file="header.jsp" %>
 <main id="container">
     <div class="wrap">
         <section id="contain">
@@ -41,7 +16,7 @@
                 </div>
                 <div class="header">
                     <div class="title">불법대부업 현황</div>
-                    <div class="bookmark"><img src="./img/ic_star.svg"></div>
+                    <div class="bookmark"><img src="/jsp/sc112/v2/assets/img/ic_star.svg"></div>
                     <div class="sort">
                         <select>
                             <option>최신순</option>
@@ -154,7 +129,7 @@
                                 <span class="subject">OOOO에게 피해를 당했습니다.</span>
                                 <span class="reply">(92)</span>
                                 <span class="icon icon_new"></span>
-                               <!-- <span class="like">12</span>-->
+                                <!-- <span class="like">12</span>-->
                             </a>
                         </li>
                         <li class="writer">김OO</li>
@@ -213,7 +188,7 @@
                         <a href="#">3</a>
                         <a href="#">4</a>
                         <a href="#">5</a>
-                      
+
                         <a href="#" class="next"></a>
                         <a href="#" class="end"></a>
                     </div>
@@ -223,133 +198,9 @@
                 </div>
             </div>
         </section>
-        <section id="aside">
-            <div class="latest">
-                <div class="head gray">
-                    <div class="title"><img src="./img/ic_main_title5.svg"> 실시간 댓글</div>
-                    <div class="more"><a href="#">더보기</a></div>
-                </div>
-                <div class="content">
-                    <div class="list">
-                        <ul>
-                            <li>
-                                <a href="#" class="inner">
-                                    <div class="title">
-                                        <span class="cate cate01">자유</span>
-                                        <span class="subject bold">김종국이 결혼식에 김희철을 안부른 이유?</span>
-                                    </div>
-                                    <div class="comment">
-                                        <span>뭔가 찔리는게 있어서 안나온거 아님?</span>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" class="inner">
-                                    <div class="title">
-                                        <span class="cate cate02">단도</span>
-                                        <span class="subject bold">김종국이 결혼식에 김희철을 안부른 이유?</span>
-                                    </div>
-                                    <div class="comment">
-                                        <span>뭔가 찔리는게 있어서 안나온거 아님?</span>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" class="inner">
-                                    <div class="title">
-                                        <span class="cate cate02">단도</span>
-                                        <span class="subject bold">김종국이 결혼식에 김희철을 안부른 이유?</span>
-                                    </div>
-                                    <div class="comment">
-                                        <span>뭔가 찔리는게 있어서 안나온거 아님?</span>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" class="inner">
-                                    <div class="title">
-                                        <span class="cate cate03">불법</span>
-                                        <span class="subject bold">김종국이 결혼식에 김희철을 안부른 이유?</span>
-                                    </div>
-                                    <div class="comment">
-                                        <span>뭔가 찔리는게 있어서 안나온거 아님?</span>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" class="inner">
-                                    <div class="title">
-                                        <span class="cate cate03">불법</span>
-                                        <span class="subject bold">김종국이 결혼식에 김희철을 안부른 이유?</span>
-                                    </div>
-                                    <div class="comment">
-                                        <span>뭔가 찔리는게 있어서 안나온거 아님?</span>
-                                    </div>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <div class="latest">
-                <div class="head gray">
-                    <div class="title"><img src="./img/ic_main_title6.svg"> 불법대부업</div>
-                    <div class="more"><a href="#">더보기</a></div>
-                </div>
-                <div class="content">
-                    <div class="ranking">
-                        <ul>
-                            <li>
-                                <a href="#" class="inner">
-                                    <div class="rank">1위</div>
-                                    <div class="name">김실장</div>
-                                    <div class="change up">5</div>
-                                </a >
-                            </li>
-                            <li>
-                                <a href="#" class="inner">
-                                    <div class="rank">2위</div>
-                                    <div class="name">안대리</div>
-                                    <div class="change down">1</div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" class="inner">
-                                    <div class="rank">3위</div>
-                                    <div class="name">안대리</div>
-                                    <div class="change up">5</div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" class="inner">
-                                    <div class="rank">4위</div>
-                                    <div class="name">안대리</div>
-                                    <div class="change down">1</div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" class="inner">
-                                    <div class="rank">5위</div>
-                                    <div class="name">김실장</div>
-                                    <div class="change up">5</div>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <div class="adarea">
-                <div class="head">
-                    <div class="title">광고영역</div>
-                    <div class="label">AD</div>
-                </div>
-                <div class="cont">
-                    <a href="#"><img src="./img/adarea.svg"></a>
-                </div>
-            </div>
-        </section>
+        <%@ include file="aside.jsp" %>
     </div>
 </main>
- <div id="include-footer"></div>
+<%@ include file="footer.jsp" %>
 </body>
 </html>

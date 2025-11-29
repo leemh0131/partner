@@ -60,7 +60,10 @@ public class AXBootSecurityConfig extends WebSecurityConfigurerAdapter {
             "/login/**",
             "/logout/**",
             "/sso/*",
-            "/api/oAuth2/**"
+            "/api/oAuth2/**",
+
+            "/jsp/sc112/**",
+            "/sc112/**"
     };
 
     @Inject

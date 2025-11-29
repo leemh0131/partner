@@ -1,8 +1,8 @@
-
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <section id="aside">
     <div class="latest">
         <div class="head gray">
-            <div class="title"><img src="./img/ic_main_title5.svg"> 실시간 댓글</div>
+            <div class="title"><img src="/jsp/sc112/v2/assets/img/ic_main_title5.svg"> 실시간 댓글</div>
             <div class="more"><a href="#">더보기</a></div>
         </div>
         <div class="content">
@@ -69,7 +69,7 @@
     </div>
     <div class="latest">
         <div class="head gray">
-            <div class="title"><img src="./img/ic_main_title6.svg"> 불법대부업</div>
+            <div class="title"><img src="/jsp/sc112/v2/assets/img/ic_main_title6.svg"> 불법대부업</div>
             <div class="more"><a href="#">더보기</a></div>
         </div>
         <div class="content">
@@ -120,7 +120,7 @@
             <div class="label">AD</div>
         </div>
         <div class="cont">
-            <a href="#"><img src="./img/adarea.svg"></a>
+            <a href="#"><img src="/jsp/sc112/v2/assets/img/adarea.svg"></a>
         </div>
     </div>
 </section>

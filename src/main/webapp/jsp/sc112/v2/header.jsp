@@ -1,6 +1,20 @@
- <header id="header">
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0, user-scalable=yes">
+    <title>사채패치</title>
+
+    <link rel="stylesheet" type="text/css" href="/jsp/sc112/v2/assets/css/swiper.css">
+    <link rel="stylesheet" type="text/css" href="/jsp/sc112/v2/assets/css/common.css">
+    <link rel="stylesheet" type="text/css" href="/jsp/sc112/v2/assets/css/layout.css">
+
+    <script type="text/javascript" src="/jsp/sc112/v2/assets/js/jquery-3.7.1.min.js"></script>
+    <script type="text/javascript" src="/jsp/sc112/v2/assets/js/swiper.js"></script>
+    <script type="text/javascript" src="/jsp/sc112/v2/assets/js/common.js"></script>
+</head>
+<header id="header">
     <div class="wrap">
-        <div class="logo"><a href="./index.html"><img src="./img/logo.svg" alt="사채패치"></a></div>
+        <div class="logo"><a href="home.jsp"><img src="/jsp/sc112/v2/assets/img/fogo.svg" alt="사채패치"></a></div>
         <div class="tool">
             <div class="search">
                 <input type="text" placeholder="검색어 입력">
@@ -13,12 +27,12 @@
 <section id="gnb">
     <div class="wrap">
         <div class="gnb">
-            <a href="#" class="on"><img src="./img/ic_main_title2.svg"> 피해등록하기</a>
-            <a href="#"><img src="./img/ic_main_title3.svg"> 불법대부업 현황</a>
-            <a href="#"><img src="./img/ic_main_title5.svg"> 피해상담문의</a>
-            <a href="#"><img src="./img/ic_main_title1.svg"> 자유게시판</a>
-            <a href="#"><img src="./img/ic_main_title6.svg"> 단도박게시판</a>
-            <a href="#"><img src="./img/ic_main_title4.svg"> 고객센터</a>
+            <a href="#" class="on"><img src="/jsp/sc112/v2/assets/img/ic_main_title2.svg"> 피해등록하기</a>
+            <a href="#"><img src="/jsp/sc112/v2/assets/img/ic_main_title3.svg"> 불법대부업 현황</a>
+            <a href="#"><img src="/jsp/sc112/v2/assets/img/ic_main_title5.svg"> 피해상담문의</a>
+            <a href="#"><img src="/jsp/sc112/v2/assets/img/ic_main_title1.svg"> 자유게시판</a>
+            <a href="#"><img src="/jsp/sc112/v2/assets/img/ic_main_title6.svg"> 단도박게시판</a>
+            <a href="#"><img src="/jsp/sc112/v2/assets/img/ic_main_title4.svg"> 고객센터</a>
         </div>
         <div class="real-time">
             <div class="title">실시간 순위</div>
