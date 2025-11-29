@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ensys.qray.web.v1.blurb01.Blurb01Mapper">
+
+	<select id="select" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*Blurb01Mapper.select*/
+		select
+			   A.COMPANY_CD		AS "COMPANY_CD"
+			 , A.ADV_CD		 	AS "ADV_CD"
+			 , A.ADV_NM		 	AS "ADV_NM"
+			 , A.AM		 		AS "AM"
+			 , A.ADV_MONTH		AS "ADV_MONTH"
+			 , A.BOX_YN		 	AS "BOX_YN"
+			 , A.BOX_NUM		AS "BOX_NUM"
+			 , A.INSERT_ID		AS "INSERT_ID"
+			 , A.INSERT_DTS		AS "INSERT_DTS"
+			 , A.UPDATE_ID		AS "UPDATE_ID"
+			 , A.UPDATE_DTS		AS "UPDATE_DTS"
+		FROM ES_BLURB_MASTER A
+		WHERE A.COMPANY_CD = #{COMPANY_CD}
+	</select>
+
+	<insert id="created" parameterType="hashmap" statementType="CALLABLE">
+		/*Blurb01Mapper.created*/
+		INSERT INTO ES_BLURB_MASTER
+		    (
+			  COMPANY_CD
+			, ADV_CD
+			, ADV_NM
+			, AM
+			, ADV_MONTH
+			, BOX_YN
+			, BOX_NUM
+			, INSERT_ID
+			, INSERT_DTS
+			, UPDATE_ID
+			, UPDATE_DTS
+			)
+			VALUES
+			(
+			  #{COMPANY_CD}
+			, #{ADV_CD}
+			, #{ADV_NM}
+			, #{AM}
+			, #{ADV_MONTH}
+			, #{BOX_YN}
+			, #{BOX_NUM}
+			, #{INSERT_ID}
+			, #{INSERT_DTS}
+			, #{UPDATE_ID}
+			, #{UPDATE_DTS}
+			)
+	</insert>
+
+	<update id="updated" parameterType="hashmap" statementType="CALLABLE">
+		/*Blurb01Mapper.updated*/
+		UPDATE ES_BLURB_MASTER
+		SET 	   ADV_NM = #{ADV_NM}
+				,  AM = #{AM}
+				,  ADV_MONTH = #{ADV_MONTH}
+				,  BOX_YN = #{BOX_YN}
+				,  BOX_NUM = #{BOX_NUM}
+		  WHERE   COMPANY_CD = #{COMPANY_CD}
+		  AND   ADV_CD        = #{ADV_CD}
+	</update>
+
+	<delete id="deleted" parameterType="hashmap" statementType="CALLABLE">
+		/*Blurb01Mapper.deleted*/
+		DELETE FROM ES_BLURB_MASTER
+		WHERE COMPANY_CD = #{COMPANY_CD}
+		  AND   ADV_CD = #{ADV_CD}
+	</delete>
+
+</mapper>

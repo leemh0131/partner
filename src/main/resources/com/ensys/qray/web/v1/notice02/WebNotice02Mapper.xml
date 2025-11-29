@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ensys.qray.web.v1.notice02.WebNotice02Mapper">
+
+	<select id="select" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*WebNotice02Mapper.select*/
+		SELECT	  A.COMPANY_CD  AS "COMPANY_CD"
+				, A.SEQ  AS "SEQ"
+				, A.SEQ  AS "DM_CD"
+				, A.COMMUNITY_TP  AS "COMMUNITY_TP"
+				, A.COMMUNITY_ST  AS "COMMUNITY_ST"
+				, A.COMMUNITY_GB  AS "COMMUNITY_GB"
+				, A.TITLE  AS "TITLE"
+				, A.CONTENTS  AS "CONTENTS"
+				, A.HIT  AS "HIT"
+				, A.INSERT_ID  AS "INSERT_ID"
+				, A.INSERT_DTS  AS "INSERT_DTS"
+				, A.UPDATE_ID  AS "UPDATE_ID"
+				, A.UPDATE_DTS  AS "UPDATE_DTS"
+				, A.LIKE_NUM  AS "LIKE_NUM"
+				, A.NO_NUM  AS "NO_NUM"
+				, A.ANSWER	AS "ANSWER"
+		FROM ES_COMMUNITY A
+		WHERE a.COMPANY_CD = #{COMPANY_CD}
+		<if test='COMMUNITY_TP != null and COMMUNITY_TP != ""'>
+ 			AND A.COMMUNITY_TP = #{COMMUNITY_TP}
+		</if>
+		<if test='COMMUNITY_GB != null and COMMUNITY_GB != ""'>
+			AND A.COMMUNITY_GB = #{COMMUNITY_GB}
+		</if>
+		<if test='KEYWORD != null and KEYWORD != ""'>
+			AND A.TITLE LIKE  '%' || #{KEYWORD} || '%'
+		</if>
+		ORDER BY SEQ
+	</select>
+
+	<select id="selectDetail" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*WebNotice02Mapper.selectDetail*/
+	</select>
+
+	<delete id="delete" parameterType="hashmap" statementType="CALLABLE">
+		/*WebNotice02Mapper.delete*/
+		DELETE FROM ES_COMMUNITY
+		WHERE COMPANY_CD = #{COMPANY_CD}
+		  AND   SEQ        = #{SEQ}
+	</delete>
+
+	<delete id="deleteD" parameterType="hashmap" statementType="CALLABLE">
+		/*WebNotice02Mapper.deleteD*/
+		DELETE FROM ES_COMMUNITY_DETAIL
+		WHERE COMPANY_CD = #{COMPANY_CD}
+		  AND   SEQ_M        = #{SEQ_M}
+		  AND   SEQ        = #{SEQ}
+	</delete>
+
+	<select id="selectImg" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+		/*WebNotice02Mapper.selectImg*/
+		SELECT
+			  COMPANY_CD	 AS "COMPANY_CD"
+			, TABLE_ID	 AS "TABLE_ID"
+			, TABLE_KEY	 AS "TABLE_KEY"
+            , FILE_SEQ	 AS "FILE_SEQ"
+            , FILE_NAME	 AS "FILE_NAME"
+            , ORGN_FILE_NAME	 AS "ORGN_FILE_NAME"
+            , FILE_PATH	 AS "FILE_PATH"
+            , FILE_EXT	 AS "FILE_EXT"
+            , FILE_BYTE	 AS "FILE_BYTE"
+            , FILE_SIZE	 AS "FILE_SIZE"
+            , FILE_DIVISION	 AS "FILE_DIVISION"
+            , INSERT_ID	 AS "INSERT_ID"
+            , INSERT_DTS	 AS "INSERT_DTS"
+            , UPDATE_ID	 AS "UPDATE_ID"
+            , UPDATE_DTS	 AS "UPDATE_DTS"
+            , MAIN_YN	 AS "MAIN_YN"
+            , LINK	 AS "LINK"
+            , REMARK	 AS "REMARK"
+			, CONCAT(#{IMG_URL}, FILE_PATH, FILE_NAME, '.', FILE_EXT) AS "IMG_URL"
+		FROM ES_FILE
+		WHERE COMPANY_CD = #{COMPANY_CD}
+		AND TABLE_ID IN ('CENTER_BANNER_MO', 'CENTER_BANNER_PC', 'PATH_BANNER_PC', 'PATH_BANNER_MO')
+	</select>
+
+	<update id="imgUpdate" parameterType="hashmap" statementType="CALLABLE">
+		/*WebNotice02Mapper.imgUpdate*/
+		UPDATE ES_FILE
+		SET	  ORGN_FILE_NAME = #{ORGN_FILE_NAME}
+			, FILE_PATH = #{FILE_PATH}
+			, FILE_EXT = #{FILE_EXT}
+			, LINK = #{LINK}
+		WHERE COMPANY_CD = #{COMPANY_CD}
+		AND TABLE_ID = #{TABLE_ID}
+	</update>
+
+	<update id="updateCommunity" parameterType="hashmap" statementType="CALLABLE">
+		/*WebNotice02Mapper.updateCommunity*/
+		UPDATE ES_COMMUNITY
+		SET	  ANSWER = #{ANSWER}
+		WHERE COMPANY_CD = #{COMPANY_CD}
+		  AND SEQ = #{SEQ}
+	</update>
+</mapper>
