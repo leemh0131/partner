@@ -38,41 +38,25 @@
             <div class="title">실시간 순위</div>
             <div class="slider" id="realtime_slider">
                 <ul class="swiper-wrapper">
-                    <li class="swiper-slide">
+
+                    <c:forEach var="item" items="${liveRanks}" varStatus="status">
+                        <li class="swiper-slide">
+                            <a href="/sc112/dm/detail?DM_CD=${item.DM_CD}" class="inner">
+                                <div class="rank">${status.count}위</div>
+                                <div class="name">${item.COMP_NM}</div>
+<%--                            <div class="change up">5</div>--%>
+<%--                            <div class="change down">5</div>--%>
+                            </a >
+                        </li>
+                    </c:forEach>
+                    <%--<li class="swiper-slide">
                         <a href="#" class="inner">
                             <div class="rank">1위</div>
                             <div class="name">김실장</div>
                             <div class="change up">5</div>
+                            <div class="change down">5</div>
                         </a >
-                    </li>
-                    <li class="swiper-slide">
-                        <a href="#" class="inner">
-                            <div class="rank">2위</div>
-                            <div class="name">안대리</div>
-                            <div class="change down">1</div>
-                        </a>
-                    </li>
-                    <li class="swiper-slide">
-                        <a href="#" class="inner">
-                            <div class="rank">3위</div>
-                            <div class="name">안대리</div>
-                            <div class="change up">5</div>
-                        </a>
-                    </li>
-                    <li class="swiper-slide">
-                        <a href="#" class="inner">
-                            <div class="rank">4위</div>
-                            <div class="name">안대리</div>
-                            <div class="change down">1</div>
-                        </a>
-                    </li>
-                    <li class="swiper-slide">
-                        <a href="#" class="inner">
-                            <div class="rank">5위</div>
-                            <div class="name">김실장</div>
-                            <div class="change up">5</div>
-                        </a>
-                    </li>
+                    </li>--%>
                 </ul>
             </div>
             <div class="more active">
