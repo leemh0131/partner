@@ -3,7 +3,7 @@
 <!doctype html>
 <html>
 <body id="wrap">
-<%@ include file="header.jsp" %>
+<%@ include file="/jsp/sc112/v2/header.jsp" %>
 <main id="container">
     <div class="wrap">
         <section id="contain">
@@ -26,8 +26,8 @@
                 <div class="list">
                     <ul class="item notice">
                         <li class="title">
-                            <a href="#">
-                                <span class="cate cate01">공지</span>
+                            <a href="/sc112/dm/detail?DM_CD=111111111">
+                                <span class="cate cate001">공지</span>
                                 <span class="subject">OOOO에게 피해를 당했습니다.</span>
                                 <span class="reply">(92)</span>
                                 <span class="icon icon_new"></span>
@@ -41,7 +41,7 @@
                     <ul class="item">
                         <li class="num">10</li>
                         <li class="title">
-                            <a href="#">
+                            <a href="/sc112/dm/detail?DM_CD=111111111">
                                 <span class="subject">OOOO에게 피해를 당했습니다.</span>
                                 <span class="reply">(92)</span>
                                 <span class="icon icon_new"></span>
@@ -198,9 +198,9 @@
                 </div>
             </div>
         </section>
-        <%@ include file="aside.jsp" %>
+        <%@ include file="/jsp/sc112/v2/aside.jsp" %>
     </div>
 </main>
-<%@ include file="footer.jsp" %>
+<%@ include file="/jsp/sc112/v2/footer.jsp" %>
 </body>
 </html>

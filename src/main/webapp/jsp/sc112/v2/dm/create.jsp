@@ -3,7 +3,7 @@
 <!doctype html>
 <html>
 <body id="wrap">
-<%@ include file="header.jsp" %>
+<%@ include file="/jsp/sc112/v2/header.jsp" %>
 <main id="container">
     <div class="wrap">
         <section id="contain">
@@ -135,9 +135,9 @@
                 </div>
             </div>
         </section>
-        <%@ include file="aside.jsp" %>
+        <%@ include file="/jsp/sc112/v2/aside.jsp" %>
     </div>
 </main>
-<%@ include file="footer.jsp" %>
+<%@ include file="/jsp/sc112/v2/footer.jsp" %>
 </body>
 </html>

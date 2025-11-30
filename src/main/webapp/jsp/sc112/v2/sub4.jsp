@@ -3,13 +3,13 @@
 <!doctype html>
 <html>
 <body id="wrap">
-<%@ include file="header.jsp" %>
+<%@ include file="/jsp/sc112/v2/header.jsp" %>
 <main id="container">
     <div class="wrap">
         <section id="contain">
             <div id="bbs_write">
                 <div class="header">
-                    <div class="title">불법대부업 등록하기</div>
+                    <div class="title">법률상담문의 등록하기</div>
                     <div class="bookmark"><img src="/jsp/sc112/v2/assets/img/ic_star.svg"></div>
                 </div>
                 <div class="form">
@@ -129,9 +129,9 @@
                 </script>
             </div>
         </section>
-        <%@ include file="aside.jsp" %>
+        <%@ include file="/jsp/sc112/v2/aside.jsp" %>
     </div>
 </main>
-<%@ include file="footer.jsp" %>
+<%@ include file="/jsp/sc112/v2/footer.jsp" %>
 </body>
 </html>

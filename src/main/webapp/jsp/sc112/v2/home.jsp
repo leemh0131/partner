@@ -3,7 +3,7 @@
 <!doctype html>
 <html>
 <body id="wrap">
-<%@ include file="header.jsp" %>
+<%@ include file="/jsp/sc112/v2/header.jsp" %>
 <main id="container">
     <div class="wrap">
         <section id="main">
@@ -17,7 +17,7 @@
             <div class="latest order4">
                 <div class="head">
                     <div class="title"><img src="/jsp/sc112/v2/assets/img/ic_main_title3.svg"> 불법대부업 등록현황</div>
-                    <div class="more"><a href="sub1.jsp">더보기</a></div>
+                    <div class="more"><a href="/sc112/sub1">더보기</a></div>
                 </div>
                 <div class="content">
                     <div class="list">
@@ -369,9 +369,9 @@
                 </div>
             </div>
         </section>
-        <%@ include file="aside.jsp" %>
+        <%@ include file="/jsp/sc112/v2/aside.jsp" %>
     </div>
 </main>
-<%@ include file="footer.jsp" %>
+<%@ include file="/jsp/sc112/v2/footer.jsp" %>
 </body>
 </html>

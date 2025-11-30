@@ -14,7 +14,7 @@
 </head>
 <header id="header">
     <div class="wrap">
-        <div class="logo"><a href="home.jsp"><img src="/jsp/sc112/v2/assets/img/fogo.svg" alt="사채패치"></a></div>
+        <div class="logo"><a href="/sc112/home"><img src="/jsp/sc112/v2/assets/img/fogo.svg" alt="사채패치"></a></div>
         <div class="tool">
             <div class="search">
                 <input type="text" placeholder="검색어 입력">
@@ -27,11 +27,11 @@
 <section id="gnb">
     <div class="wrap">
         <div class="gnb">
-            <a href="#" class="on"><img src="/jsp/sc112/v2/assets/img/ic_main_title2.svg"> 피해등록하기</a>
-            <a href="#"><img src="/jsp/sc112/v2/assets/img/ic_main_title3.svg"> 불법대부업 현황</a>
-            <a href="#"><img src="/jsp/sc112/v2/assets/img/ic_main_title5.svg"> 피해상담문의</a>
+            <a href="/sc112/dm/create" class="on"><img src="/jsp/sc112/v2/assets/img/ic_main_title2.svg"> 피해등록하기</a>
+            <a href="/sc112/dm/list?DM_TYPE=001"><img src="/jsp/sc112/v2/assets/img/ic_main_title3.svg"> 불법대부업 현황</a>
             <a href="#"><img src="/jsp/sc112/v2/assets/img/ic_main_title1.svg"> 자유게시판</a>
             <a href="#"><img src="/jsp/sc112/v2/assets/img/ic_main_title6.svg"> 단도박게시판</a>
+            <a href="#"><img src="/jsp/sc112/v2/assets/img/ic_main_title5.svg"> 법률상담문의</a>
             <a href="#"><img src="/jsp/sc112/v2/assets/img/ic_main_title4.svg"> 고객센터</a>
         </div>
         <div class="real-time">
@@ -91,7 +91,7 @@
                         <li>
                             <a href="#" class="inner">
                                 <div class="title">
-                                    <span class="cate cate01">자유</span>
+                                    <span class="cate cate001">자유</span>
                                     <span class="subject">김종국이 결혼식에 김희철을 안부른 이유?</span>
                                     <span class="icon icon_new"></span>
                                 </div>
