@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ensys.qray.web.v2.dm.V2Sub1Mapper">
+
+    <select id="list" resultType="hashmap" parameterType="hashmap">
+        /*V2Sub1Mapper.list*/
+        SELECT
+        (#{totalCount} - #{offset} - ROW_NUMBER() OVER (ORDER BY T."WRITE_DATE" DESC) + 1) AS "NUM"
+        , T.*
+        FROM (
+        SELECT
+        -- 이 줄 추가!! (최신 3개만 Y)
+            CASE
+            WHEN ROW_NUMBER() OVER (ORDER BY A.WRITE_DATE DESC) <![CDATA[ <= ]]> 3
+            THEN 'Y'
+            ELSE 'N'
+            END AS "NEW_YN"
+        , A.DM_CD AS "DM_CD"
+        , A.DM_TYPE AS "DM_TYPE"
+        , A.DM_KIND AS "DM_KIND"
+        , A.COMP_NM AS "COMP_NM"
+        , A.BORW_SITE AS "BORW_SITE"
+        , A.DEBTOR_TEL AS "DEBTOR_TEL"
+        , A.DEBTOR_KAKAO AS "DEBTOR_KAKAO"
+        , A.DEBTOR_TELE AS "DEBTOR_TELE"
+        , A.DEBTOR_SNS AS "DEBTOR_SNS"
+        , A.WITHDR_LOCA AS "WITHDR_LOCA"
+        , A.COMPL_POLICE AS "COMPL_POLICE"
+        , A.DM_CONTENTS AS "DM_CONTENTS"
+        , A.USE_YN AS "USE_YN"
+        , A.WRITE_DATE AS "WRITE_DATE"
+        , A.WRITE_IP AS "WRITE_IP"
+
+        , CASE
+        WHEN LENGTH(A.INSERT_DATE::TEXT) = 14 THEN
+        CONCAT(
+        SUBSTRING(A.INSERT_DATE::TEXT, 1, 4), '-',
+        SUBSTRING(A.INSERT_DATE::TEXT, 5, 2), '-',
+        SUBSTRING(A.INSERT_DATE::TEXT, 7, 2), ' ',
+        SUBSTRING(A.INSERT_DATE::TEXT, 9, 2), ':',
+        SUBSTRING(A.INSERT_DATE::TEXT, 11, 4)
+        )
+        WHEN LENGTH(A.INSERT_DATE::TEXT) = 8 THEN
+        CONCAT(
+        SUBSTRING(A.INSERT_DATE::TEXT, 1, 4), '-',
+        SUBSTRING(A.INSERT_DATE::TEXT, 5, 2), '-',
+        SUBSTRING(A.INSERT_DATE::TEXT, 7, 2)
+        )
+        WHEN A.INSERT_DATE IS NULL OR TRIM(A.INSERT_DATE::TEXT) = ''
+        THEN '0000-00-00 00:00'
+        ELSE A.INSERT_DATE::TEXT
+        END AS "INSERT_DATE_FORMATTED"
+
+        , A.INSERT_DATE AS "INSERT_DATE"
+        , A.UPDATE_DATE AS "UPDATE_DATE"
+        , A.PW AS "PW"
+        , 0 AS "VIEW_CNT"
+        , A.TEL_TEMP AS "TEL_TEMP"
+        , COALESCE(B.COMM_CNT, 0) AS "COMM_CNT"
+        , COALESCE(A.DM_TITLE, '제목없음') AS "DM_TITLE"
+        FROM PL_DM_M A
+        LEFT JOIN (
+        SELECT DM_CD, COUNT(1) AS COMM_CNT
+        FROM PL_DM_COMM
+        GROUP BY DM_CD
+        ) B ON A.DM_CD = B.DM_CD
+        ORDER BY A.WRITE_DATE DESC
+        LIMIT #{pageSize} OFFSET #{offset}
+        ) T
+    </select>
+
+    <select id="getListCount" resultType="int" parameterType="hashmap">
+        /*V2Sub1Mapper.getListCount*/
+        SELECT COUNT(1)
+        FROM PL_DM_COMM
+    </select>
+
+
+
+</mapper>

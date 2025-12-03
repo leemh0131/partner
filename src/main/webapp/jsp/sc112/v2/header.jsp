@@ -27,12 +27,15 @@
 <section id="gnb">
     <div class="wrap">
         <div class="gnb">
-            <a href="/sc112/dm/create" class="on"><img src="/jsp/sc112/v2/assets/img/ic_main_title2.svg"> 피해등록하기</a>
-            <a href="/sc112/dm/list?DM_TYPE=001"><img src="/jsp/sc112/v2/assets/img/ic_main_title3.svg"> 불법대부업 현황</a>
-            <a href="#"><img src="/jsp/sc112/v2/assets/img/ic_main_title1.svg"> 자유게시판</a>
-            <a href="#"><img src="/jsp/sc112/v2/assets/img/ic_main_title6.svg"> 단도박게시판</a>
-            <a href="#"><img src="/jsp/sc112/v2/assets/img/ic_main_title5.svg"> 법률상담문의</a>
-            <a href="#"><img src="/jsp/sc112/v2/assets/img/ic_main_title4.svg"> 고객센터</a>
+            <c:forEach var="item" items="${commonHeader}">
+                <a href="${item.SYSDEF_CD}" ><img src="${item.FLAG1_CD}"> ${item.SYSDEF_NM}</a>
+            </c:forEach>
+<%--            <a href="/sc112/dm/create" class="on"><img src="/jsp/sc112/v2/assets/img/ic_main_title2.svg"> 피해등록하기</a>--%>
+<%--            <a href="/sc112/dm/list?DM_TYPE=001"><img src="/jsp/sc112/v2/assets/img/ic_main_title3.svg"> 불법대부업 현황</a>--%>
+<%--            <a href="#"><img src="/jsp/sc112/v2/assets/img/ic_main_title1.svg"> 자유게시판</a>--%>
+<%--            <a href="#"><img src="/jsp/sc112/v2/assets/img/ic_main_title6.svg"> 단도박게시판</a>--%>
+<%--            <a href="#"><img src="/jsp/sc112/v2/assets/img/ic_main_title5.svg"> 법률상담문의</a>--%>
+<%--            <a href="#"><img src="/jsp/sc112/v2/assets/img/ic_main_title4.svg"> 고객센터</a>--%>
         </div>
         <div class="real-time">
             <div class="title">실시간 순위</div>

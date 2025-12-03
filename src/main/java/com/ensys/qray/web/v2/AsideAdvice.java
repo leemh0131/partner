@@ -22,4 +22,10 @@ public class AsideAdvice {
     public List<HashMap<String, Object>> liveRanks() {
         return asideService.liveRanks();
     }
+
+    @ModelAttribute("commonHeader")
+    public List<HashMap<String, Object>> commonHeader() {
+        return asideService.commonHeader();
+    }
+
 }

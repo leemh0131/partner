@@ -14,7 +14,8 @@
 		<repository>
 			<id>axboot-release</id>
 			<name>AXBoot-Release</name>
-			<url>https://nexus.axboot.com/content/repositories/releases</url>
+			<url>https://repo.maven.apache.org/maven2</url>
+			<!--<url>https://nexus.axboot.com/content/repositories/releases</url>-->
 			<releases>
 				<enabled>true</enabled>
 				<updatePolicy>always</updatePolicy>

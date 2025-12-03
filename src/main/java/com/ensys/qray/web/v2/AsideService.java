@@ -27,4 +27,12 @@ public class AsideService {
 
         return asideMapper.liveRanks(param);
     }
+
+    public List<HashMap<String, Object>> commonHeader() {
+        HashMap<String, Object> param = new HashMap<>();
+        param.put("COMPANY_CD", "1000");
+
+        return asideMapper.commonHeader(param);
+    }
+
 }

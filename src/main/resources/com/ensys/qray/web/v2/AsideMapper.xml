@@ -33,4 +33,26 @@
 		ORDER BY DM_COUNT DESC, B.WRITE_DATE DESC
 		LIMIT 5
 	</select>
+
+	<select id="commonHeader" resultType="hashmap" parameterType="hashmap">
+		/*AsideMapper.commonHeader*/
+		SELECT A.FIELD_CD as "FIELD_CD"
+			 , A.SYSDEF_CD as "SYSDEF_CD"
+			 , A.COMPANY_CD as "COMPANY_CD"
+			 , A.SYSCODE_FG1 as "SYSCODE_FG1"
+			 , A.USRDEF_CD as "USRDEF_CD"
+			 , A.USRDEF_NM as "USRDEF_NM"
+			 , A.SYSDEF_NM as "SYSDEF_NM"
+			 , A.USE_YN as "USE_YN"
+			 , A.FLAG1_CD as "FLAG1_CD"
+			 , A.FLAG2_CD as "FLAG2_CD"
+			 , A.FLAG3_CD as "FLAG3_CD"
+			 , A.SYSDEF_E_NM as "SYSDEF_E_NM"
+			 , A.FLAG4_CD as "FLAG4_CD"
+		FROM ES_CODEDTL A
+		WHERE A.COMPANY_CD  = #{COMPANY_CD}
+		  AND A.FIELD_CD  = 'ES_Q0145'
+		  AND A.USE_YN = 'Y'
+	</select>
+
 </mapper>
