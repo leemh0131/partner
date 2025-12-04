@@ -1,4 +1,4 @@
-package com.ensys.qray.web.v2.dm;
+package com.ensys.qray.web.v2.rule;
 
 import com.chequer.axboot.core.mybatis.MyBatisMapper;
 import org.springframework.stereotype.Repository;
@@ -7,10 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 
 @Repository
-public interface V2Sub1Mapper extends MyBatisMapper {
+public interface V2RuleMapper extends MyBatisMapper {
 
     List<HashMap<String, Object>> list(HashMap<String, Object> param);
-
-    int getListCount(HashMap<String, Object> param);
 
 }

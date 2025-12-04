@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.ensys.qray.web.v2.dm.V2Sub1Mapper">
+<mapper namespace="com.ensys.qray.web.v2.dm.V2DmMapper">
 
     <select id="list" resultType="hashmap" parameterType="hashmap">
-        /*V2Sub1Mapper.list*/
+        /*V2DmMapper.list*/
         SELECT
         (#{totalCount} - #{offset} - ROW_NUMBER() OVER (ORDER BY T."WRITE_DATE" DESC) + 1) AS "NUM"
         , T.*
@@ -71,11 +71,9 @@
     </select>
 
     <select id="getListCount" resultType="int" parameterType="hashmap">
-        /*V2Sub1Mapper.getListCount*/
+        /*V2DmMapper.getListCount*/
         SELECT COUNT(1)
         FROM PL_DM_COMM
     </select>
-
-
 
 </mapper>

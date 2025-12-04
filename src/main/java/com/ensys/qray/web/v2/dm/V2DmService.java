@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.HashMap;
 import java.util.List;
@@ -12,11 +11,11 @@ import java.util.List;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class V2Sub1Service {
+public class V2DmService {
 
-    private final V2Sub1Mapper V2Sub1Mapper;
+    private final V2DmMapper V2DmMapper;
 
-    public void sub1(Model model, HashMap<String, Object> param) {
+    public void list(Model model, HashMap<String, Object> param) {
 
         int page = safeInt(param.get("page"), 1);
         int pageSize = safeInt(param.get("pageSize"), 10);
@@ -27,10 +26,10 @@ public class V2Sub1Service {
         param.put("pageSize", pageSize);
         param.put("offset", offset);
 
-        int totalCount = V2Sub1Mapper.getListCount(param);
+        int totalCount = V2DmMapper.getListCount(param);
         param.put("totalCount", totalCount);
 
-        List<HashMap<String, Object>> list = V2Sub1Mapper.list(param);
+        List<HashMap<String, Object>> list = V2DmMapper.list(param);
 
         model.addAttribute("list", list);
         model.addAttribute("page", page);

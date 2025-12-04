@@ -1,16 +1,12 @@
 package com.ensys.qray.setting.config;
 
-import ch.qos.logback.classic.LoggerContext;
-
 import com.chequer.axboot.core.config.AXBootContextConfig;
 import com.chequer.axboot.core.db.dbcp.AXBootDataSourceFactory;
 import com.chequer.axboot.core.db.monitor.SqlMonitoringService;
-import com.chequer.axboot.core.domain.log.AXBootErrorLogService;
 import com.chequer.axboot.core.model.extract.service.jdbc.JdbcMetadataService;
 import com.chequer.axboot.core.mybatis.MyBatisMapper;
 import com.chequer.axboot.core.mybatis.MyBatisMapper2;
 import com.ensys.qray.setting.code.GlobalConstants;
-import com.ensys.qray.setting.logging.AXBootLogbackAppender;
 
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.type.JdbcType;
@@ -19,7 +15,6 @@ import org.modelmapper.convention.MatchingStrategies;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.mapper.MapperScannerConfigurer;
 import org.mybatis.spring.transaction.SpringManagedTransactionFactory;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
@@ -233,15 +228,4 @@ public class CoreApplicationContext {
         return new LocalValidatorFactoryBean();
     }
 
-    @Bean
-    public AXBootLogbackAppender axBootLogbackAppender(AXBootErrorLogService axBootErrorLogService, AXBootContextConfig axBootContextConfig) throws Exception {
-        LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
-        AXBootLogbackAppender axBootLogbackAppender = new AXBootLogbackAppender(axBootErrorLogService, axBootContextConfig);
-        axBootLogbackAppender.setContext(loggerContext);
-        axBootLogbackAppender.setName("axBootLogbackAppender");
-        axBootLogbackAppender.start();
-        loggerContext.getLogger("ROOT").addAppender(axBootLogbackAppender);
-
-        return axBootLogbackAppender;
-    }
 }

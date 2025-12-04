@@ -290,7 +290,7 @@
 #bbs_consult{}
 #bbs_consult .header{display:flex;align-items:center;justify-content:flex-start;gap:8px;margin:0 0 24px;}
 #bbs_consult .header .title{line-height:48px;font-size:32px;font-weight:700;color:#000;}
-#bbs_consult .header .bookmark{display:flex;align-items:center;justify-content:center;cursor:pointer;}
+#bbs_consult .header .bookmark{display:flex;align-items:center;justify-content:center;/*cursor:pointer;*/}
 #bbs_consult .consult{}
 #bbs_consult .consult .subject{border-top:2px solid #000;padding:16px 0;border-bottom:1px solid #E5E8EC}
 #bbs_consult .consult .subject .title{line-height:24px;font-size:16px;font-weight:700;color:#000;}

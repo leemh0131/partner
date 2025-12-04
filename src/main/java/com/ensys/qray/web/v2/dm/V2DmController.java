@@ -1,6 +1,5 @@
 package com.ensys.qray.web.v2.dm;
 
-import com.ensys.qray.web.v2.sub4.V2Sub4Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,13 +12,13 @@ import java.util.HashMap;
 @Controller
 @RequestMapping("/sc112/dm")
 @RequiredArgsConstructor
-public class V2Sub1Controller {
+public class V2DmController {
 
-    private final V2Sub1Service V2Sub1Service;
+    private final V2DmService V2DmService;
 
     @GetMapping("list")
-    public String sub1(Model model, @RequestParam HashMap<String, Object> param) {
-        V2Sub1Service.sub1(model, param);
+    public String list(Model model, @RequestParam HashMap<String, Object> param) {
+        V2DmService.list(model, param);
         return "/sc112/v2/dm/list";
     }
     @GetMapping("detail")
