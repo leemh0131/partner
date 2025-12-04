@@ -51,8 +51,9 @@
 			 , A.FLAG4_CD as "FLAG4_CD"
 		FROM ES_CODEDTL A
 		WHERE A.COMPANY_CD  = #{COMPANY_CD}
-		  AND A.FIELD_CD  = 'ES_Q0145'
-		  AND A.USE_YN = 'Y'
-	</select>
+        AND A.FIELD_CD  = 'ES_Q0145'
+        AND A.USE_YN = 'Y'
+        ORDER BY A.FLAG4_CD
+    </select>
 
 </mapper>
