@@ -21,17 +21,6 @@
                             </a>
                         </li>
                     </c:forEach>
-                    <%--<li>
-                        <a href="#" class="inner">
-                            <div class="title">
-                                <span class="cate cate03">불법</span>
-                                <span class="subject bold">김종국이 결혼식에 김희철을 안부른 이유?</span>
-                            </div>
-                            <div class="comment">
-                                <span>뭔가 찔리는게 있어서 안나온거 아님?</span>
-                            </div>
-                        </a>
-                    </li>--%>
                 </ul>
             </div>
         </div>
@@ -49,18 +38,19 @@
                             <a href="/sc112/dm/detail?DM_CD=${item.DM_CD}" class="inner">
                                 <div class="rank">${status.count}위</div>
                                 <div class="name">${item.COMP_NM}</div>
-<%--                                <div class="change up">5</div>--%>
-<%--                            <div class="change down">1</div>--%>
+                                <c:choose>
+                                    <c:when test="${item.RANK_DIFF == 0}">
+                                    </c:when>
+                                    <c:when test="${item.RANK_DIFF > 0}">
+                                        <div class="change up">${item.RANK_DIFF}</div>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <div class="change down">${item.RANK_DIFF}</div>
+                                    </c:otherwise>
+                                </c:choose>
                             </a >
                         </li>
                     </c:forEach>
-                    <%--<li>
-                        <a href="#" class="inner">
-                            <div class="rank">2위</div>
-                            <div class="name">안대리</div>
-                            <div class="change down">1</div>
-                        </a>
-                    </li>--%>
                 </ul>
             </div>
         </div>

@@ -17,7 +17,22 @@
                     </a>
                 </div>
                 <div class="header">
-                    <div class="title">불법대부업 현황</div>
+                    <div class="title" id="menuTitle">
+                        <script>
+                            $(function () {
+                                var $target = $("a[id*='" + location.pathname + location.search + "']");
+                                if ($target) {
+                                    $("#menuTitle").text($target.text());
+                                    $(".list-item").each(function () {
+                                        const href = $(this).attr("href");
+                                        // "/sc112/dm/detail" 는 하드코딩 공통코드에서 location.search 추가가능
+                                        $(this).attr("href", "/sc112/dm/detail" + location.search + href);
+                                    });
+                                }
+
+                            });
+                        </script>
+                    </div>
                     <div class="bookmark"><img src="/jsp/sc112/v2/assets/img/ic_star.svg"></div>
                     <div class="sort">
                         <select>
@@ -45,7 +60,7 @@
                         <ul class="item">
                             <li class="num">${item.NUM}</li>
                             <li class="title">
-                                <a href="/sc112/dm/detail?DM_CD=${item.DM_CD}">
+                                <a class="list-item" href="&DM_CD=${item.DM_CD}">
                                     <span class="subject"><c:out value="${item.DM_TITLE}" /></span>
                                     <span class="reply">(${item.COMM_CNT})</span>
                                     <!-- NEW 표시 조건 -->

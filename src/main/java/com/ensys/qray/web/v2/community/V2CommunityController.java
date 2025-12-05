@@ -21,4 +21,8 @@ public class V2CommunityController {
         model.addAttribute("list", V2CommunityService.list(param));
         return "/sc112/v2/community/list";
     }
+    @GetMapping("detail")
+    public String detail(Model model, @RequestParam HashMap<String, Object> param) {
+        return "/sc112/v2/community/detail";
+    }
 }

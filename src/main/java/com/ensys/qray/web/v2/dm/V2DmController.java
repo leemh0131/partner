@@ -22,12 +22,12 @@ public class V2DmController {
         return "/sc112/v2/dm/list";
     }
     @GetMapping("detail")
-    public String sub2(Model model, @RequestParam HashMap<String, Object> param) {
+    public String detail(Model model, @RequestParam HashMap<String, Object> param) {
         return "/sc112/v2/dm/detail";
     }
 
     @GetMapping("create")
-    public String sub3(Model model, @RequestParam HashMap<String, Object> param) {
+    public String create(Model model, @RequestParam HashMap<String, Object> param) {
         return "/sc112/v2/dm/create";
     }
 }

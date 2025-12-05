@@ -9,7 +9,16 @@
         <section id="contain">
             <div id="bbs_write">
                 <div class="header">
-                    <div class="title">불법대부업 등록하기</div>
+                    <div class="title" id="menuTitle">
+                        <script>
+                            $(function () {
+                                var $target = $("a[id*='" + location.pathname + location.search + "']");
+                                if ($target) {
+                                    $("#menuTitle").text($target.text());
+                                }
+                            });
+                        </script>
+                    </div>
                     <div class="bookmark"><img src="/jsp/sc112/v2/assets/img/ic_star.svg"></div>
                 </div>
                 <div class="form">

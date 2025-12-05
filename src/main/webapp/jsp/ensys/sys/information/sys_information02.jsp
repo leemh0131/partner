@@ -345,6 +345,7 @@
                     {
                         key: "SYSDEF_CD", label: "코드", width: 100, align: "center", sortable: true, editor: {
                             type: "text",
+                            maxlength: 100,
                             disabled: function () {
                                 var selected = fnObj.gridView02.target.getList('selected')[0];
                                 if(nvl(selected.__created__, '') == '') {

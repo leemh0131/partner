@@ -28,7 +28,11 @@
     <div class="wrap">
         <div class="gnb">
             <c:forEach var="item" items="${commonHeader}">
-                <a href="${item.SYSDEF_CD}" ><img src="${item.FLAG1_CD}"> ${item.SYSDEF_NM}</a>
+                <a id="${item.SYSDEF_CD}"
+                   href="${item.SYSDEF_CD}"
+                   style="${item.FLAG2_CD == 'false' ? 'display:none;' : ''}">
+                    <img src="${item.FLAG1_CD}" alt="${item.SYSDEF_NM}"/>${item.SYSDEF_NM}
+                </a>
             </c:forEach>
 <%--            <a href="/sc112/dm/create" class="on"><img src="/jsp/sc112/v2/assets/img/ic_main_title2.svg"> 피해등록하기</a>--%>
 <%--            <a href="/sc112/dm/list?DM_TYPE=001"><img src="/jsp/sc112/v2/assets/img/ic_main_title3.svg"> 불법대부업 현황</a>--%>
@@ -47,8 +51,18 @@
                             <a href="/sc112/dm/detail?DM_CD=${item.DM_CD}" class="inner">
                                 <div class="rank">${status.count}위</div>
                                 <div class="name">${item.COMP_NM}</div>
-<%--                            <div class="change up">5</div>--%>
-<%--                            <div class="change down">5</div>--%>
+                                <c:choose>
+                                    <c:when test="${item.RANK_DIFF == 0}">
+                                    </c:when>
+
+                                    <c:when test="${item.RANK_DIFF > 0}">
+                                        <div class="change up">${item.RANK_DIFF}</div>
+                                    </c:when>
+
+                                    <c:otherwise>
+                                        <div class="change down">${item.RANK_DIFF}</div>
+                                    </c:otherwise>
+                                </c:choose>
                             </a >
                         </li>
                     </c:forEach>

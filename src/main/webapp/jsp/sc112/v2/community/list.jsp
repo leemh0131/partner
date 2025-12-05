@@ -19,7 +19,21 @@
                     </a>
                 </div>
                 <div class="header">
-                    <div class="title">코드로 바꿔야함</div>
+                    <div class="title" id="menuTitle">
+                        <script>
+                            $(function () {
+                                var $target = $("a[id*='" + location.pathname + location.search + "']");
+                                if ($target) {
+                                    $("#menuTitle").text($target.text());
+                                    $(".list-item").each(function () {
+                                        const href = $(this).attr("href");
+                                        // "/sc112/community/detail" 는 하드코딩 공통코드에서 location.search 추가가능
+                                        $(this).attr("href", "/sc112/community/detail" + location.search + href);
+                                    });
+                                }
+                            });
+                        </script>
+                    </div>
                     <div class="bookmark"><img src="/jsp/sc112/v2/assets/img/ic_star.svg"></div>
                     <div class="sort">
                         <select>
@@ -42,12 +56,11 @@
                         <li class="view">1,524,000회</li>
                         <li class="date">2023-08-27 14:22</li>
                     </ul>
-
                     <c:forEach var="item" items="${list}">
                         <ul class="item">
                             <li class="num">${item.COMM_NUM}</li>
                             <li class="title">
-                                <a href="/sc112/community/detail?SEQ=${item.SEQ}">
+                                <a class="list-item" href="&SEQ=${item.SEQ}">
                                     <span class="subject"><c:out value="${item.TITLE}" /></span>
                                     <span class="reply">(${item.COMM_CUT})</span>
                                     <!-- NEW 표시 조건 -->
