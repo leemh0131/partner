@@ -42,7 +42,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
@@ -58,6 +57,9 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.*;
 
+import static com.ensys.qray.file.FileSupport.getGlobalFilePath;
+import static java.util.UUID.*;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -71,14 +73,6 @@ public class FileService extends BaseService {
 		param.put("COMPANY_CD", user.getCompanyCd());
 
 		return fileMapper.search(param);
-	}
-
-	@Transactional(readOnly = true)
-	public List<HashMap<String, Object>> searchIn(HashMap<String, Object> param) {
-		SessionUser user = SessionUtils.getCurrentUser();
-		param.put("COMPANY_CD", user.getCompanyCd());
-
-		return fileMapper.searchIn(param);
 	}
 
 	public void save(HashMap<String, Object> param) {
@@ -169,7 +163,7 @@ public class FileService extends BaseService {
 				if (mf != null && mf.length > 0) {
 					for (int i = 0; i < mf.length; i++) {
 						HashMap<String, Object> map = new HashMap<>();
-						String savedFileNm = UUID.randomUUID().toString(); //서버에 저장될 파일 이름
+						String savedFileNm = randomUUID().toString(); //서버에 저장될 파일 이름
 						String fileExtension = ext(mf[i].getOriginalFilename());
 						map.put("FILE_SEQ", fileSeq++);
 						map.put("TABLE_ID", tableId);
@@ -253,7 +247,7 @@ public class FileService extends BaseService {
 		String fileNameExtension = fileName.toLowerCase().substring(fileNameExtensionIndex, fileName.length());
 		return fileNameExtension;
 	}
-	
+
 	public static void main(String[] args) {
 		int result = 0;
 		try {
@@ -405,7 +399,7 @@ public class FileService extends BaseService {
 				ImageIOUtil.writeImage(bim, imgFileName, 300);
 			}
 			divisionCnt = pdfDoc.getPages().getCount();
-			
+
 			pdfDoc.close(); // 모두 사용한 PDF 문서는 닫는다.
 			System.out.println("[ **** 엑셀xlsx 변환 종료 **** ]");
 		} else if (exe(savefile.getName()).equals("xls")) {
@@ -754,4 +748,19 @@ public class FileService extends BaseService {
 
 	}
 
+    public void simpleFileUpload(MultipartFile file, HashMap<String, Object> param) throws IOException {
+        param.put("FILE_NAME", randomUUID().toString());
+        param.put("ORGN_FILE_NAME", file.getOriginalFilename());
+        param.put("FILE_BYTE", file.getSize());
+        param.put("FILE_PATH", getGlobalFilePath());
+
+        File destination = new File(getGlobalFilePath(), (String) param.get("FILE_NAME"));
+
+        if (!destination.getParentFile().exists()) {
+            destination.getParentFile().mkdirs();
+        }
+
+        file.transferTo(destination);
+        fileMapper.insert(param);
+    }
 }

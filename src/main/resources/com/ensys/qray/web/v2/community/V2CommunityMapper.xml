@@ -25,4 +25,86 @@
         LIMIT 15 OFFSET <!--#{MORE_BTN_COUNT}::INTEGER-->1 * 15
     </select>
 
+    <select id="detail" resultType="hashmap" parameterType="hashmap">
+        /*V2CommunityMapper.detail*/
+        SELECT    SEQ       AS "SEQ"
+                , TITLE     AS "TITLE"
+                , CONTENTS  AS "CONTENTS"
+                , TO_CHAR(TO_TIMESTAMP(INSERT_DTS, 'YYYYMMDDHH24MISS'), 'YYYY-MM-DD') AS "INSERT_DTS"
+--                 , TO_CHAR(TO_TIMESTAMP(INSERT_DTS, 'YYYYMMDDHH24MISS'), 'YYYY-MM-DD HH24:MI:SS')
+        FROM ES_COMMUNITY
+        WHERE COMPANY_CD = #{COMPANY_CD}
+        AND SEQ = #{SEQ}
+    </select>
+
+    <insert id="create" parameterType="hashmap">
+        /*V2CommunityMapper.create*/
+        INSERT INTO ES_COMMUNITY (
+              COMPANY_CD
+            , SEQ
+            , NAME
+            , COMMUNITY_TP
+            , COMMUNITY_ST
+            , TITLE
+            , CONTENTS
+            , HIT
+            , INSERT_ID
+            , INSERT_DTS
+            , COMMUNITY_GB
+            , PW
+        ) VALUES (
+              #{COMPANY_CD}
+            , #{SEQ}
+            , #{NAME} --param
+            , #{COMMUNITY_TP} --param
+            , #{COMMUNITY_ST} --param
+            , #{TITLE} --param
+            , #{CONTENTS} --param
+            , 0
+            , #{INSERT_ID}
+            , #{INSERT_DTS}
+            , F_NVL_TEXT(#{COMMUNITY_GB}, '01')
+            , #{PW} --param
+       )
+    </insert>
+
+    <select id="detailLinks" resultType="hashmap" parameterType="hashmap">
+        /*V2CommunityMapper.detailLinks*/
+        SELECT    COMMUNITY_SEQ AS "COMMUNITY_SEQ"
+                , SEQ AS "SEQ"
+                , CASE
+                    WHEN LINK LIKE 'http%' THEN LINK
+                    ELSE 'https://' || LINK
+                END AS "LINK"
+        FROM ES_COMMUNITY_LINK
+        WHERE COMPANY_CD = #{COMPANY_CD}
+          AND COMMUNITY_SEQ = #{SEQ}
+        ORDER BY SEQ
+    </select>
+
+    <insert id="createLink" parameterType="hashmap">
+    /*V2CommunityMapper.createLink*/
+        <if test="LINK_ARR != null and LINK_ARR != ''">
+            <foreach item="link" index="idx" collection='LINK_ARR.split(",")' separator=";">
+                <if test="link != null and link.trim() != ''">
+                    INSERT INTO ES_COMMUNITY_LINK (
+                          COMPANY_CD
+                        , COMMUNITY_SEQ
+                        , SEQ
+                        , LINK
+                        , INSERT_ID
+                        , INSERT_DTS
+                    ) VALUES (
+                          #{COMPANY_CD}
+                        , #{SEQ}
+                        , #{idx} + 1
+                        , #{link}
+                        , #{INSERT_ID}
+                        , #{INSERT_DTS}
+                    )
+                </if>
+            </foreach>
+        </if>
+    </insert>
+
 </mapper>

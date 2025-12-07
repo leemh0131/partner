@@ -11,4 +11,13 @@ public interface V2CommunityMapper extends MyBatisMapper {
 
     List<HashMap<String, Object>> list(HashMap<String, Object> param);
 
+    HashMap<String, Object> detail(HashMap<String, Object> param);
+
+    void create(HashMap<String, Object> param);
+
+
+    List<HashMap<String, Object>> detailLinks(HashMap<String, Object> param);
+
+    void createLink(HashMap<String, Object> param);
+
 }

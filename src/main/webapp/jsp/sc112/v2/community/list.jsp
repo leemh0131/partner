@@ -25,6 +25,7 @@
                                 var $target = $("a[id*='" + location.pathname + location.search + "']");
                                 if ($target) {
                                     $("#menuTitle").text($target.text());
+                                    $(".list-create").attr("href", "/sc112/community/create" + location.search);
                                     $(".list-item").each(function () {
                                         const href = $(this).attr("href");
                                         // "/sc112/community/detail" 는 하드코딩 공통코드에서 location.search 추가가능
@@ -94,7 +95,7 @@
                         <a href="#" class="end"></a>--%>
                     </div>
                     <div class="button">
-                        <a href="#" class="btn btn_01">글쓰기</a>
+                        <a href="" class="btn btn_01 list-create">글쓰기</a>
                     </div>
                 </div>
             </div>

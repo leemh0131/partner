@@ -11,8 +11,6 @@ public interface FileMapper extends MyBatisMapper {
 
 	List<HashMap<String, Object>> search(HashMap<String, Object> param);
 
-	List<HashMap<String, Object>> searchIn(HashMap<String, Object> param);
-
 	int insert(HashMap<String, Object> param);
 
 	int delete(HashMap<String, Object> param);
