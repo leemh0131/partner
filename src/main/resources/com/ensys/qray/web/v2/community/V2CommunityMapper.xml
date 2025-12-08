@@ -22,7 +22,7 @@
         AND COMMUNITY_ST = #{COMMUNITY_ST} --14(커뮤니티) / 15(고객센터) ES_Q0137
         AND COMMUNITY_TP = #{COMMUNITY_TP} -- 04 삭제요청 / 07 단도박 / 08 자유게시판 ES_Q0138 나중에 03(커뮤니티)를 08로 바꿔야할듯? ES_Q0138
         ORDER BY INSERT_DTS DESC
-        LIMIT 15 OFFSET <!--#{MORE_BTN_COUNT}::INTEGER-->1 * 15
+        LIMIT 15 OFFSET <!--#{MORE_BTN_COUNT}::INTEGER-->0 * 15
     </select>
 
     <select id="detail" resultType="hashmap" parameterType="hashmap">
@@ -63,7 +63,7 @@
             , 0
             , #{INSERT_ID}
             , #{INSERT_DTS}
-            , F_NVL_TEXT(#{COMMUNITY_GB}, '01')
+            , F_NVL_TEXT(#{COMMUNITY_GB}, '02')
             , #{PW} --param
        )
     </insert>

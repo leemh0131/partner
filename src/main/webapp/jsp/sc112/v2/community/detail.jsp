@@ -35,15 +35,13 @@
                     <dl>
                         <dt>첨부</dt>
                         <dd>
-                            <div class="flex">
-                                <div class="file">
-                                    <label class="btn"><input type="file" id="file_input">파일선택</label>
-                                    <span class="txt">선택된 파일 없음</span>
+                            <c:forEach var="file" items="${files}">
+                                <div class="flex">
+                                    <div class="file">
+                                        <a class="txt" href="/sc112/community/download/${file.TABLE_ID}/${file.FILE_NAME}" target="_blank">${file.ORGN_FILE_NAME}</a>
+                                    </div>
                                 </div>
-                            </div>
-                            <%--<div class="flex">
-                                <div class="caution">* 용량이 50.0M 파일만 업로드 가능</div>
-                            </div>--%>
+                            </c:forEach>
                         </dd>
                     </dl>
                 </div>

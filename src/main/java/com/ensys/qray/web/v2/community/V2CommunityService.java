@@ -42,7 +42,7 @@ public class V2CommunityService {
         param.put("TABLE_ID", param.get("SEQ"));
         model.addAttribute("item", v2CommunityMapper.detail(param));
         model.addAttribute("links", v2CommunityMapper.detailLinks(param));
-        model.addAttribute("files", fileService.search(param));
+        model.addAttribute("files", fileService.simpleSearch(param));
 
         //        param.put("DM_CD", param.get("SEQ"));
 //        param.put("IP", getRemoteAddress());
@@ -80,4 +80,10 @@ public class V2CommunityService {
         return param;
     }
 
+
+    public List<HashMap<String, Object>> getFile(HashMap<String, Object> param) {
+        param.put("COMPANY_CD", "1000");
+
+        return fileService.simpleSearch(param);
+    }
 }

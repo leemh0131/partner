@@ -9,13 +9,10 @@ import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
@@ -320,21 +317,4 @@ public class FileController extends BaseController {
 		fileService.bannerUpload(bannerImage, device);
 		return ok();
 	}
-
-	/*@GetMapping("/download/{fileId}")
-	public ResponseEntity<Resource> download(@PathVariable Long fileId) {
-
-		FileDTO file = fileService.getFile(fileId);  // DB 조회
-
-		File fileToDownload = new File(file.getSavedPath(), file.getSavedName());
-		Resource resource = new FileSystemResource(fileToDownload);
-
-		String encodedName = UriUtils.encode(file.getOriginalName(), StandardCharsets.UTF_8);
-
-		return ResponseEntity.ok()
-				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + encodedName + "\"")
-				.header(HttpHeaders.CONTENT_LENGTH, String.valueOf(fileToDownload.length()))
-				.contentType(MediaType.APPLICATION_OCTET_STREAM)
-				.body(resource);
-	}*/
 }
