@@ -10,7 +10,6 @@
             <div id="bbs_write">
                 <div class="header">
                     <div class="title">법률상담문의 등록하기</div>
-                    <div class="bookmark"><img src="/jsp/sc112/v2/assets/img/ic_star.svg"></div>
                 </div>
                 <div class="form">
                     <dl class="w50p">

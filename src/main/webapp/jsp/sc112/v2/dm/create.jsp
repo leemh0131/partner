@@ -19,7 +19,6 @@
                             });
                         </script>
                     </div>
-                    <div class="bookmark"><img src="/jsp/sc112/v2/assets/img/ic_star.svg"></div>
                 </div>
                 <div class="form">
                     <dl>

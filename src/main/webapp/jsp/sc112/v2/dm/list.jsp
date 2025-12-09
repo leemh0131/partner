@@ -33,7 +33,6 @@
                             });
                         </script>
                     </div>
-                    <div class="bookmark"><img src="/jsp/sc112/v2/assets/img/ic_star.svg"></div>
                     <div class="sort">
                         <select>
                             <option>최신순</option>
@@ -41,20 +40,20 @@
                     </div>
                 </div>
                 <div class="list">
-                    <ul class="item notice">
+                    <%--<ul class="item notice">
                         <li class="title">
                             <a href="/sc112/dm/detail?DM_CD=111111111">
                                 <span class="cate cate001">공지</span>
                                 <span class="subject">OOOO에게 피해를 당했습니다.</span>
                                 <span class="reply">(92)</span>
                                 <span class="icon icon_new"></span>
-                                <!--<span class="like on">12</span>-->
+                                <span class="like on">12</span>
                             </a>
                         </li>
                         <li class="writer">김OO</li>
                         <li class="view">1,524,000회</li>
                         <li class="date">2023-08-27 14:22</li>
-                    </ul>
+                    </ul>--%>
 
                     <c:forEach var="item" items="${list}">
                         <ul class="item">

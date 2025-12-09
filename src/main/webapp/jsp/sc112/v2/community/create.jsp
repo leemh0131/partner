@@ -25,7 +25,6 @@
                             });
                         </script>
                     </div>
-                    <div class="bookmark"><img src="/jsp/sc112/v2/assets/img/ic_star.svg"></div>
                 </div>
                 <form class="form" id="createForm" action="/sc112/community/create" method="POST" enctype="multipart/form-data">
                     <input type="hidden" name="COMMUNITY_TP" value="${param.COMMUNITY_TP}">

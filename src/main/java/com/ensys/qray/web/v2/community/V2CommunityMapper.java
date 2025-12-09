@@ -9,6 +9,8 @@ import java.util.List;
 @Repository
 public interface V2CommunityMapper extends MyBatisMapper {
 
+    int listCount(HashMap<String, Object> param);
+
     List<HashMap<String, Object>> list(HashMap<String, Object> param);
 
     HashMap<String, Object> detail(HashMap<String, Object> param);
@@ -19,5 +21,9 @@ public interface V2CommunityMapper extends MyBatisMapper {
     List<HashMap<String, Object>> detailLinks(HashMap<String, Object> param);
 
     void createLink(HashMap<String, Object> param);
+
+    int insertEsCommunityHit(HashMap<String, Object> param);
+
+    int hitPlus(HashMap<String, Object> param);
 
 }

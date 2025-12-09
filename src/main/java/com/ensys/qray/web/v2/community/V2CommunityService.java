@@ -1,6 +1,5 @@
 package com.ensys.qray.web.v2.community;
 
-import com.ensys.qray.file.FileMapper;
 import com.ensys.qray.file.FileService;
 import com.ensys.qray.sys.information08.SysInformation08Mapper;
 import lombok.RequiredArgsConstructor;
@@ -9,15 +8,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
 
 import static com.chequer.axboot.core.utils.HttpUtils.getRemoteAddress;
-import static com.ensys.qray.file.FileSupport.getGlobalFilePath;
 import static com.ensys.qray.utils.HammerUtility.nowDate;
+import static java.lang.Math.*;
 
 @Service
 @Transactional
@@ -30,12 +27,35 @@ public class V2CommunityService {
 
     private final FileService fileService;
 
-    public List<HashMap<String, Object>> list(HashMap<String, Object> param) {
+    public void list(Model model, HashMap<String, Object> param) {
         param.put("COMPANY_CD", "1000");
-        return v2CommunityMapper.list(param);
+        int pageSize = param.get("PAGE_SIZE") == null ? 10 : Integer.parseInt(param.get("PAGE_SIZE").toString());
+
+        // 요청 파라미터
+        int currentPage = param.get("CURRENT_PAGE") == null ? 1 : Integer.parseInt(param.get("CURRENT_PAGE").toString());
+
+        // 전체 게시글 수
+        int listCount = v2CommunityMapper.listCount(param);
+        int totalPage = (int) ceil((double) listCount / pageSize);
+
+        // 슬라이딩 윈도우 (앞뒤로 2개)
+        int pageWindow = 2;
+        int startPage = currentPage - pageWindow;
+        int endPage   = currentPage + pageWindow;
+
+        // 범위 보정
+        if (startPage < 1) startPage = 1;
+        if (endPage > totalPage) endPage = totalPage;
+
+        model.addAttribute("list", v2CommunityMapper.list(param));
+        model.addAttribute("CURRENT_PAGE", currentPage);
+        model.addAttribute("START_PAGE", startPage);
+        model.addAttribute("END_PAGE", endPage);
+        model.addAttribute("TOTAL_PAGE", totalPage);
+        model.addAttribute("PAGE_SIZE", pageSize);
     }
 
-    public HashMap<String, Object> detail(Model model, HashMap<String, Object> param) {
+    public void detail(Model model, HashMap<String, Object> param) {
         HashMap<String, Object> result = new HashMap<>();
 
         param.put("COMPANY_CD", "1000");
@@ -44,16 +64,13 @@ public class V2CommunityService {
         model.addAttribute("links", v2CommunityMapper.detailLinks(param));
         model.addAttribute("files", fileService.simpleSearch(param));
 
-        //        param.put("DM_CD", param.get("SEQ"));
-//        param.put("IP", getRemoteAddress());
-//        result.put("comm_list", apimapper.getPrivateLoanPlDmCommList(param));
-        //IP로 조회수 체크 후 업데이트
-//        int chk = apimapper.insertEsCommunityHit(param);
-//        if(chk > 0){
-//            apimapper.hitPlus(param);
-//        }
-
-        return result;
+        param.put("DM_CD", param.get("SEQ"));
+        param.put("IP", getRemoteAddress());
+//        IP로 조회수 체크 후 업데이트
+        int chk = v2CommunityMapper.insertEsCommunityHit(param);
+        if(chk > 0){
+            v2CommunityMapper.hitPlus(param);
+        }
     }
 
     public HashMap<String, Object> create(HashMap<String, Object> param, MultipartFile file) throws IOException {
@@ -80,10 +97,8 @@ public class V2CommunityService {
         return param;
     }
 
-
     public List<HashMap<String, Object>> getFile(HashMap<String, Object> param) {
         param.put("COMPANY_CD", "1000");
-
         return fileService.simpleSearch(param);
     }
 }

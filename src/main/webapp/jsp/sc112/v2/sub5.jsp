@@ -16,7 +16,6 @@
                 </div>
                 <div class="header">
                     <div class="title">법률상담문의</div>
-                    <div class="bookmark"><img src="/jsp/sc112/v2/assets/img/ic_star.svg"></div>
                 </div>
                 <div class="consult">
                     <div class="subject">

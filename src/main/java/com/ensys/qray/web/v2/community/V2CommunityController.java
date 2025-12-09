@@ -14,7 +14,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriUtils;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -25,17 +24,17 @@ import java.util.List;
 @RequiredArgsConstructor
 public class V2CommunityController {
 
-    private final V2CommunityService V2CommunityService;
+    private final V2CommunityService v2CommunityService;
 
     @GetMapping("list")
     public String list(Model model, @RequestParam HashMap<String, Object> param) {
-        model.addAttribute("list", V2CommunityService.list(param));
+        v2CommunityService.list(model, param);
         return "/sc112/v2/community/list";
     }
 
     @GetMapping("detail")
     public String detail(Model model, @RequestParam HashMap<String, Object> param) {
-        V2CommunityService.detail(model, param);
+        v2CommunityService.detail(model, param);
         return "/sc112/v2/community/detail";
     }
 
@@ -46,7 +45,7 @@ public class V2CommunityController {
 
     @PostMapping("create")
     public String createAction(Model model, @RequestParam HashMap<String, Object> param, @RequestParam("FILE") MultipartFile file) throws IOException {
-        V2CommunityService.create(param, file);
+        v2CommunityService.create(param, file);
         return "redirect:/sc112/community/detail?COMMUNITY_TP=" + param.get("COMMUNITY_TP") + "&COMMUNITY_ST=" + param.get("COMMUNITY_ST") + "&SEQ=" + param.get("SEQ");
     }
 
@@ -56,7 +55,7 @@ public class V2CommunityController {
         param.put("TABLE_ID", seq);
         param.put("FILE_NAME", fileName);
 
-        List<HashMap<String, Object>> files = V2CommunityService.getFile(param);
+        List<HashMap<String, Object>> files = v2CommunityService.getFile(param);
 
         if(CollectionUtils.isEmpty(files)) {
             throw new RuntimeException("해당 첨부파일이 없습니다.");

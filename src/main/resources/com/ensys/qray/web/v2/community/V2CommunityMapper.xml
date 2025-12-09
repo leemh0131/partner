@@ -3,6 +3,16 @@
 
 <mapper namespace="com.ensys.qray.web.v2.community.V2CommunityMapper">
 
+    <select id="listCount" resultType="int" parameterType="hashmap">
+        /*V2CommunityMapper.listCount*/
+        SELECT    COUNT(*)
+        FROM ES_COMMUNITY
+        WHERE  COMPANY_CD = #{COMPANY_CD}
+        AND COMMUNITY_GB = '02'
+        AND COMMUNITY_ST = #{COMMUNITY_ST} --14(커뮤니티) / 15(고객센터) ES_Q0137
+        AND COMMUNITY_TP = #{COMMUNITY_TP} -- 04 삭제요청 / 07 단도박 / 08 자유게시판 ES_Q0138 나중에 03(커뮤니티)를 08로 바꿔야할듯 ES_Q0138
+    </select>
+
     <select id="list" resultType="hashmap" parameterType="hashmap">
         /*V2CommunityMapper.list*/
         SELECT    SEQ               AS "SEQ"
@@ -22,7 +32,7 @@
         AND COMMUNITY_ST = #{COMMUNITY_ST} --14(커뮤니티) / 15(고객센터) ES_Q0137
         AND COMMUNITY_TP = #{COMMUNITY_TP} -- 04 삭제요청 / 07 단도박 / 08 자유게시판 ES_Q0138 나중에 03(커뮤니티)를 08로 바꿔야할듯? ES_Q0138
         ORDER BY INSERT_DTS DESC
-        LIMIT 15 OFFSET <!--#{MORE_BTN_COUNT}::INTEGER-->0 * 15
+        LIMIT 15 OFFSET #{CURRENT_PAGE}::INTEGER * 15
     </select>
 
     <select id="detail" resultType="hashmap" parameterType="hashmap">
@@ -106,5 +116,22 @@
             </foreach>
         </if>
     </insert>
+
+    <insert id="insertEsCommunityHit" parameterType="hashmap">
+        /*V2CommunityMapper.insertEsCommunityHit*/
+        INSERT INTO ES_COMMUNITY_HIT
+        (COMPANY_CD, SEQ, IP)
+        VALUES
+        (#{COMPANY_CD}, #{SEQ}, #{IP})
+        ON CONFLICT (COMPANY_CD, SEQ, IP) DO NOTHING
+    </insert>
+
+    <update id="hitPlus" parameterType="hashmap">
+        /*V2CommunityMapper.hitPlus*/
+        UPDATE ES_COMMUNITY
+        SET   HIT = (SELECT COALESCE(HIT, 0) + 1 FROM ES_COMMUNITY WHERE COMPANY_CD = #{COMPANY_CD} AND SEQ = #{SEQ})
+        WHERE  COMPANY_CD    = #{COMPANY_CD}
+          AND    SEQ = #{SEQ}
+    </update>
 
 </mapper>
