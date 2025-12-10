@@ -28,6 +28,7 @@ public class V2DmController {
 
     @GetMapping("create")
     public String create(Model model, @RequestParam HashMap<String, Object> param) {
+        V2DmService.create(model, param);
         return "/sc112/v2/dm/create";
     }
 }

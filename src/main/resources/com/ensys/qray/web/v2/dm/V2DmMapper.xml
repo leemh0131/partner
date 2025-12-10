@@ -3,77 +3,27 @@
 
 <mapper namespace="com.ensys.qray.web.v2.dm.V2DmMapper">
 
-    <select id="list" resultType="hashmap" parameterType="hashmap">
-        /*V2DmMapper.list*/
-        SELECT
-        (#{totalCount} - #{offset} - ROW_NUMBER() OVER (ORDER BY T."WRITE_DATE" DESC) + 1) AS "NUM"
-        , T.*
-        FROM (
-        SELECT
-        -- 이 줄 추가!! (최신 3개만 Y)
-            CASE
-            WHEN ROW_NUMBER() OVER (ORDER BY A.WRITE_DATE DESC) <![CDATA[ <= ]]> 3
-            THEN 'Y'
-            ELSE 'N'
-            END AS "NEW_YN"
-        , A.DM_CD AS "DM_CD"
-        , A.DM_TYPE AS "DM_TYPE"
-        , A.DM_KIND AS "DM_KIND"
-        , A.COMP_NM AS "COMP_NM"
-        , A.BORW_SITE AS "BORW_SITE"
-        , A.DEBTOR_TEL AS "DEBTOR_TEL"
-        , A.DEBTOR_KAKAO AS "DEBTOR_KAKAO"
-        , A.DEBTOR_TELE AS "DEBTOR_TELE"
-        , A.DEBTOR_SNS AS "DEBTOR_SNS"
-        , A.WITHDR_LOCA AS "WITHDR_LOCA"
-        , A.COMPL_POLICE AS "COMPL_POLICE"
-        , A.DM_CONTENTS AS "DM_CONTENTS"
-        , A.USE_YN AS "USE_YN"
-        , A.WRITE_DATE AS "WRITE_DATE"
-        , A.WRITE_IP AS "WRITE_IP"
-
-        , CASE
-        WHEN LENGTH(A.INSERT_DATE::TEXT) = 14 THEN
-        CONCAT(
-        SUBSTRING(A.INSERT_DATE::TEXT, 1, 4), '-',
-        SUBSTRING(A.INSERT_DATE::TEXT, 5, 2), '-',
-        SUBSTRING(A.INSERT_DATE::TEXT, 7, 2), ' ',
-        SUBSTRING(A.INSERT_DATE::TEXT, 9, 2), ':',
-        SUBSTRING(A.INSERT_DATE::TEXT, 11, 4)
-        )
-        WHEN LENGTH(A.INSERT_DATE::TEXT) = 8 THEN
-        CONCAT(
-        SUBSTRING(A.INSERT_DATE::TEXT, 1, 4), '-',
-        SUBSTRING(A.INSERT_DATE::TEXT, 5, 2), '-',
-        SUBSTRING(A.INSERT_DATE::TEXT, 7, 2)
-        )
-        WHEN A.INSERT_DATE IS NULL OR TRIM(A.INSERT_DATE::TEXT) = ''
-        THEN '0000-00-00 00:00'
-        ELSE A.INSERT_DATE::TEXT
-        END AS "INSERT_DATE_FORMATTED"
-
-        , A.INSERT_DATE AS "INSERT_DATE"
-        , A.UPDATE_DATE AS "UPDATE_DATE"
-        , A.PW AS "PW"
-        , 0 AS "VIEW_CNT"
-        , A.TEL_TEMP AS "TEL_TEMP"
-        , COALESCE(B.COMM_CNT, 0) AS "COMM_CNT"
-        , COALESCE(A.DM_TITLE, '제목없음') AS "DM_TITLE"
-        FROM PL_DM_M A
-        LEFT JOIN (
-        SELECT DM_CD, COUNT(1) AS COMM_CNT
+    <select id="listCount" resultType="int" parameterType="hashmap">
+        /*V2DmMapper.listCount*/
+        SELECT COUNT(*)
         FROM PL_DM_COMM
-        GROUP BY DM_CD
-        ) B ON A.DM_CD = B.DM_CD
-        ORDER BY A.WRITE_DATE DESC
-        LIMIT #{pageSize} OFFSET #{offset}
-        ) T
     </select>
 
-    <select id="getListCount" resultType="int" parameterType="hashmap">
-        /*V2DmMapper.getListCount*/
-        SELECT COUNT(1)
-        FROM PL_DM_COMM
+    <select id="list" resultType="hashmap" parameterType="hashmap">
+        /*V2DmMapper.list*/
+        SELECT    DM_CD AS "SEQ"
+                , F_NVL_TEXT(SUBSTRING(DM_CONTENTS, 1, 50), COMP_NM) AS "TITLE"
+                , ROW_NUMBER() OVER (ORDER BY INSERT_DATE) AS "COMM_NUM"
+                , SUBSTRING(COMP_NM, 1, 1) || 'OO' AS "NAME"
+                , TO_CHAR(SUBSTRING(INSERT_DATE, 1, 8)::DATE, 'YYYY-MM-DD HH:DD') AS "DTS"
+                , (SELECT COUNT(*) FROM PL_DM_COMM WHERE DM_CD = A.DM_CD) AS "COMM_CUT"
+                , CASE WHEN coalesce(HIT, 0) BETWEEN 0 AND 999 THEN coalesce(HIT, 0)::VARCHAR ELSE '999↑' END AS "HIT"
+                , CASE WHEN CURRENT_DATE - TO_DATE(SUBSTRING(REPLACE(INSERT_DATE, '-', ''), 1, 8), 'YYYYMMDD') > F_NVL_NUM(B.SYSDEF_CD::INTEGER, 7) THEN 'N' ELSE 'Y' END AS "NEW_VALUE"
+        FROM PL_DM_M A
+        LEFT JOIN (SELECT SYSDEF_CD FROM ES_CODEDTL WHERE FIELD_CD = 'ES_Q0141' AND FLAG1_CD = 'Y' LIMIT 1) B
+            ON 1 = 1
+        ORDER BY INSERT_DATE DESC
+        LIMIT 15 OFFSET (#{CURRENT_PAGE}::INTEGER - 1) * 15
     </select>
 
 </mapper>

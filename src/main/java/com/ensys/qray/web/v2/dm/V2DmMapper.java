@@ -9,8 +9,8 @@ import java.util.List;
 @Repository
 public interface V2DmMapper extends MyBatisMapper {
 
-    List<HashMap<String, Object>> list(HashMap<String, Object> param);
+    int listCount(HashMap<String, Object> param);
 
-    int getListCount(HashMap<String, Object> param);
+    List<HashMap<String, Object>> list(HashMap<String, Object> param);
 
 }

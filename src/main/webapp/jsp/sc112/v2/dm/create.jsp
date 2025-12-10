@@ -12,10 +12,16 @@
                     <div class="title" id="menuTitle">
                         <script>
                             $(function () {
-                                var $target = $("a[id*='" + location.pathname + location.search + "']");
-                                if ($target) {
-                                    $("#menuTitle").text($target.text());
-                                }
+                                $(function () {
+                                    var current = location.pathname + location.search;
+                                    var $target = $("a").filter(function () {
+                                        var idValue = $(this).attr("id");
+                                        return current.startsWith(idValue);
+                                    });
+                                    if ($target.length) {
+                                        $(".title").text($target.text());
+                                    }
+                                });
                             });
                         </script>
                     </div>
