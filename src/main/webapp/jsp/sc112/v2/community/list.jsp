@@ -4,6 +4,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="repeat" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="substring" uri="http://java.sun.com/jsp/jstl/functions" %>
+<c:set var="baseUrl" value="${pageContext.request.requestURI}" />
 <!doctype html>
 <html>
 <body id="wrap">
@@ -22,9 +23,13 @@
                     <div class="title" id="menuTitle">
                         <script>
                             $(function () {
-                                var $target = $("a[id*='" + location.pathname + location.search + "']");
+                                var $target = $("a[id*='" + location.pathname + location.search.replace(/&CURRENT_PAGE=\d+/, "") + "']");
                                 if ($target) {
                                     $("#menuTitle").text($target.text());
+                                    $(".start, .prev, .current, .current2, .next, .end").each(function () {
+                                        const href = $(this).attr("href");
+                                        $(this).attr("href", location.pathname + location.search.replace(/&CURRENT_PAGE=\d+/, "") + href);
+                                    });
                                     $(".list-create").attr("href", "/sc112/community/create" + location.search);
                                     $(".list-item").each(function () {
                                         const href = $(this).attr("href");
@@ -34,11 +39,6 @@
                                 }
                             });
                         </script>
-                    </div>
-                    <div class="sort">
-                        <select>
-                            <option>최신순</option>
-                        </select>
                     </div>
                 </div>
                 <div class="list">
@@ -65,9 +65,9 @@
                                     <span class="subject"><c:out value="${item.TITLE}"/></span>
                                     <span class="reply">(${item.COMM_CUT})</span>
                                     <!-- NEW 표시 조건 -->
-                                        <%--                                    <c:if test="${item.NEW_YN eq 'Y'}">--%>
-                                    <span class="icon icon_new"></span>
-                                        <%--                                    </c:if>--%>
+                                    <c:if test="${item.NEW_VALUE eq 'Y'}">
+                                        <span class="icon icon_new"></span>
+                                    </c:if>
                                 </a>
                             </li>
                             <!-- 작성자 (WRITE_IP) -->
@@ -82,43 +82,45 @@
 
                 </div>
 
-<div class="bottom">
-    <div class="pager" id="pagination">
+                <div class="bottom">
+                    <div class="pager" id="pagination">
 
-        <!-- 맨 처음 -->
-        <c:if test="${CURRENT_PAGE > 1}">
-            <a href="?page=1" class="start"></a>
-        </c:if>
+                        <!-- 맨 처음 -->
+                        <c:if test="${CURRENT_PAGE > 1}">
+                            <a href="&CURRENT_PAGE=1" class="start"></a>
+                        </c:if>
 
-        <!-- 이전 -->
-        <c:if test="${CURRENT_PAGE > 1}">
-            <a href="?page=${CURRENT_PAGE - 1}" class="prev"></a>
-        </c:if>
+                        <!-- 이전 -->
+                        <c:if test="${CURRENT_PAGE > 1}">
+                            <a href="&CURRENT_PAGE=${CURRENT_PAGE - 1}" class="prev"></a>
+                        </c:if>
 
-        <!-- 페이지 번호 -->
-        <c:forEach var="i" begin="${START_PAGE}" end="${END_PAGE}">
-            <c:choose>
-                <c:when test="${i == CURRENT_PAGE}">
-                    <a href="#" class="current">${i}</a>
-                </c:when>
-                <c:otherwise>
-                    <a href="?page=${i}">${i}</a>
-                </c:otherwise>
-            </c:choose>
-        </c:forEach>
+                        <!-- 페이지 번호 -->
+                        <c:forEach var="i" begin="${START_PAGE}" end="${END_PAGE}">
+                            <c:choose>
+                                <c:when test="${i == CURRENT_PAGE}">
+                                    <a href="&CURRENT_PAGE=${i}" class="current">${i}</a>
+                                </c:when>
+                                <c:otherwise>
+                                    <a href="&CURRENT_PAGE=${i}" class="current2">${i}</a>
+                                </c:otherwise>
+                            </c:choose>
+                        </c:forEach>
 
-        <!-- 다음 -->
-        <c:if test="${CURRENT_PAGE < TOTAL_PAGE}">
-            <a href="?page=${CURRENT_PAGE + 1}" class="next"></a>
-        </c:if>
+                        <!-- 다음 -->
+                        <c:if test="${CURRENT_PAGE < TOTAL_PAGE}">
+                            <a href="&CURRENT_PAGE=${CURRENT_PAGE + 1}" class="next"></a>
+                        </c:if>
 
-        <!-- 맨 끝 -->
-        <c:if test="${CURRENT_PAGE < TOTAL_PAGE}">
-            <a href="?page=${TOTAL_PAGE}" class="end"></a>
-        </c:if>
-
-    </div>
-</div>
+                        <!-- 맨 끝 -->
+                        <c:if test="${CURRENT_PAGE < TOTAL_PAGE}">
+                            <a href="&CURRENT_PAGE=${TOTAL_PAGE}" class="end"></a>
+                        </c:if>
+                    </div>
+                    <div class="button">
+                        <a href="" class="btn btn_01 list-create">글쓰기</a>
+                    </div>
+                </div>
 
             </div>
         </section>

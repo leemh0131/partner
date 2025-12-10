@@ -32,7 +32,7 @@
         AND COMMUNITY_ST = #{COMMUNITY_ST} --14(커뮤니티) / 15(고객센터) ES_Q0137
         AND COMMUNITY_TP = #{COMMUNITY_TP} -- 04 삭제요청 / 07 단도박 / 08 자유게시판 ES_Q0138 나중에 03(커뮤니티)를 08로 바꿔야할듯? ES_Q0138
         ORDER BY INSERT_DTS DESC
-        LIMIT 15 OFFSET #{CURRENT_PAGE}::INTEGER * 15
+        LIMIT 15 OFFSET (#{CURRENT_PAGE}::INTEGER - 1) * 15
     </select>
 
     <select id="detail" resultType="hashmap" parameterType="hashmap">
@@ -40,6 +40,7 @@
         SELECT    SEQ       AS "SEQ"
                 , TITLE     AS "TITLE"
                 , CONTENTS  AS "CONTENTS"
+                , NAME AS "NAME"
                 , TO_CHAR(TO_TIMESTAMP(INSERT_DTS, 'YYYYMMDDHH24MISS'), 'YYYY-MM-DD') AS "INSERT_DTS"
 --                 , TO_CHAR(TO_TIMESTAMP(INSERT_DTS, 'YYYYMMDDHH24MISS'), 'YYYY-MM-DD HH24:MI:SS')
         FROM ES_COMMUNITY

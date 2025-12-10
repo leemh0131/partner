@@ -20,7 +20,7 @@
                         </dd>
                     </dl>
                     <dl>
-                        <dt>닉네임 : ${item.TITLE} 작성날짜 : ${item.INSERT_DTS}</dt>
+                        <dt>닉네임 : ${item.NAME} 작성날짜 : ${item.INSERT_DTS}</dt>
                     </dl>
                     <dl>
                         <dt>링크</dt>

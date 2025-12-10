@@ -11,6 +11,8 @@
     <script type="text/javascript" src="/jsp/sc112/v2/assets/js/jquery-3.7.1.min.js"></script>
     <script type="text/javascript" src="/jsp/sc112/v2/assets/js/swiper.js"></script>
     <script type="text/javascript" src="/jsp/sc112/v2/assets/js/common.js"></script>
+
+    <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
 </head>
 <header id="header">
     <div class="wrap">

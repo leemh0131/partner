@@ -25,7 +25,7 @@
                 <div class="content">
                     <div class="head">
                         <div class="title">상세정보</div>
-                        <div class="like">12</div>
+<%--                        <div class="like">12</div>--%>
                     </div>
                     <div class="text">
                         <dl>

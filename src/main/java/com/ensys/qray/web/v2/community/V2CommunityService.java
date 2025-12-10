@@ -14,6 +14,7 @@ import java.util.List;
 
 import static com.chequer.axboot.core.utils.HttpUtils.getRemoteAddress;
 import static com.ensys.qray.utils.HammerUtility.nowDate;
+import static java.lang.Integer.*;
 import static java.lang.Math.*;
 
 @Service
@@ -29,30 +30,37 @@ public class V2CommunityService {
 
     public void list(Model model, HashMap<String, Object> param) {
         param.put("COMPANY_CD", "1000");
-        int pageSize = param.get("PAGE_SIZE") == null ? 10 : Integer.parseInt(param.get("PAGE_SIZE").toString());
-
         // 요청 파라미터
-        int currentPage = param.get("CURRENT_PAGE") == null ? 1 : Integer.parseInt(param.get("CURRENT_PAGE").toString());
-
-        // 전체 게시글 수
+        int currentPage = param.get("CURRENT_PAGE") == null ? 1 : parseInt(param.get("CURRENT_PAGE").toString());
         int listCount = v2CommunityMapper.listCount(param);
-        int totalPage = (int) ceil((double) listCount / pageSize);
+        int totalPage = (int) Math.ceil((double) listCount / 15);
 
-        // 슬라이딩 윈도우 (앞뒤로 2개)
-        int pageWindow = 2;
-        int startPage = currentPage - pageWindow;
-        int endPage   = currentPage + pageWindow;
+        int window = 5; // 화면에 보여줄 페이지 개수
+        int half = window / 2;
 
-        // 범위 보정
+        int startPage = currentPage - half;
+        int endPage = currentPage + half;
+
+        // 왼쪽 부족하면 오른쪽을 채움
+        if (startPage < 1) {
+            endPage += (1 - startPage);
+            startPage = 1;
+        }
+
+        // 오른쪽 부족하면 왼쪽을 채움
+        if (endPage > totalPage) {
+            startPage -= (endPage - totalPage);
+            endPage = totalPage;
+        }
+
+        // 최종 범위 보정
         if (startPage < 1) startPage = 1;
-        if (endPage > totalPage) endPage = totalPage;
 
         model.addAttribute("list", v2CommunityMapper.list(param));
         model.addAttribute("CURRENT_PAGE", currentPage);
         model.addAttribute("START_PAGE", startPage);
         model.addAttribute("END_PAGE", endPage);
         model.addAttribute("TOTAL_PAGE", totalPage);
-        model.addAttribute("PAGE_SIZE", pageSize);
     }
 
     public void detail(Model model, HashMap<String, Object> param) {
