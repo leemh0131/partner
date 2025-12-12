@@ -36,7 +36,7 @@
                         <dd>
                             <div class="flex">
                                 <div class="select">
-                                    <select name="DM_TYPE">
+                                    <select name="DM_TYPE" class="DM_TYPE">
                                         <c:forEach var="code" items="${codes}">
                                             <c:if test="${code.FIELD_CD eq 'ES_Q0139'}">
                                             <option value="${code.SYSDEF_CD}">${code.SYSDEF_NM}</option>
@@ -47,7 +47,7 @@
                             </div>
                         </dd>
                     </dl>
-                    <dl>
+                    <dl id="DM_KIND" style="display: none;">
                         <dt>피해종류</dt>
                         <dd>
                             <div class="flex">
@@ -128,7 +128,7 @@
                                 <div class="input"><input name="NO_DEPOSIT" type="text" placeholder="계좌번호를 입력하세요."></div>
                                 <div class="flex">
                                     <div class="input w200"><input name="NM_DEPOSITOR" type="text" placeholder="입금자명"></div>
-                                    <div class="bttn"><a href="#" class="btn">추가</a></div>
+                                    <div class="bttn"><a href="#" class="btn bank">추가</a></div>
                                 </div>
                             </div>
                         </dd>
@@ -138,7 +138,7 @@
                         <dd>
                             <div class="flex">
                                 <div class="input"><input name="WITHDR_LOCA" type="text" placeholder="스마트출금위치"></div>
-                                <div class="bttn"><a href="#" class="btn">추가</a></div>
+                                <div class="bttn"><a href="#" class="btn smart">추가</a></div>
                             </div>
                         </dd>
                     </dl>
@@ -172,9 +172,6 @@
                     <a href="#" class="btn btn_01" onclick="submitCreateForm();">등록</a>
                 </div>
                 <script>
-                    //피해구분 불법대부업일떄 피해종류 숨기기
-                    //상환계좌 추가 or 삭제
-                    //스마트 출금위치 추가 or 삭제
                     function submitCreateForm() {
                         const dmType = $("#DM_TYPE").val();
                         const dmKind = $("#DM_KIND").val();
@@ -184,9 +181,6 @@
                         const debtorKakao = $("input[name='DEBTOR_KAKAO']").val().trim();
                         const debtorTele = $("input[name='DEBTOR_TELE']").val().trim();
                         const debtorSns = $("input[name='DEBTOR_SNS']").val().trim();
-                        // const bankCd = $("#BANK_CD").val().trim();
-                        // const noDeposit = $("input[name='NO_DEPOSIT']").val().trim();
-                        // const nm_depositor = $("input[name='NM_DEPOSITOR']").val().trim();
                         const withdrLoca = $("input[name='WITHDR_LOCA']").map(function() {return $(this).val().trim();}).get().join(',')
                         const complPolice = $("input[name='COMPL_POLICE']").val().trim();
                         const dmContents = $("textarea[name='DM_CONTENTS']").val().trim();
@@ -212,10 +206,109 @@
                         $('input[name="BANK_CD_ARR"]').val($('select[name="BANK_CD"]').toArray().map(s => s.value).join('|'));
                         $('input[name="NO_DEPOSIT_ARR"]').val($('input[name="NO_DEPOSIT"]').toArray().map(s => s.value).join('|'));
                         $('input[name="NM_DEPOSITOR_ARR"]').val($('input[name="NM_DEPOSITOR"]').toArray().map(s => s.value).join('|'));
-                        // $("input[name='BANK_INFO']").val(bankCd + '|' + noDeposit + '|'  + nm_depositor);
                         $("input[name='WITHDR_LOCA_ARR']").val(withdrLoca);
                         $("#createForm").submit();
                     }
+                    $(document).on("change", ".DM_TYPE", function () {
+                        if ("001" === $(this).val()) {
+                            $("#DM_KIND").hide();
+                        } else {
+                            $("#DM_KIND").show();
+                        }
+                    });
+                    $(function () {
+                        $(document).on("click", "dd > .flex .btn.smart", function (e) {
+                            e.preventDefault();
+                            let currentFlex = $(this).closest(".flex");
+                            let area = currentFlex.closest("dd");
+                            let isAdd = $(this).hasClass("add") || !$(this).hasClass("delete");
+
+                            if (isAdd) {
+                                $(this)
+                                    .removeClass("add")
+                                    .addClass("delete")
+                                    .html('<i class="icon icon_delete"></i>제거');
+                                let newFlex =
+                                    `<div class="flex">
+                                        <div class="input">
+                                            <input name="WITHDR_LOCA" type="text" placeholder="스마트출금위치">
+                                        </div>
+                                        <div class="bttn"><a href="#" class="btn smart">추가</a></div>
+                                    </div>`;
+                                area.append(newFlex);
+                            }
+                        });
+                        $(document).on("click", "dd > .flex .btn.delete.smart", function (e) {
+                            e.preventDefault();
+                            let area = $(this).closest("dd");
+                            $(this).closest(".flex").remove();
+                            let lastFlex = area.find(".flex").last();
+
+                            area.find(".flex .btn.smart")
+                                .removeClass("add")
+                                .addClass("delete")
+                                .html('<i class="icon icon_delete"></i>제거');
+
+                            lastFlex.find(".btn.smart")
+                                .removeClass("delete")
+                                .addClass("add")
+                                .html('<i class="icon icon_plus"></i>추가');
+                        });
+                    });
+
+                    $(function () {
+                        $(document).on("click", "dd > .flex .btn.bank", function (e) {
+                            e.preventDefault();
+                            let currentFlex = $(this).closest(".flex");
+                            let area = currentFlex.closest("dd");
+                            let isAdd = $(this).hasClass("add") || !$(this).hasClass("delete");
+
+                            if (isAdd) {
+                                $(this)
+                                    .removeClass("add")
+                                    .addClass("delete")
+                                    .html('<i class="icon icon_delete"></i>제거');
+
+                                let newFlex =
+                                    `<div class="flex col first">
+                                        <div class="select w200">
+                                            <select name="BANK_CD">
+                                                <option>은행명</option>
+                                            </select>
+                                        </div>
+                                        <div class="input"><input name="NO_DEPOSIT" type="text" placeholder="계좌번호를 입력하세요."></div>
+                                        <div class="flex">
+                                            <div class="input w200"><input name="NM_DEPOSITOR" type="text" placeholder="입금자명"></div>
+                                            <div class="bttn"><a href="#" class="btn bank add">추가</a></div>
+                                        </div>
+                                    </div>`;
+
+                                area.append(newFlex);
+                            }
+                        });
+
+                        // 제거 버튼 클릭 시
+                        $(document).on("click", "dd > .flex .btn.delete.bank", function (e) {
+                            e.preventDefault();
+                            let area = $(this).closest("dd");
+                            $(this).closest(".flex.col").remove();
+
+                            let lastFlex = area.find(".flex.col").last();
+
+                            // 전체 버튼을 제거 버튼으로 통일
+                            area.find(".flex .btn.bank")
+                                .removeClass("add")
+                                .addClass("delete")
+                                .html('제거');
+
+                            // 마지막만 추가 버튼으로 변경
+                            lastFlex.find(".btn.bank")
+                                .removeClass("delete")
+                                .addClass("add")
+                                .html('추가');
+                        });
+                    });
+
                 </script>
             </div>
         </section>
