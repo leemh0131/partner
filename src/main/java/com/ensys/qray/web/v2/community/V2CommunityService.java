@@ -15,7 +15,6 @@ import java.util.List;
 import static com.chequer.axboot.core.utils.HttpUtils.getRemoteAddress;
 import static com.ensys.qray.utils.HammerUtility.nowDate;
 import static java.lang.Integer.*;
-import static java.lang.Math.*;
 
 @Service
 @Transactional

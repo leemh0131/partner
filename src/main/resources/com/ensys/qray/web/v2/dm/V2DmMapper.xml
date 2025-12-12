@@ -26,4 +26,73 @@
         LIMIT 15 OFFSET (#{CURRENT_PAGE}::INTEGER - 1) * 15
     </select>
 
+    <insert id="create" parameterType="hashmap">
+        /*V2DmMapper.create*/
+        INSERT INTO PL_DM_M (
+              DM_CD
+            , DM_TYPE
+            , DM_KIND
+            , COMP_NM
+            , BORW_SITE
+            , DEBTOR_TEL
+            , DEBTOR_KAKAO
+            , DEBTOR_TELE
+            , DEBTOR_SNS
+            , WITHDR_LOCA
+            , COMPL_POLICE
+            , DM_CONTENTS
+            , PW
+            , USE_YN
+            , WRITE_DATE
+            , WRITE_IP
+            , INSERT_DATE
+            , UPDATE_DATE
+        ) VALUES (
+              #{DM_CD}
+            , #{DM_TYPE}
+            , #{DM_KIND}
+            , #{COMP_NM}
+            , #{BORW_SITE}
+            , #{DEBTOR_TEL}
+            , #{DEBTOR_KAKAO}
+            , #{DEBTOR_TELE}
+            , #{DEBTOR_SNS}
+            , #{WITHDR_LOCA_ARR}
+            , #{COMPL_POLICE}
+            , #{DM_CONTENTS}
+            , #{PW}
+            , 'Y'
+            , #{WRITE_DATE}
+            , #{WRITE_IP}
+            , #{INSERT_DATE}
+            , #{UPDATE_DATE}
+        )
+    </insert>
+
+    <insert id="createDeposit" parameterType="hashmap">
+        /*V2DmMapper.createDeposit*/
+        <if test="BANK_CD_ARR != null and BANK_CD_ARR != ''">
+            <foreach item="bankCd" index="index" collection='BANK_CD_ARR.split("\\|")' separator=";">
+                INSERT INTO PL_DM_DEPOSIT (
+                      DM_CD
+                    , SEQ
+                    , BANK_CD
+                    , NO_DEPOSIT
+                    , NM_DEPOSITOR
+                    , USE_YN
+                    , INSERT_DATE
+                    , UPDATE_DATE
+                ) VALUES (
+                      #{DM_CD}
+                    , #{index} + 1
+                    , SPLIT_PART(#{BANK_CD_ARR}, '|', #{index} + 1) -- BANK_CD
+                    , SPLIT_PART(#{NO_DEPOSIT_ARR}, '|', #{index} + 1) -- NO_DEPOSIT
+                    , SPLIT_PART(#{NM_DEPOSITOR_ARR}, '|', #{index} + 1) -- NM_DEPOSITOR
+                    , 'Y'
+                    , #{INSERT_DATE}
+                    , #{UPDATE_DATE}
+                )
+            </foreach>
+        </if>
+    </insert>
 </mapper>
