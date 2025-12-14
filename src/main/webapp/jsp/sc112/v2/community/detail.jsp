@@ -1,5 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!doctype html>
 <html>
 <body id="wrap">
@@ -91,27 +92,25 @@
                     });
                 </script>
             </div>
-            <div id="bbs_detail">
+            <div id="bbs_detail" style="margin-top: 30px;">
                 <div class="comment">
-                    <div class="title">댓글 (12)</div>
-                    <div class="form">
+                    <div class="title">댓글 (${fn:length(comments)})</div>
+                    <form class="form" id="createCommonForm" action="/sc112/community/create/comment" method="POST">
+                        <input type="text" name="SEQ" value="${item.SEQ}" hidden="hidden">
                         <div class="input">
-                            <div class="inp"><input type="text" placeholder="닉네임"></div>
-                            <div class="inp"><input type="password" placeholder="비밀번호"></div>
+                            <div class="inp"><input name="NICK_NM" type="text" placeholder="닉네임"></div>
+                            <div class="inp"><input name="PASSWORD" type="password" placeholder="비밀번호"></div>
                         </div>
                         <div class="textarea">
-                            <div class="text"><textarea id="commentArea"
-                                                        placeholder="타인의 권리를 침해하거나 명예를 훼손하는 댓글은 관련 법률에 의해 제재를 받을 수 있습니다."></textarea>
+                            <div class="text"><textarea name="CONTENTS" id="commentArea" placeholder="타인의 권리를 침해하거나 명예를 훼손하는 댓글은 관련 법률에 의해 제재를 받을 수 있습니다."></textarea>
                             </div>
                             <div class="tool">
                                 <div class="util">
-                                    <label class="camera"><input type="file"><i class="icon icon_camera"></i><span
-                                            class="blind">이미지 등록</span></label>
-                                    <button class="imoji"><i class="icon icon_imoji"></i><span
-                                            class="blind">이모지 선택</span></button>
+<%--                                    <label class="camera"><input type="file"><i class="icon icon_camera"></i><span class="blind">이미지 등록</span></label>--%>
+                                    <button class="imoji"><i class="icon icon_imoji"></i><span class="blind">이모지 선택</span></button>
                                 </div>
                                 <div class="bttn">
-                                    <button type="button">등록</button>
+                                    <button type="submit">등록</button>
                                 </div>
                             </div>
                         </div>
@@ -160,10 +159,10 @@
                                 });
                             });
                         </script>
-                    </div>
+                    </form>
                     <div class="list">
                         <ul>
-                            <li>
+                            <%--<li>
                                 <div class="cmmt">
                                     <div class="top">
                                         <div class="ico"><img src="/jsp/sc112/v2/assets/img/profile.svg"></div>
@@ -177,7 +176,7 @@
                                         <a href="#">수정</a>
                                         <a href="#">삭제</a>
                                         <a href="#">답글</a>
-                                        <a href="#">신고</a>
+&lt;%&ndash;                                        <a href="#">신고</a>&ndash;%&gt;
                                     </div>
                                 </div>
                                 <div class="cmmt rep">
@@ -192,7 +191,7 @@
                                         <a href="#">수정</a>
                                         <a href="#">삭제</a>
                                         <a href="#">답글</a>
-                                        <a href="#">신고</a>
+&lt;%&ndash;                                        <a href="#">신고</a>&ndash;%&gt;
                                     </div>
                                 </div>
                                 <div class="form">
@@ -201,16 +200,12 @@
                                         <div class="inp"><input type="password" placeholder="비밀번호"></div>
                                     </div>
                                     <div class="textarea">
-                                        <div class="text"><textarea
-                                                placeholder="타인의 권리를 침해하거나 명예를 훼손하는 댓글은 관련 법률에 의해 제재를 받을 수 있습니다."></textarea>
+                                        <div class="text"><textarea placeholder="타인의 권리를 침해하거나 명예를 훼손하는 댓글은 관련 법률에 의해 제재를 받을 수 있습니다."></textarea>
                                         </div>
                                         <div class="tool">
                                             <div class="util">
-                                                <label class="camera"><input type="file"><i
-                                                        class="icon icon_camera"></i><span
-                                                        class="blind">이미지 등록</span></label>
-                                                <button class="imoji"><i class="icon icon_imoji"></i><span
-                                                        class="blind">이모지 선택</span></button>
+&lt;%&ndash;                                                <label class="camera"><input type="file"><i class="icon icon_camera"></i><span class="blind">이미지 등록</span></label>&ndash;%&gt;
+                                                <button class="imoji"><i class="icon icon_imoji"></i><span class="blind">이모지 선택</span></button>
                                             </div>
                                             <div class="bttn">
                                                 <button type="button">등록</button>
@@ -218,8 +213,8 @@
                                         </div>
                                     </div>
                                 </div>
-                            </li>
-                            <li>
+                            </li>--%>
+                            <%--<li>
                                 <div class="cmmt">
                                     <div class="top">
                                         <div class="ico"><img src="/jsp/sc112/v2/assets/img/profile.svg"></div>
@@ -233,69 +228,15 @@
                                         <a href="#">수정</a>
                                         <a href="#">삭제</a>
                                         <a href="#">답글</a>
-                                        <a href="#">신고</a>
+&lt;%&ndash;                                        <a href="#">신고</a>&ndash;%&gt;
                                     </div>
                                 </div>
-                            </li>
-                            <li>
-                                <div class="cmmt">
-                                    <div class="top">
-                                        <div class="ico"><img src="/jsp/sc112/v2/assets/img/profile.svg"></div>
-                                        <div class="con">
-                                            <div class="name">김****</div>
-                                            <div class="date">2022-04-30 15:00</div>
-                                        </div>
-                                    </div>
-                                    <div class="text">추심 피해가 너무 심각합니다.</div>
-                                    <div class="tool">
-                                        <a href="#">수정</a>
-                                        <a href="#">삭제</a>
-                                        <a href="#">답글</a>
-                                        <a href="#">신고</a>
-                                    </div>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="cmmt">
-                                    <div class="top">
-                                        <div class="ico"><img src="/jsp/sc112/v2/assets/img/profile.svg"></div>
-                                        <div class="con">
-                                            <div class="name">김****</div>
-                                            <div class="date">2022-04-30 15:00</div>
-                                        </div>
-                                    </div>
-                                    <div class="text">추심 피해가 너무 심각합니다.</div>
-                                    <div class="tool">
-                                        <a href="#">수정</a>
-                                        <a href="#">삭제</a>
-                                        <a href="#">답글</a>
-                                        <a href="#">신고</a>
-                                    </div>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="cmmt">
-                                    <div class="top">
-                                        <div class="ico"><img src="/jsp/sc112/v2/assets/img/profile.svg"></div>
-                                        <div class="con">
-                                            <div class="name">김****</div>
-                                            <div class="date">2022-04-30 15:00</div>
-                                        </div>
-                                    </div>
-                                    <div class="text">추심 피해가 너무 심각합니다.</div>
-                                    <div class="tool">
-                                        <a href="#">수정</a>
-                                        <a href="#">삭제</a>
-                                        <a href="#">답글</a>
-                                        <a href="#">신고</a>
-                                    </div>
-                                </div>
-                            </li>
+                            </li>--%>
                         </ul>
                     </div>
-                    <div class="more">
+                    <%--<div class="more">
                         <a href="#">더보기</a>
-                    </div>
+                    </div>--%>
                     <div class="button">
                         <a href="#<%--/sc112/dm/list?DM_TYPE=001--%>" class="btn btn_01">목록</a>
                     </div>

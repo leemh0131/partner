@@ -17,7 +17,6 @@ public interface V2CommunityMapper extends MyBatisMapper {
 
     void create(HashMap<String, Object> param);
 
-
     List<HashMap<String, Object>> detailLinks(HashMap<String, Object> param);
 
     void createLink(HashMap<String, Object> param);
@@ -26,4 +25,7 @@ public interface V2CommunityMapper extends MyBatisMapper {
 
     int hitPlus(HashMap<String, Object> param);
 
+    void createComment(HashMap<String, Object> param);
+
+    List<HashMap<String, Object>> comments(HashMap<String, Object> param);
 }

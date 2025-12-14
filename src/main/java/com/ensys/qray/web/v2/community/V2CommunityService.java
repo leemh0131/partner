@@ -67,6 +67,7 @@ public class V2CommunityService {
         param.put("TABLE_ID", param.get("SEQ"));
         model.addAttribute("item", v2CommunityMapper.detail(param));
         model.addAttribute("links", v2CommunityMapper.detailLinks(param));
+        model.addAttribute("comments", v2CommunityMapper.comments(param));
         model.addAttribute("files", fileService.simpleSearch(param));
 
         param.put("DM_CD", param.get("SEQ"));
@@ -105,5 +106,22 @@ public class V2CommunityService {
     public List<HashMap<String, Object>> getFile(HashMap<String, Object> param) {
         param.put("COMPANY_CD", "1000");
         return fileService.simpleSearch(param);
+    }
+
+    public void createComment(HashMap<String, Object> param) {
+        String nowDate = nowDate("yyyyMMddHHmmss");
+        param.put("COMPANY_CD", "1000");
+        param.put("MODULE_CD", "MA");
+        param.put("CLASS_CD", "27");
+        param.put("strDate", nowDate);
+
+        sysInformation08Mapper.upsertNo(param);
+        HashMap<String, Object> getNo = sysInformation08Mapper.getNo(param);
+
+        param.put("COMM_CD", getNo.get("NO"));
+        param.put("WRITE_IP", getRemoteAddress());
+        param.put("WRITE_DATE", nowDate);
+        param.put("INSERT_DATE", nowDate);
+        v2CommunityMapper.createComment(param);
     }
 }

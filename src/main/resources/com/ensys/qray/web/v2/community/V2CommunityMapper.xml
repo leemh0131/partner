@@ -135,4 +135,53 @@
           AND    SEQ = #{SEQ}
     </update>
 
+	<insert id="createComment" parameterType="hashmap" statementType="CALLABLE">
+		/*V2CommunityMapper.createComment*/
+		INSERT INTO PL_DM_COMM (
+			  DM_CD
+			, COMM_CD
+			, PARENT_CD
+			, NICK_NM
+			, PASSWORD
+			, CONTENTS
+			, USE_YN
+			, REPORT_YN
+			, WRITE_DATE
+			, WRITE_IP
+			, INSERT_DATE
+		)VALUES(
+			  #{SEQ}
+			, #{COMM_CD}
+			, #{PARENT_CD}
+			, #{NICK_NM}
+			, #{PASSWORD}
+			, #{CONTENTS}
+			, 'Y'
+			, #{REPORT_YN}
+			, #{WRITE_DATE}
+			, #{WRITE_IP}
+			, #{INSERT_DATE}
+		)
+	</insert>
+
+
+    <select id="comments" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+        /*V2CommunityMapper.comments*/
+        SELECT    A.DM_CD          AS "DM_CD"
+                , A.COMM_CD        AS "COMM_CD"
+                , A.PARENT_CD      AS "PARENT_CD"
+                , A.NICK_NM        AS "NICK_NM"
+                , A.CONTENTS       AS "CONTENTS"
+                , A.USE_YN         AS "USE_YN"
+                , A.REPORT_YN      AS "REPORT_YN"
+                , A.WRITE_DATE     AS "WRITE_DATE"
+                , CASE WHEN
+                    CURRENT_DATE - TO_DATE(SUBSTRING(REPLACE(A.WRITE_DATE, '-', ''), 1, 8), 'YYYYMMDD') > F_NVL_NUM(B.SYSDEF_CD::INTEGER, 7) THEN 'N'
+                    ELSE 'Y'
+                END AS "NEW_VALUE"
+        FROM PL_DM_COMM A
+        LEFT JOIN (SELECT SYSDEF_CD FROM ES_CODEDTL WHERE FIELD_CD = 'ES_Q0141' AND FLAG1_CD = 'Y' LIMIT 1) B
+            ON 1 = 1
+        WHERE DM_CD = #{SEQ}
+    </select>
 </mapper>

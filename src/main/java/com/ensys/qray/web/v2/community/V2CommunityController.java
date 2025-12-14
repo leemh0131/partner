@@ -73,4 +73,11 @@ public class V2CommunityController {
 				.contentType(MediaType.APPLICATION_OCTET_STREAM)
 				.body(resource);
 	}
+
+
+    @PostMapping("create/comment")
+    public String createComment(Model model, @RequestParam HashMap<String, Object> param) {
+        v2CommunityService.createComment(param);
+        return "redirect:/sc112/community/detail?COMMUNITY_TP=" + param.get("COMMUNITY_TP") + "&COMMUNITY_ST=" + param.get("COMMUNITY_ST") + "&SEQ=" + param.get("SEQ");
+    }
 }

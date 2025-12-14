@@ -202,7 +202,7 @@
                             });
                         </script>
                     </div>
-                    <div class="list">
+                    <%--<div class="list">
                         <ul>
                             <li>
                                 <div class="cmmt">
@@ -333,7 +333,7 @@
                                 </div>
                             </li>
                         </ul>
-                    </div>
+                    </div>--%>
                     <div class="more">
                         <a href="#">더보기</a>
                     </div>
