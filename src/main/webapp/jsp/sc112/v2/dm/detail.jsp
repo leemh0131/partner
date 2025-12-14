@@ -1,5 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!doctype html>
 <html>
 <body id="wrap">
@@ -15,54 +16,72 @@
                     </a>
                 </div>
                 <div class="header">
-                    <div class="title">다산정약용함 볼만</div>
+                    <div class="title">${detail.COMP_NM}</div>
                     <div class="info">
-                        <p>키륵키륵</p>
-                        <p>2025-04-20 18:15</p>
-                        <p>1,524,000회</p>
+                        <p>${detail.DM_TYPE}</p>
+<%--                        <p>키륵키륵</p>--%>
+                        <p>${detail.WRITE_DATE}</p>
+<%--                        <p>${detail.HIT}회</p>--%>
                     </div>
                 </div>
                 <div class="content">
                     <div class="head">
                         <div class="title">상세정보</div>
-<%--                        <div class="like">12</div>--%>
                     </div>
                     <div class="text">
+                        <c:if test="${not empty detail.DM_KIND}">
+                            <dl>
+                                <dt>피해종류</dt>
+                                <dd>${detail.DM_KIND}</dd>
+                            </dl>
+                        </c:if>
                         <dl>
                             <dt>차용사이트</dt>
-                            <dd>대대이</dd>
+                            <dd>${detail.BORW_SITE}</dd>
                         </dl>
                         <dl>
                             <dt>연락처</dt>
-                            <dd>010-5986-8922</dd>
+                            <dd>${detail.DEBTOR_TEL}</dd>
                         </dl>
                         <dl>
                             <dt>카카오톡</dt>
-                            <dd>kk11</dd>
+                            <dd>${detail.DEBTOR_KAKAO}</dd>
                         </dl>
                         <dl>
                             <dt>텔레그램</dt>
-                            <dd>kk11</dd>
+                            <dd>${detail.DEBTOR_TELE}</dd>
                         </dl>
                         <dl>
                             <dt>기타 SNS</dt>
-                            <dd>kk11</dd>
+                            <dd>${detail.DEBTOR_SNS}</dd>
                         </dl>
                         <dl>
                             <dt>상환계좌</dt>
-                            <dd>농협 356-922-25**** (김안녕)</dd>
+                            <dd>
+                                <ul>
+                                    <c:forEach var="deposit" items="${detailDeposit}">
+                                        <li>${deposit.DEPOSIT}</li>
+                                    </c:forEach>
+                                </ul>
+                            </dd>
                         </dl>
                         <dl>
                             <dt>스마트출금 위치</dt>
-                            <dd>경기도 의정부</dd>
+                            <dd>
+                                <ul>
+                                    <c:forEach var="loca" items="${fn:split(detail.WITHDR_LOCA, ',')}">
+                                        <li>${fn:trim(loca)}</li>
+                                    </c:forEach>
+                                </ul>
+                            </dd>
                         </dl>
                         <dl>
                             <dt>피해내용</dt>
-                            <dd>악질입니다. 현재 강원청에서 수사중입니다.</dd>
+                            <dd>${detail.DM_CONTENTS}</dd>
                         </dl>
                         <dl>
                             <dt>고소한 경찰서</dt>
-                            <dd>서울 금천 경찰서</dd>
+                            <dd>${detail.COMPL_POLICE}</dd>
                         </dl>
                     </div>
                 </div>
@@ -71,78 +90,21 @@
                     <div class="list">
                         <div class="slider" id="relation_slider">
                             <ul class="swiper-wrapper">
-                                <li class="swiper-slide">
-                                    <div class="name">박이사</div>
-                                    <div class="info">
-                                        <p>연락처 : 010-5986-8922</p>
-                                        <p>카카오톡 : 모름</p>
-                                        <p>텔레그램 : 모름</p>
-                                        <p>기타SNS : 모름</p>
-                                    </div>
-                                    <div class="more">
-                                        <a href="#">자세히 보기</a>
-                                    </div>
-                                </li>
-                                <li class="swiper-slide">
-                                    <div class="name">박이사</div>
-                                    <div class="info">
-                                        <p>연락처 : 010-5986-8922</p>
-                                        <p>카카오톡 : 모름</p>
-                                        <p>텔레그램 : 모름</p>
-                                        <p>기타SNS : 모름</p>
-                                    </div>
-                                    <div class="more">
-                                        <a href="#">자세히 보기</a>
-                                    </div>
-                                </li>
-                                <li class="swiper-slide">
-                                    <div class="name">박이사</div>
-                                    <div class="info">
-                                        <p>연락처 : 010-5986-8922</p>
-                                        <p>카카오톡 : 모름</p>
-                                        <p>텔레그램 : 모름</p>
-                                        <p>기타SNS : 모름</p>
-                                    </div>
-                                    <div class="more">
-                                        <a href="#">자세히 보기</a>
-                                    </div>
-                                </li>
-                                <li class="swiper-slide">
-                                    <div class="name">박이사</div>
-                                    <div class="info">
-                                        <p>연락처 : 010-5986-8922</p>
-                                        <p>카카오톡 : 모름</p>
-                                        <p>텔레그램 : 모름</p>
-                                        <p>기타SNS : 모름</p>
-                                    </div>
-                                    <div class="more">
-                                        <a href="#">자세히 보기</a>
-                                    </div>
-                                </li>
-                                <li class="swiper-slide">
-                                    <div class="name">박이사</div>
-                                    <div class="info">
-                                        <p>연락처 : 010-5986-8922</p>
-                                        <p>카카오톡 : 모름</p>
-                                        <p>텔레그램 : 모름</p>
-                                        <p>기타SNS : 모름</p>
-                                    </div>
-                                    <div class="more">
-                                        <a href="#">자세히 보기</a>
-                                    </div>
-                                </li>
-                                <li class="swiper-slide">
-                                    <div class="name">박이사</div>
-                                    <div class="info">
-                                        <p>연락처 : 010-5986-8922</p>
-                                        <p>카카오톡 : 모름</p>
-                                        <p>텔레그램 : 모름</p>
-                                        <p>기타SNS : 모름</p>
-                                    </div>
-                                    <div class="more">
-                                        <a href="#">자세히 보기</a>
-                                    </div>
-                                </li>
+                                <c:forEach var="relation" items="${relationList}">
+                                    <li class="swiper-slide">
+                                        <div class="name">${relation.COMP_NM}</div>
+                                        <div class="info">
+                                            <p>연락처 : ${relation.DEBTOR_TEL}</p>
+                                            <p>카카오톡 : ${relation.DEBTOR_KAKAO}</p>
+                                            <p>텔레그램 : ${relation.DEBTOR_TELE}</p>
+                                            <p>기타SNS : ${relation.DEBTOR_SNS}</p>
+                                            <p>고소경찰서 : ${relation.WITHDR_LOCA}</p>
+                                        </div>
+                                        <div class="more">
+                                            <a href="/sc112/dm/detail?DM_TYPE=001&DM_CD=${relation.DM_CD}">자세히 보기</a>
+                                        </div>
+                                    </li>
+                                </c:forEach>
                             </ul>
                         </div>
                         <button type="button" class="swiper-button-prev"><span class="blind">이전</span></button>
@@ -378,7 +340,7 @@
                         <a href="#">더보기</a>
                     </div>
                     <div class="button">
-                        <a href="#" class="btn btn_01">목록</a>
+                        <a href="/sc112/dm/list?DM_TYPE=001" class="btn btn_01">목록</a>
                     </div>
                 </div>
                 <div id="emoji-picker-container" style="display:none; position:absolute; z-index:999;"></div>

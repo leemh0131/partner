@@ -13,7 +13,16 @@ public interface V2DmMapper extends MyBatisMapper {
 
     List<HashMap<String, Object>> list(HashMap<String, Object> param);
 
+    HashMap<String, Object> detail(HashMap<String, Object> param);
+
+    List<HashMap<String, Object>> detailDeposit(HashMap<String, Object> param);
+
     int create(HashMap<String, Object> param);
 
     int createDeposit(HashMap<String, Object> param);
+
+    List<HashMap<String, Object>> relationList(HashMap<String, Object> param);
+
+    List<HashMap<String, Object>> randomList();
 }
+

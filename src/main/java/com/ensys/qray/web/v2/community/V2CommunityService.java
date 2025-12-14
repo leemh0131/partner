@@ -63,8 +63,6 @@ public class V2CommunityService {
     }
 
     public void detail(Model model, HashMap<String, Object> param) {
-        HashMap<String, Object> result = new HashMap<>();
-
         param.put("COMPANY_CD", "1000");
         param.put("TABLE_ID", param.get("SEQ"));
         model.addAttribute("item", v2CommunityMapper.detail(param));

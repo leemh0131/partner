@@ -43,7 +43,7 @@
                         <ul class="item">
                             <li class="num">${item.COMM_NUM}</li>
                             <li class="title">
-                                <a class="list-item" href="&SEQ=${item.SEQ}">
+                                <a class="list-item" href="&DM_CD=${item.DM_CD}">
                                     <span class="subject"><c:out value="${item.TITLE}"/></span>
                                     <span class="reply">(${item.COMM_CUT})</span>
                                     <!-- NEW 표시 조건 -->

@@ -181,32 +181,27 @@
                         const debtorKakao = $("input[name='DEBTOR_KAKAO']").val().trim();
                         const debtorTele = $("input[name='DEBTOR_TELE']").val().trim();
                         const debtorSns = $("input[name='DEBTOR_SNS']").val().trim();
-                        const withdrLoca = $("input[name='WITHDR_LOCA']").map(function() {return $(this).val().trim();}).get().join(',')
                         const complPolice = $("input[name='COMPL_POLICE']").val().trim();
                         const dmContents = $("textarea[name='DM_CONTENTS']").val().trim();
                         const pw = $("input[name='PW']").val().trim();
 
-/*
-                        if (name === "") {
-                            alert("닉네임을 입력하세요.");
+                        if (compNm === "") {
+                            alert("업체명을 입력하세요.");
+                            return false;
+                        }
+                        if (dmContents === "") {
+                            alert("피해내용을 입력하세요.");
                             return false;
                         }
                         if (pw === "") {
                             alert("비밀번호를 입력하세요.");
                             return false;
                         }
-                        if (title === "") {
-                            alert("제목을 입력하세요.");
-                            return false;
-                        }
-                        if (contents === "") {
-                            alert("내용을 입력하세요.");
-                            return false;
-                        }*/
+
                         $('input[name="BANK_CD_ARR"]').val($('select[name="BANK_CD"]').toArray().map(s => s.value).join('|'));
                         $('input[name="NO_DEPOSIT_ARR"]').val($('input[name="NO_DEPOSIT"]').toArray().map(s => s.value).join('|'));
                         $('input[name="NM_DEPOSITOR_ARR"]').val($('input[name="NM_DEPOSITOR"]').toArray().map(s => s.value).join('|'));
-                        $("input[name='WITHDR_LOCA_ARR']").val(withdrLoca);
+                        $("input[name='WITHDR_LOCA_ARR']").val($("input[name='WITHDR_LOCA']").map(function() {return $(this).val().trim();}).get().join(','));
                         $("#createForm").submit();
                     }
                     $(document).on("change", ".DM_TYPE", function () {
@@ -270,16 +265,21 @@
                                     .html('<i class="icon icon_delete"></i>제거');
 
                                 let newFlex =
-                                    `<div class="flex col first">
+                                    `<div class="flex col">
                                         <div class="select w200">
                                             <select name="BANK_CD">
                                                 <option>은행명</option>
+                                                <c:forEach var="code" items="${codes}">
+                                                    <c:if test="${code.FIELD_CD eq 'ES_Q0009'}">
+                                                    <option value="${code.SYSDEF_CD}">${code.SYSDEF_NM}</option>
+                                                    </c:if>
+                                                </c:forEach>
                                             </select>
                                         </div>
                                         <div class="input"><input name="NO_DEPOSIT" type="text" placeholder="계좌번호를 입력하세요."></div>
                                         <div class="flex">
                                             <div class="input w200"><input name="NM_DEPOSITOR" type="text" placeholder="입금자명"></div>
-                                            <div class="bttn"><a href="#" class="btn bank add">추가</a></div>
+                                            <div class="bttn"><a href="#" class="btn bank">추가</a></div>
                                         </div>
                                     </div>`;
 

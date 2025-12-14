@@ -11,7 +11,7 @@
 
     <select id="list" resultType="hashmap" parameterType="hashmap">
         /*V2DmMapper.list*/
-        SELECT    DM_CD AS "SEQ"
+        SELECT    DM_CD AS "DM_CD"
                 , F_NVL_TEXT(SUBSTRING(DM_CONTENTS, 1, 50), COMP_NM) AS "TITLE"
                 , ROW_NUMBER() OVER (ORDER BY INSERT_DATE) AS "COMM_NUM"
                 , SUBSTRING(COMP_NM, 1, 1) || 'OO' AS "NAME"
@@ -95,4 +95,73 @@
             </foreach>
         </if>
     </insert>
+
+    <select id="detail" resultType="hashmap" parameterType="hashmap">
+        /*V2DmMapper.detail*/
+        SELECT A.DM_CD AS "DM_CD"
+             , A.COMP_NM AS "COMP_NM"
+             , F_ES_CODE_DETAIL('1000', 'ES_Q0139', A.DM_TYPE)              AS "DM_TYPE"
+             , CASE WHEN A.DM_TYPE = '001' THEN NULL ELSE F_ES_CODE_DETAIL('1000', 'ES_Q0140', A.DM_KIND) END "DM_KIND"
+             , TO_CHAR(SUBSTRING(A.WRITE_DATE, 1, 8)::DATE, 'YYYY-MM-DD HH:DD') AS "WRITE_DATE"
+             , CASE WHEN coalesce(HIT, 0) BETWEEN 0 AND 999 THEN coalesce(HIT, 0)::VARCHAR ELSE '999↑' END AS "HIT"
+             , A.BORW_SITE              AS "BORW_SITE"
+             , A.DEBTOR_TEL             AS "DEBTOR_TEL"
+             , A.DEBTOR_KAKAO           AS "DEBTOR_KAKAO"
+             , A.DEBTOR_TELE            AS "DEBTOR_TELE"
+             , A.DEBTOR_SNS             AS "DEBTOR_SNS"
+             , A.WITHDR_LOCA            AS "WITHDR_LOCA"
+             , A.DM_CONTENTS            AS "DM_CONTENTS"
+             , A.COMPL_POLICE           AS "COMPL_POLICE"
+        FROM PL_DM_M A
+        WHERE A.DM_CD = #{DM_CD}
+    </select>
+
+    <select id="detailDeposit" resultType="hashmap" parameterType="hashmap">
+        /*V2DmMapper.detailDeposit*/
+        SELECT F_ES_CODE_DETAIL('1000', 'ES_Q0009', BANK_CD) || ' ' || NO_DEPOSIT || ' (' || NM_DEPOSITOR || ')' AS "DEPOSIT"
+        FROM PL_DM_DEPOSIT
+        WHERE DM_CD = #{DM_CD}
+    </select>
+
+    <select id="relationList" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+        /*V2DmMapper.relationList*/
+        SELECT    A.DM_CD                              AS "DM_CD"
+                , A.COMP_NM                            AS "COMP_NM"
+                , F_NVL_TEXT(A.DEBTOR_TEL, '모름')      AS "DEBTOR_TEL"
+                , F_NVL_TEXT(A.DEBTOR_KAKAO, '모름')    AS "DEBTOR_KAKAO"
+                , F_NVL_TEXT(A.DEBTOR_TELE, '모름')     AS "DEBTOR_TELE"
+                , F_NVL_TEXT(A.DEBTOR_SNS, '모름')      AS "DEBTOR_SNS"
+                , F_NVL_TEXT(A.WITHDR_LOCA, '모름')      AS "WITHDR_LOCA"
+                , CASE WHEN CURRENT_DATE - TO_DATE(SUBSTRING(REPLACE(A.WRITE_DATE, '-', ''), 1, 8), 'YYYYMMDD') > F_NVL_NUM(B.SYSDEF_CD::INTEGER, 7) THEN 'N' ELSE 'Y' END AS "NEW_VALUE"
+        FROM    PL_DM_M A
+        LEFT JOIN (SELECT SYSDEF_CD FROM ES_CODEDTL WHERE FIELD_CD = 'ES_Q0141' AND FLAG1_CD = 'Y' LIMIT 1) B
+            ON 1 = 1
+        WHERE (
+            A.COMP_NM LIKE SUBSTRING(#{COMP_NM}, 1, 2) || '%'
+            OR  A.BORW_SITE LIKE '%' || SUBSTRING(#{BORW_SITE} FROM LENGTH(#{BORW_SITE}) - 4)
+            OR  A.DEBTOR_TEL LIKE '%' || SUBSTRING(#{DEBTOR_TEL} FROM LENGTH(#{DEBTOR_TEL}) - 8)
+            OR  A.DEBTOR_KAKAO LIKE '%' || SUBSTRING(#{DEBTOR_KAKAO} FROM LENGTH(#{DEBTOR_KAKAO}) - 4)
+            OR  A.DEBTOR_TELE LIKE '%' || SUBSTRING(#{DEBTOR_TELE} FROM LENGTH(#{DEBTOR_TELE}) - 4)
+            OR  A.DEBTOR_SNS LIKE '%' || SUBSTRING(#{DEBTOR_SNS} FROM LENGTH(#{DEBTOR_SNS}) - 4)
+            OR  A.WITHDR_LOCA LIKE '%' || SUBSTRING(#{WITHDR_LOCA} FROM LENGTH(#{WITHDR_LOCA}) - 4)
+        )
+        LIMIT 3
+    </select>
+
+    <select id="randomList" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+        /*V2DmMapper.randomList*/
+        SELECT    A.DM_CD                              AS "DM_CD"
+                , A.COMP_NM                            AS "COMP_NM"
+                , F_NVL_TEXT(A.DEBTOR_TEL, '모름')      AS "DEBTOR_TEL"
+                , F_NVL_TEXT(A.DEBTOR_KAKAO, '모름')    AS "DEBTOR_KAKAO"
+                , F_NVL_TEXT(A.DEBTOR_TELE, '모름')     AS "DEBTOR_TELE"
+                , F_NVL_TEXT(A.DEBTOR_SNS, '모름')      AS "DEBTOR_SNS"
+                , F_NVL_TEXT(A.WITHDR_LOCA, '모름')      AS "WITHDR_LOCA"
+                , CASE WHEN CURRENT_DATE - TO_DATE(SUBSTRING(REPLACE(A.WRITE_DATE, '-', ''), 1, 8), 'YYYYMMDD') > F_NVL_NUM(B.SYSDEF_CD::INTEGER, 7) THEN 'N' ELSE 'Y' END AS "NEW_VALUE"
+        FROM    PL_DM_M A
+        LEFT JOIN (SELECT SYSDEF_CD FROM ES_CODEDTL WHERE FIELD_CD = 'ES_Q0141' AND FLAG1_CD = 'Y' LIMIT 1) B
+            ON 1 = 1
+        ORDER BY RANDOM()
+        LIMIT 3
+    </select>
 </mapper>

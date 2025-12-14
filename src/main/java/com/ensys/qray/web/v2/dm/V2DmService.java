@@ -14,6 +14,7 @@ import java.util.List;
 import static com.chequer.axboot.core.utils.HttpUtils.getRemoteAddress;
 import static com.ensys.qray.utils.HammerUtility.nowDate;
 import static java.lang.Integer.parseInt;
+import static org.apache.commons.collections.CollectionUtils.isEmpty;
 
 @Service
 @Transactional
@@ -67,6 +68,29 @@ public class V2DmService {
         model.addAttribute("codes", codes);
     }
 
+    public void detail(Model model, HashMap<String, Object> param) {
+        HashMap<String, Object> detail = v2DmMapper.detail(param);
+        model.addAttribute("detail", detail);
+        model.addAttribute("detailDeposit", v2DmMapper.detailDeposit(param));
+
+        List<HashMap<String, Object>> dmMRelation = v2DmMapper.relationList(detail);
+        if (isEmpty(dmMRelation)) {
+            model.addAttribute("relationList", v2DmMapper.randomList());
+        } else {
+            model.addAttribute("relationList", dmMRelation);
+        }
+
+
+        /*param.put("DM_CD", param.get("SEQ"));
+        param.put("IP", getRemoteAddress());
+//        IP로 조회수 체크 후 업데이트
+        int chk = v2CommunityMapper.insertEsCommunityHit(param);
+        if(chk > 0){
+            v2CommunityMapper.hitPlus(param);
+        }*/
+    }
+
+
     public void create(HashMap<String, Object> param) {
         String strDate = nowDate("yyyyMMddHHmmss");
         param.put("COMPANY_CD", "1000");
@@ -81,7 +105,7 @@ public class V2DmService {
         HashMap<String, Object> getNo = sysInformation08Mapper.getNo(param);
         param.put("DM_CD", getNo.get("NO"));
 
-//        v2DmMapper.create(param);
+        v2DmMapper.create(param);
         v2DmMapper.createDeposit(param);
     }
 }

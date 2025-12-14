@@ -24,8 +24,10 @@ public class V2DmController {
         v2DmService.list(model, param);
         return "/sc112/v2/dm/list";
     }
+
     @GetMapping("detail")
     public String detail(Model model, @RequestParam HashMap<String, Object> param) {
+        v2DmService.detail(model, param);
         return "/sc112/v2/dm/detail";
     }
 
@@ -38,6 +40,6 @@ public class V2DmController {
     @PostMapping("create")
     public String createAction(Model model, @RequestParam HashMap<String, Object> param) {
         v2DmService.create(param);
-        return "redirect:/sc112/dm/detail?DM_TYPE=" + param.get("DM_TYPE") + "&SEQ=" + param.get("SEQ");
+        return "redirect:/sc112/dm/detail?DM_CD=" + param.get("DM_CD");
     }
 }
