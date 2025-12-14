@@ -20,12 +20,12 @@
                     <div class="title" id="menuTitle">
                         <script>
                             $(function () {
-                                var $target = $("a[id*='" + location.pathname + location.search.replace(/&CURRENT_PAGE=\d+/, "") + "']");
+                                var $target = $("a[id*='" + location.pathname + location.search.replace(/&CURRENT_PAGE=\d+/, "").replace(/&KEYWORD=[^&]*/, "") + "']");
                                 if ($target) {
                                     $("#menuTitle").text($target.text());
                                     $(".start, .prev, .current, .current2, .next, .end").each(function () {
                                         const href = $(this).attr("href");
-                                        $(this).attr("href", location.pathname + location.search.replace(/&CURRENT_PAGE=\d+/, "") + href);
+                                        $(this).attr("href", location.pathname + location.search.replace(/&CURRENT_PAGE=\d+/, "").replace(/&KEYWORD=[^&]*/, "") + href);
                                     });
                                     $(".list-create").attr("href", "/sc112/dm/create");
                                     $(".list-item").each(function () {

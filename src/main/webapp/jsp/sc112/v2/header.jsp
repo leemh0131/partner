@@ -18,10 +18,13 @@
     <div class="wrap">
         <div class="logo"><a href="/sc112/home"><img src="/jsp/sc112/v2/assets/img/fogo.svg" alt="사채패치"></a></div>
         <div class="tool">
+            <form id="searchForm" action="/sc112/dm/list" method="GET">
             <div class="search">
-                <input type="text" placeholder="검색어 입력">
-                <button type="button"><i class="icon icon_search"></i><span class="blind">검색</span></button>
+                    <input type="text" name="DM_TYPE" value="001" hidden="hidden">
+                    <input type="text" name="KEYWORD" placeholder="피해현황 검색" value="${param.KEYWORD}">
+                <button type="submit"><i class="icon icon_search"></i><span class="blind">검색</span></button>
             </div>
+            </form>
             <div class="menu"><span class="blind">전체메뉴</span></div>
         </div>
     </div>
@@ -36,18 +39,11 @@
                     <img src="${item.FLAG1_CD}" alt="${item.SYSDEF_NM}"/>${item.SYSDEF_NM}
                 </a>
             </c:forEach>
-<%--            <a href="/sc112/dm/create" class="on"><img src="/jsp/sc112/v2/assets/img/ic_main_title2.svg"> 피해등록하기</a>--%>
-<%--            <a href="/sc112/dm/list?DM_TYPE=001"><img src="/jsp/sc112/v2/assets/img/ic_main_title3.svg"> 불법대부업 현황</a>--%>
-<%--            <a href="#"><img src="/jsp/sc112/v2/assets/img/ic_main_title1.svg"> 자유게시판</a>--%>
-<%--            <a href="#"><img src="/jsp/sc112/v2/assets/img/ic_main_title6.svg"> 단도박게시판</a>--%>
-<%--            <a href="#"><img src="/jsp/sc112/v2/assets/img/ic_main_title5.svg"> 법률상담문의</a>--%>
-<%--            <a href="#"><img src="/jsp/sc112/v2/assets/img/ic_main_title4.svg"> 고객센터</a>--%>
         </div>
         <div class="real-time">
             <div class="title">실시간 순위</div>
             <div class="slider" id="realtime_slider">
                 <ul class="swiper-wrapper">
-
                     <c:forEach var="item" items="${liveRanks}" varStatus="status">
                         <li class="swiper-slide">
                             <a href="/sc112/dm/detail?DM_CD=${item.DM_CD}" class="inner">
@@ -68,14 +64,6 @@
                             </a >
                         </li>
                     </c:forEach>
-                    <%--<li class="swiper-slide">
-                        <a href="#" class="inner">
-                            <div class="rank">1위</div>
-                            <div class="name">김실장</div>
-                            <div class="change up">5</div>
-                            <div class="change down">5</div>
-                        </a >
-                    </li>--%>
                 </ul>
             </div>
             <div class="more active">
@@ -86,158 +74,53 @@
             <div class="tabs">
                 <button type="button" class="tab on">실시간 댓글</button>
                 <button type="button" class="tab">불법대부업</button>
-               <!-- <button type="button" class="tab">공지사항</button>-->
             </div>
             <div class="cont on">
                 <div class="list">
                     <ul>
-                        <li>
-                            <a href="#" class="inner">
-                                <div class="title">
-                                    <span class="cate cate001">자유</span>
-                                    <span class="subject">김종국이 결혼식에 김희철을 안부른 이유?</span>
-                                    <span class="icon icon_new"></span>
-                                </div>
-                                <div class="comment">
-                                    <span>뭔가 찔리는게 있어서 안나온거 아님?</span>
-                                </div>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="inner">
-                                <div class="title">
-                                    <span class="cate cate02">단도</span>
-                                    <span class="subject">김종국이 결혼식에 김희철을 안부른 이유?</span>
-                                    <span class="icon icon_new"></span>
-                                </div>
-                                <div class="comment">
-                                    <span>뭔가 찔리는게 있어서 안나온거 아님?</span>
-                                </div>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="inner">
-                                <div class="title">
-                                    <span class="cate cate02">단도</span>
-                                    <span class="subject">김종국이 결혼식에 김희철을 안부른 이유?</span>
-                                    <span class="icon icon_new"></span>
-                                </div>
-                                <div class="comment">
-                                    <span>뭔가 찔리는게 있어서 안나온거 아님?</span>
-                                </div>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="inner">
-                                <div class="title">
-                                    <span class="cate cate03">불법</span>
-                                    <span class="subject">김종국이 결혼식에 김희철을 안부른 이유?</span>
-                                    <span class="icon icon_new"></span>
-                                </div>
-                                <div class="comment">
-                                    <span>뭔가 찔리는게 있어서 안나온거 아님?</span>
-                                </div>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="inner">
-                                <div class="title">
-                                    <span class="cate cate03">불법</span>
-                                    <span class="subject">김종국이 결혼식에 김희철을 안부른 이유?</span>
-                                    <span class="icon icon_new"></span>
-                                </div>
-                                <div class="comment">
-                                    <span>뭔가 찔리는게 있어서 안나온거 아님?</span>
-                                </div>
-                            </a>
-                        </li>
+                        <c:forEach var="item" items="${liveComments}">
+                            <li>
+                                <a href="/sc112/dm/detail?DM_CD=${item.DM_CD}" class="inner">
+                                    <div class="title">
+                                        <span class="cate cate${item.DM_TYPE}">${item.DM_TYPE_NM}</span>
+                                        <span class="subject bold">${item.COMP_NM}</span>
+<%--                                        <span class="icon icon_new"></span>--%>
+                                    </div>
+                                    <div class="comment">
+                                        <span>${item.COMMENT}</span>
+                                    </div>
+                                </a>
+                            </li>
+                        </c:forEach>
                     </ul>
                 </div>
             </div>
             <div class="cont">
                 <div class="ranking">
                     <ul>
-                        <li>
-                            <a href="#" class="inner">
-                                <div class="rank">1위</div>
-                                <div class="name">김실장</div>
-                                <div class="change up">5</div>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="inner">
-                                <div class="rank">2위</div>
-                                <div class="name">안대리</div>
-                                <div class="change down">1</div>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="inner">
-                                <div class="rank">3위</div>
-                                <div class="name">안대리</div>
-                                <div class="change up">5</div>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="inner">
-                                <div class="rank">4위</div>
-                                <div class="name">안대리</div>
-                                <div class="change down">1</div>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="inner">
-                                <div class="rank">5위</div>
-                                <div class="name">김실장</div>
-                                <div class="change up">5</div>
-                            </a>
-                        </li>
+                        <c:forEach var="item" items="${liveRanks}" varStatus="status">
+                            <li>
+                                <a href="/sc112/dm/detail?DM_CD=${item.DM_CD}" class="inner">
+                                    <div class="rank">${status.count}위</div>
+                                    <div class="name">${item.COMP_NM}</div>
+                                    <c:choose>
+                                        <c:when test="${item.RANK_DIFF == 0}">
+                                        </c:when>
+
+                                        <c:when test="${item.RANK_DIFF > 0}">
+                                            <div class="change up">${item.RANK_DIFF}</div>
+                                        </c:when>
+
+                                        <c:otherwise>
+                                            <div class="change down">${item.RANK_DIFF}</div>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </a>
+                            </li>
+                        </c:forEach>
                     </ul>
                 </div>
             </div>
-            <!--<div class="cont">
-                <div class="list">
-                    <ul>
-                        <li>
-                            <a href="#" class="inner">
-                                <div class="title">
-                                    <span class="subject">[09/01] [안내] 사채패치 업데이트 안내</span>
-                                    <span class="icon icon_new"></span>
-                                </div>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="inner">
-                                <div class="title">
-                                    <span class="subject">[08/27] 유머게시판 개편 및 이벤트</span>
-                                    <span class="icon icon_new"></span>
-                                </div>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="inner">
-                                <div class="title">
-                                    <span class="subject">[06/24] [공지] 포인트 서비스 종료 안내</span>
-                                </div>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="inner">
-                                <div class="title">
-                                    <span class="subject">[06/24] [공지] 포인트 서비스 종료 안내</span>
-                                </div>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="inner">
-                                <div class="title">
-                                    <span class="subject">[09/01] [안내] 사채패치 업데이트 안내</span>
-                                </div>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>-->
         </div>
         <div class="dimmed"></div>
          <script>

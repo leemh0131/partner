@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ensys.qray.web.v2.home.V2HomeMapper">
+
+	<select id="boards" resultType="hashmap" parameterType="hashmap">
+		/*V2HomeMapper.boards*/
+		SELECT TITLE AS "TITLE"
+			 , TO_CHAR(SUBSTRING(INSERT_DTS, 1, 8)::date, 'YYYY/MM/DD') AS "DTS"
+			 , CASE WHEN CURRENT_DATE - TO_DATE(SUBSTRING(REPLACE(INSERT_DTS, '-', ''), 1, 8), 'YYYYMMDD') > F_NVL_NUM(B.SYSDEF_CD::INTEGER, 7) THEN 'N' ELSE 'Y' END AS "NEW_VALUE"
+		FROM ES_BOARD
+		LEFT JOIN (SELECT SYSDEF_CD FROM ES_CODEDTL WHERE FIELD_CD = 'ES_Q0141' AND FLAG1_CD = 'Y' LIMIT 1) B
+			ON 1 = 1
+		WHERE COMPANY_CD = #{COMPANY_CD}
+		AND BOARD_TYPE = #{BOARD_TYPE}
+		ORDER BY CASE WHEN MAIN_YN = 'Y' THEN 1 ELSE 2 END, INSERT_DTS DESC, SEQ DESC
+		LIMIT 3
+	</select>
+
+	<select id="dms" resultType="hashmap" parameterType="hashmap">
+		/*V2HomeMapper.dms*/
+		SELECT    DM_CD AS "DM_CD"
+				, F_NVL_TEXT(SUBSTRING(DM_CONTENTS, 1, 18), COMP_NM) AS "TITLE"
+				, SUBSTRING(COMP_NM, 1, 1) || 'OO' AS "NAME"
+				, (SELECT COUNT(*) FROM PL_DM_COMM WHERE DM_CD = A.DM_CD) AS "COMM_CUT"
+				, CASE WHEN CURRENT_DATE - TO_DATE(SUBSTRING(REPLACE(INSERT_DATE, '-', ''), 1, 8), 'YYYYMMDD') > F_NVL_NUM(B.SYSDEF_CD::INTEGER, 7) THEN 'N' ELSE 'Y' END AS "NEW_VALUE"
+		FROM PL_DM_M A
+		LEFT JOIN (SELECT SYSDEF_CD FROM ES_CODEDTL WHERE FIELD_CD = 'ES_Q0141' AND FLAG1_CD = 'Y' LIMIT 1) B
+			ON 1 = 1
+		WHERE DM_TYPE = #{DM_TYPE}
+		ORDER BY INSERT_DATE DESC
+		LIMIT 10
+	</select>
+
+	<select id="communitys" resultType="hashmap" parameterType="hashmap">
+		/*V2HomeMapper.communitys*/
+		SELECT    SEQ               AS "SEQ"
+				, SUBSTRING(TITLE, 1, 18)             AS "TITLE"
+				, SUBSTRING(NAME, 1, 1) || 'OO' AS "NAME"
+				, (SELECT COUNT(*) FROM PL_DM_COMM WHERE DM_CD = SEQ) AS "COMM_CUT"
+				, CASE WHEN CURRENT_DATE - TO_DATE(SUBSTRING(REPLACE(INSERT_DTS, '-', ''), 1, 8), 'YYYYMMDD') > F_NVL_NUM(B.SYSDEF_CD::INTEGER, 7) THEN 'N' ELSE 'Y' END AS "NEW_VALUE"
+		FROM ES_COMMUNITY
+		LEFT JOIN (SELECT SYSDEF_CD FROM ES_CODEDTL WHERE FIELD_CD = 'ES_Q0141' AND FLAG1_CD = 'Y' LIMIT 1) B
+			ON 1 = 1
+		WHERE  COMPANY_CD = #{COMPANY_CD}
+		AND COMMUNITY_GB = '02'
+		AND COMMUNITY_ST = #{COMMUNITY_ST}
+		AND COMMUNITY_TP = #{COMMUNITY_TP}
+		ORDER BY INSERT_DTS DESC
+		LIMIT 10
+	</select>
+
+</mapper>

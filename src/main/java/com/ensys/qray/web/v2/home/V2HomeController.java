@@ -1,6 +1,5 @@
 package com.ensys.qray.web.v2.home;
 
-import com.ensys.qray.web.v1.api.ApiService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,11 +14,11 @@ import java.util.HashMap;
 @RequiredArgsConstructor
 public class V2HomeController {
 
-    private final ApiService apiService;
+    private final V2HomeService v2HomeService;
 
     @GetMapping
     public String home(Model model, @RequestParam HashMap<String, Object> param) {
-        model.addAttribute("item", apiService.getPrivateLoanMain(param));
+        v2HomeService.home(model, param);
         return "/sc112/v2/home";
     }
 }

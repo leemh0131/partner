@@ -98,7 +98,7 @@
                                             <p>카카오톡 : ${relation.DEBTOR_KAKAO}</p>
                                             <p>텔레그램 : ${relation.DEBTOR_TELE}</p>
                                             <p>기타SNS : ${relation.DEBTOR_SNS}</p>
-                                            <p>고소경찰서 : ${relation.WITHDR_LOCA}</p>
+                                            <p>고소한경찰서 : ${relation.WITHDR_LOCA}</p>
                                         </div>
                                         <div class="more">
                                             <a href="/sc112/dm/detail?DM_TYPE=001&DM_CD=${relation.DM_CD}">자세히 보기</a>
@@ -107,8 +107,6 @@
                                 </c:forEach>
                             </ul>
                         </div>
-                        <button type="button" class="swiper-button-prev"><span class="blind">이전</span></button>
-                        <button type="button" class="swiper-button-next"><span class="blind">다음</span></button>
                         <script>
                             var relation = new Swiper("#relation_slider", {
                                 loop: true,
@@ -340,7 +338,7 @@
                         <a href="#">더보기</a>
                     </div>
                     <div class="button">
-                        <a href="/sc112/dm/list?DM_TYPE=001" class="btn btn_01">목록</a>
+                        <a href="#<%--/sc112/dm/list?DM_TYPE=001--%>" class="btn btn_01">목록</a>
                     </div>
                 </div>
                 <div id="emoji-picker-container" style="display:none; position:absolute; z-index:999;"></div>

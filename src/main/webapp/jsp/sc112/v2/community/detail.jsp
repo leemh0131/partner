@@ -45,10 +45,6 @@
                         </dd>
                     </dl>
                 </div>
-                <%--<div class="button">
-                    <a href="#" class="btn btn_02">취소</a>
-                    <a href="#" class="btn btn_01">등록</a>
-                </div>--%>
                 <script>
                     $(function () {
                         $(document).on("click", ".link.add", function (e) {
@@ -94,6 +90,217 @@
                         });
                     });
                 </script>
+            </div>
+            <div id="bbs_detail">
+                <div class="comment">
+                    <div class="title">댓글 (12)</div>
+                    <div class="form">
+                        <div class="input">
+                            <div class="inp"><input type="text" placeholder="닉네임"></div>
+                            <div class="inp"><input type="password" placeholder="비밀번호"></div>
+                        </div>
+                        <div class="textarea">
+                            <div class="text"><textarea id="commentArea"
+                                                        placeholder="타인의 권리를 침해하거나 명예를 훼손하는 댓글은 관련 법률에 의해 제재를 받을 수 있습니다."></textarea>
+                            </div>
+                            <div class="tool">
+                                <div class="util">
+                                    <label class="camera"><input type="file"><i class="icon icon_camera"></i><span
+                                            class="blind">이미지 등록</span></label>
+                                    <button class="imoji"><i class="icon icon_imoji"></i><span
+                                            class="blind">이모지 선택</span></button>
+                                </div>
+                                <div class="bttn">
+                                    <button type="button">등록</button>
+                                </div>
+                            </div>
+                        </div>
+                        <script src="https://unpkg.com/emoji-mart@latest/dist/browser.js"></script>
+                        <script>
+                            $(function () {
+                                const $pickerContainer = $("#emoji-picker-container");
+                                const $imojiBtn = $(".imoji");
+                                const $textarea = $("#commentArea");
+                                let pickerVisible = false;
+
+                                const picker = new EmojiMart.Picker({
+                                    onEmojiSelect: emoji => {
+                                        insertAtCursor($textarea[0], emoji.native);
+                                    },
+                                    locale: "ko", // 한국어
+                                    previewPosition: "none",
+                                    skinTonePosition: "none",
+                                    searchPosition: "none"
+                                });
+                                $pickerContainer.append(picker);
+
+                                $imojiBtn.on("click", function (e) {
+                                    e.preventDefault();
+                                    const pos = $(this).offset();
+                                    $pickerContainer.css({
+                                        top: pos.top - $pickerContainer.outerHeight() - 10,
+                                        left: pos.left
+                                    }).toggle();
+                                    pickerVisible = !pickerVisible;
+                                });
+
+                                function insertAtCursor(textarea, text) {
+                                    const start = textarea.selectionStart;
+                                    const end = textarea.selectionEnd;
+                                    textarea.value = textarea.value.substring(0, start) + text + textarea.value.substring(end);
+                                    textarea.selectionStart = textarea.selectionEnd = start + text.length;
+                                    textarea.focus();
+                                }
+
+                                $(document).on("click", function (e) {
+                                    if (!$(e.target).closest('.imoji, #emoji-picker-container').length) {
+                                        $pickerContainer.hide();
+                                        pickerVisible = false;
+                                    }
+                                });
+                            });
+                        </script>
+                    </div>
+                    <div class="list">
+                        <ul>
+                            <li>
+                                <div class="cmmt">
+                                    <div class="top">
+                                        <div class="ico"><img src="/jsp/sc112/v2/assets/img/profile.svg"></div>
+                                        <div class="con">
+                                            <div class="name">김****</div>
+                                            <div class="date">2022-04-30 15:00</div>
+                                        </div>
+                                    </div>
+                                    <div class="text">추심 피해가 너무 심각합니다.</div>
+                                    <div class="tool">
+                                        <a href="#">수정</a>
+                                        <a href="#">삭제</a>
+                                        <a href="#">답글</a>
+                                        <a href="#">신고</a>
+                                    </div>
+                                </div>
+                                <div class="cmmt rep">
+                                    <div class="top">
+                                        <div class="con">
+                                            <div class="name">kimsu</div>
+                                            <div class="date">2022-04-30 15:00</div>
+                                        </div>
+                                    </div>
+                                    <div class="text">추심 피해가 너무 심각합니다.</div>
+                                    <div class="tool">
+                                        <a href="#">수정</a>
+                                        <a href="#">삭제</a>
+                                        <a href="#">답글</a>
+                                        <a href="#">신고</a>
+                                    </div>
+                                </div>
+                                <div class="form">
+                                    <div class="input">
+                                        <div class="inp"><input type="text" placeholder="닉네임"></div>
+                                        <div class="inp"><input type="password" placeholder="비밀번호"></div>
+                                    </div>
+                                    <div class="textarea">
+                                        <div class="text"><textarea
+                                                placeholder="타인의 권리를 침해하거나 명예를 훼손하는 댓글은 관련 법률에 의해 제재를 받을 수 있습니다."></textarea>
+                                        </div>
+                                        <div class="tool">
+                                            <div class="util">
+                                                <label class="camera"><input type="file"><i
+                                                        class="icon icon_camera"></i><span
+                                                        class="blind">이미지 등록</span></label>
+                                                <button class="imoji"><i class="icon icon_imoji"></i><span
+                                                        class="blind">이모지 선택</span></button>
+                                            </div>
+                                            <div class="bttn">
+                                                <button type="button">등록</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="cmmt">
+                                    <div class="top">
+                                        <div class="ico"><img src="/jsp/sc112/v2/assets/img/profile.svg"></div>
+                                        <div class="con">
+                                            <div class="name">김****</div>
+                                            <div class="date">2022-04-30 15:00</div>
+                                        </div>
+                                    </div>
+                                    <div class="text">추심 피해가 너무 심각합니다.</div>
+                                    <div class="tool">
+                                        <a href="#">수정</a>
+                                        <a href="#">삭제</a>
+                                        <a href="#">답글</a>
+                                        <a href="#">신고</a>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="cmmt">
+                                    <div class="top">
+                                        <div class="ico"><img src="/jsp/sc112/v2/assets/img/profile.svg"></div>
+                                        <div class="con">
+                                            <div class="name">김****</div>
+                                            <div class="date">2022-04-30 15:00</div>
+                                        </div>
+                                    </div>
+                                    <div class="text">추심 피해가 너무 심각합니다.</div>
+                                    <div class="tool">
+                                        <a href="#">수정</a>
+                                        <a href="#">삭제</a>
+                                        <a href="#">답글</a>
+                                        <a href="#">신고</a>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="cmmt">
+                                    <div class="top">
+                                        <div class="ico"><img src="/jsp/sc112/v2/assets/img/profile.svg"></div>
+                                        <div class="con">
+                                            <div class="name">김****</div>
+                                            <div class="date">2022-04-30 15:00</div>
+                                        </div>
+                                    </div>
+                                    <div class="text">추심 피해가 너무 심각합니다.</div>
+                                    <div class="tool">
+                                        <a href="#">수정</a>
+                                        <a href="#">삭제</a>
+                                        <a href="#">답글</a>
+                                        <a href="#">신고</a>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="cmmt">
+                                    <div class="top">
+                                        <div class="ico"><img src="/jsp/sc112/v2/assets/img/profile.svg"></div>
+                                        <div class="con">
+                                            <div class="name">김****</div>
+                                            <div class="date">2022-04-30 15:00</div>
+                                        </div>
+                                    </div>
+                                    <div class="text">추심 피해가 너무 심각합니다.</div>
+                                    <div class="tool">
+                                        <a href="#">수정</a>
+                                        <a href="#">삭제</a>
+                                        <a href="#">답글</a>
+                                        <a href="#">신고</a>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="more">
+                        <a href="#">더보기</a>
+                    </div>
+                    <div class="button">
+                        <a href="#<%--/sc112/dm/list?DM_TYPE=001--%>" class="btn btn_01">목록</a>
+                    </div>
+                </div>
+                <div id="emoji-picker-container" style="display:none; position:absolute; z-index:999;"></div>
             </div>
         </section>
         <%@ include file="/jsp/sc112/v2/aside.jsp" %>
