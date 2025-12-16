@@ -72,6 +72,7 @@ public class V2DmService {
         HashMap<String, Object> detail = v2DmMapper.detail(param);
         model.addAttribute("detail", detail);
         model.addAttribute("detailDeposit", v2DmMapper.detailDeposit(param));
+        model.addAttribute("comments", v2DmMapper.comments(param));
 
         List<HashMap<String, Object>> dmMRelation = v2DmMapper.relationList(detail);
         if (isEmpty(dmMRelation)) {
@@ -107,5 +108,22 @@ public class V2DmService {
 
         v2DmMapper.create(param);
         v2DmMapper.createDeposit(param);
+    }
+
+    public void createComment(HashMap<String, Object> param) {
+        String nowDate = nowDate("yyyyMMddHHmmss");
+        param.put("COMPANY_CD", "1000");
+        param.put("MODULE_CD", "MA");
+        param.put("CLASS_CD", "27");
+        param.put("strDate", nowDate);
+
+        sysInformation08Mapper.upsertNo(param);
+        HashMap<String, Object> getNo = sysInformation08Mapper.getNo(param);
+
+        param.put("COMM_CD", getNo.get("NO"));
+        param.put("WRITE_IP", getRemoteAddress());
+        param.put("WRITE_DATE", nowDate);
+        param.put("INSERT_DATE", nowDate);
+        v2DmMapper.createComment(param);
     }
 }

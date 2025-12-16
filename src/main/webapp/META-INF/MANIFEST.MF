@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Created-By: IntelliJ IDEA
-Built-By: j5539
-Build-Jdk: Oracle OpenJDK 1.8.0_202
+Built-By: HP 15
+Build-Jdk: 1.8.0_212
 Implementation-Title: partner
 Implementation-Version: 1.0.0
 Implementation-Vendor-Id: com.ensys.qray

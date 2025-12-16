@@ -42,4 +42,11 @@ public class V2DmController {
         v2DmService.create(param);
         return "redirect:/sc112/dm/detail?DM_CD=" + param.get("DM_CD");
     }
+
+
+    @PostMapping("create/comment")
+    public String createComment(Model model, @RequestParam HashMap<String, Object> param) {
+        v2DmService.createComment(param);
+        return "redirect:/sc112/dm/detail?DM_CD=" + param.get("DM_CD");
+    }
 }

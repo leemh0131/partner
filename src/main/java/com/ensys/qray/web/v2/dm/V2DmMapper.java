@@ -24,5 +24,9 @@ public interface V2DmMapper extends MyBatisMapper {
     List<HashMap<String, Object>> relationList(HashMap<String, Object> param);
 
     List<HashMap<String, Object>> randomList();
+
+    void createComment(HashMap<String, Object> param);
+
+    List<HashMap<String, Object>> comments(HashMap<String, Object> param);
 }
 

@@ -74,7 +74,6 @@ public class V2CommunityController {
 				.body(resource);
 	}
 
-
     @PostMapping("create/comment")
     public String createComment(Model model, @RequestParam HashMap<String, Object> param) {
         v2CommunityService.createComment(param);
