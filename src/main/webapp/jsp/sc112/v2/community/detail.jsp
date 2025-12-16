@@ -95,151 +95,76 @@
             <div id="bbs_detail" style="margin-top: 30px;">
                 <div class="comment">
                     <div class="title">댓글 (${fn:length(comments)})</div>
-                    <form class="form" id="createCommonForm" action="/sc112/community/create/comment" method="POST">
+                    <form class="form createCommonForm" action="/sc112/community/create/comment" method="POST">
                         <input type="text" name="SEQ" value="${item.SEQ}" hidden="hidden">
                         <div class="input">
                             <div class="inp"><input name="NICK_NM" type="text" placeholder="닉네임"></div>
                             <div class="inp"><input name="PASSWORD" type="password" placeholder="비밀번호"></div>
                         </div>
                         <div class="textarea">
-                            <div class="text"><textarea name="CONTENTS" id="commentArea" placeholder="타인의 권리를 침해하거나 명예를 훼손하는 댓글은 관련 법률에 의해 제재를 받을 수 있습니다."></textarea>
+                            <div class="text">
+                                <textarea name="CONTENTS" class="commentArea" placeholder="타인의 권리를 침해하거나 명예를 훼손하는 댓글은 관련 법률에 의해 제재를 받을 수 있습니다."></textarea>
                             </div>
+
                             <div class="tool">
                                 <div class="util">
-<%--                                    <label class="camera"><input type="file"><i class="icon icon_camera"></i><span class="blind">이미지 등록</span></label>--%>
-                                    <button class="imoji"><i class="icon icon_imoji"></i><span class="blind">이모지 선택</span></button>
+                                    <button class="imoji" type="button"><i class="icon icon_imoji"></i></button>
                                 </div>
-                                <div class="bttn">
-                                    <button type="submit">등록</button>
-                                </div>
+                                <div class="bttn"><button type="submit">등록</button></div>
                             </div>
                         </div>
-                        <script src="https://unpkg.com/emoji-mart@latest/dist/browser.js"></script>
-                        <script>
-                            $(function () {
-                                const $pickerContainer = $("#emoji-picker-container");
-                                const $imojiBtn = $(".imoji");
-                                const $textarea = $("#commentArea");
-                                let pickerVisible = false;
-
-                                const picker = new EmojiMart.Picker({
-                                    onEmojiSelect: emoji => {
-                                        insertAtCursor($textarea[0], emoji.native);
-                                    },
-                                    locale: "ko", // 한국어
-                                    previewPosition: "none",
-                                    skinTonePosition: "none",
-                                    searchPosition: "none"
-                                });
-                                $pickerContainer.append(picker);
-
-                                $imojiBtn.on("click", function (e) {
-                                    e.preventDefault();
-                                    const pos = $(this).offset();
-                                    $pickerContainer.css({
-                                        top: pos.top - $pickerContainer.outerHeight() - 10,
-                                        left: pos.left
-                                    }).toggle();
-                                    pickerVisible = !pickerVisible;
-                                });
-
-                                function insertAtCursor(textarea, text) {
-                                    const start = textarea.selectionStart;
-                                    const end = textarea.selectionEnd;
-                                    textarea.value = textarea.value.substring(0, start) + text + textarea.value.substring(end);
-                                    textarea.selectionStart = textarea.selectionEnd = start + text.length;
-                                    textarea.focus();
-                                }
-
-                                $(document).on("click", function (e) {
-                                    if (!$(e.target).closest('.imoji, #emoji-picker-container').length) {
-                                        $pickerContainer.hide();
-                                        pickerVisible = false;
-                                    }
-                                });
-                            });
-                        </script>
+                        <div class="emoji-picker-container" style="display:none; position:absolute; z-index:9999;"></div>
                     </form>
                     <div class="list">
                         <ul>
-                            <%--<li>
-                                <div class="cmmt">
-                                    <div class="top">
-                                        <div class="ico"><img src="/jsp/sc112/v2/assets/img/profile.svg"></div>
-                                        <div class="con">
-                                            <div class="name">김****</div>
-                                            <div class="date">2022-04-30 15:00</div>
-                                        </div>
-                                    </div>
-                                    <div class="text">추심 피해가 너무 심각합니다.</div>
-                                    <div class="tool">
-                                        <a href="#">수정</a>
-                                        <a href="#">삭제</a>
-                                        <a href="#">답글</a>
-&lt;%&ndash;                                        <a href="#">신고</a>&ndash;%&gt;
-                                    </div>
-                                </div>
-                                <div class="cmmt rep">
-                                    <div class="top">
-                                        <div class="con">
-                                            <div class="name">kimsu</div>
-                                            <div class="date">2022-04-30 15:00</div>
-                                        </div>
-                                    </div>
-                                    <div class="text">추심 피해가 너무 심각합니다.</div>
-                                    <div class="tool">
-                                        <a href="#">수정</a>
-                                        <a href="#">삭제</a>
-                                        <a href="#">답글</a>
-&lt;%&ndash;                                        <a href="#">신고</a>&ndash;%&gt;
-                                    </div>
-                                </div>
-                                <div class="form">
-                                    <div class="input">
-                                        <div class="inp"><input type="text" placeholder="닉네임"></div>
-                                        <div class="inp"><input type="password" placeholder="비밀번호"></div>
-                                    </div>
-                                    <div class="textarea">
-                                        <div class="text"><textarea placeholder="타인의 권리를 침해하거나 명예를 훼손하는 댓글은 관련 법률에 의해 제재를 받을 수 있습니다."></textarea>
-                                        </div>
-                                        <div class="tool">
-                                            <div class="util">
-&lt;%&ndash;                                                <label class="camera"><input type="file"><i class="icon icon_camera"></i><span class="blind">이미지 등록</span></label>&ndash;%&gt;
-                                                <button class="imoji"><i class="icon icon_imoji"></i><span class="blind">이모지 선택</span></button>
+                            <c:forEach var="comment" items="${comments}">
+                                <c:if test="${empty comment.PARENT_CD}">
+                                    <li>
+                                        <div class="cmmt">
+                                            <div class="top">
+                                                <div class="ico">
+                                                    <img src="/jsp/sc112/v2/assets/img/profile.svg">
+                                                </div>
+                                                <div class="con">
+                                                    <div class="name">${comment.NICK_NM}</div>
+                                                    <div class="date">${comment.WRITE_DATE}</div>
+                                                    <c:if test="${comment.NEW_VALUE eq 'Y'}">
+                                                        <span class="icon icon_new"></span>
+                                                    </c:if>
+                                                </div>
                                             </div>
-                                            <div class="bttn">
-                                                <button type="button">등록</button>
+                                            <div class="text">${comment.CONTENTS}</div>
+                                            <div class="tool">
+                                                <a href="#" class="reply-btn" data-dm-cd="${comment.DM_CD}" data-comment-cd="${comment.COMM_CD}">답글</a>
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
-                            </li>--%>
-                            <%--<li>
-                                <div class="cmmt">
-                                    <div class="top">
-                                        <div class="ico"><img src="/jsp/sc112/v2/assets/img/profile.svg"></div>
-                                        <div class="con">
-                                            <div class="name">김****</div>
-                                            <div class="date">2022-04-30 15:00</div>
-                                        </div>
-                                    </div>
-                                    <div class="text">추심 피해가 너무 심각합니다.</div>
-                                    <div class="tool">
-                                        <a href="#">수정</a>
-                                        <a href="#">삭제</a>
-                                        <a href="#">답글</a>
-&lt;%&ndash;                                        <a href="#">신고</a>&ndash;%&gt;
-                                    </div>
-                                </div>
-                            </li>--%>
+                                        <c:forEach var="child" items="${comments}">
+                                            <c:if test="${child.PARENT_CD eq comment.COMM_CD}">
+                                                <div class="cmmt rep">
+                                                    <div class="top">
+                                                        <div class="con">
+                                                            <div class="name">${child.NICK_NM}</div>
+                                                            <div class="date">${child.WRITE_DATE}</div>
+                                                            <c:if test="${child.NEW_VALUE eq 'Y'}">
+                                                                <span class="icon icon_new"></span>
+                                                            </c:if>
+                                                        </div>
+                                                    </div>
+                                                    <div class="text">${child.CONTENTS}</div>
+                                                </div>
+                                            </c:if>
+                                        </c:forEach>
+                                    </li>
+                                </c:if>
+                            </c:forEach>
                         </ul>
                     </div>
                     <%--<div class="more">
                         <a href="#">더보기</a>
                     </div>--%>
-                    <div class="button">
-                        <a href="#<%--/sc112/dm/list?DM_TYPE=001--%>" class="btn btn_01">목록</a>
-                    </div>
+                    <%--<div class="button">
+                        <a href="javascript:history.back();" class="btn btn_01">목록</a>
+                    </div>--%>
                 </div>
                 <div id="emoji-picker-container" style="display:none; position:absolute; z-index:999;"></div>
             </div>
@@ -248,5 +173,152 @@
     </div>
 </main>
 <%@ include file="/jsp/sc112/v2/footer.jsp" %>
+<script src="https://unpkg.com/emoji-mart@latest/dist/browser.js"></script>
+<script>
+    $(function () {
+        $(document).on("submit", ".createCommonForm", function (e) {
+            e.preventDefault(); // ★ 무조건 막고 시작
+
+            var $form = $(this);
+
+            var nick = $.trim($form.find("input[name='NICK_NM']").val());
+            var pw = $.trim($form.find("input[name='PASSWORD']").val());
+            var contents = $.trim($form.find("textarea[name='CONTENTS']").val());
+
+            if (!nick) {
+                alert("닉네임을 입력해주세요.");
+                $form.find("input[name='NICK_NM']").focus();
+                return;
+            }
+
+            if (!pw) {
+                alert("비밀번호를 입력해주세요.");
+                $form.find("input[name='PASSWORD']").focus();
+                return;
+            }
+
+            if (!contents) {
+                alert("글 내용을 입력해주세요.");
+                $form.find("textarea[name='CONTENTS']").focus();
+                return;
+            }
+
+            this.submit();
+        });
+
+    });
+
+    $(function () {
+        $(document).on("click", ".reply-btn", function (e) {
+            e.preventDefault();
+
+            const $btn = $(this);
+            const seq = $btn.data("dm-cd");
+            const commentCd = $btn.data("comment-cd");
+            const $li = $(this).closest("li");
+            const $existingForm = $(".reply-form-wrap");
+
+            if ($li.next().hasClass("reply-form-wrap")) {
+                $li.next().remove();
+                return;
+            }
+
+            if ($existingForm.length) {
+                $existingForm.remove();
+            }
+
+            var formHtml = ''
+                + '<li class="reply-form-wrap">'
+                + '  <form class="form createCommonForm" action="/sc112/community/create/comment" method="POST">'
+                + '    <input type="hidden" name="SEQ" value="' + seq + '">'
+                + '    <input type="hidden" name="PARENT_CD" value="' + commentCd + '">'
+
+                + '    <div class="input">'
+                + '      <div class="inp"><input name="NICK_NM" type="text" placeholder="닉네임"></div>'
+                + '      <div class="inp"><input name="PASSWORD" type="password" placeholder="비밀번호"></div>'
+                + '    </div>'
+
+                + '    <div class="textarea">'
+                + '      <div class="text">'
+                + '        <textarea name="CONTENTS" class="commentArea"'
+                + '          placeholder="타인의 권리를 침해하거나 명예를 훼손하는 댓글은 관련 법률에 의해 제재를 받을 수 있습니다."></textarea>'
+                + '      </div>'
+
+                + '      <div class="tool">'
+                + '        <div class="util">'
+                + '          <button class="imoji" type="button">'
+                + '            <i class="icon icon_imoji"></i>'
+                + '          </button>'
+                + '        </div>'
+                + '        <div class="bttn">'
+                + '          <button type="submit">등록</button>'
+                + '        </div>'
+                + '      </div>'
+                + '    </div>'
+
+                + '    <div class="emoji-picker-container"'
+                + '         style="display:none; position:absolute; z-index:9999;"></div>'
+                + '  </form>'
+                + '</li>';
+
+            $li.after(formHtml);
+            $li.next().find("textarea").focus();
+        });
+    });
+
+    $(function () {
+        $(document).on("click", ".imoji", function (e) {
+            e.preventDefault();
+
+            const $form = $(this).closest("form");
+            const $textarea = $form.find(".commentArea");
+            const $pickerContainer = $form.find(".emoji-picker-container");
+
+            // picker 없으면 생성
+            if (!$pickerContainer.data("picker")) {
+                const picker = new EmojiMart.Picker({
+                    onEmojiSelect: emoji => {
+                        insertAtCursor($textarea[0], emoji.native);
+                    },
+                    locale: "ko",
+                    previewPosition: "none",
+                    skinTonePosition: "none",
+                    searchPosition: "none"
+                });
+
+                $pickerContainer.append(picker);
+                $pickerContainer.data("picker", picker);
+            }
+
+            // 위치 계산
+            const pos = $(this).offset();
+            $pickerContainer.css({
+                top: pos.top - $pickerContainer.outerHeight() - 10,
+                left: pos.left
+            }).toggle();
+        });
+
+        // textarea 커서 위치 삽입
+        function insertAtCursor(textarea, text) {
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+
+            textarea.value =
+                textarea.value.substring(0, start) +
+                text +
+                textarea.value.substring(end);
+
+            textarea.selectionStart = textarea.selectionEnd = start + text.length;
+            textarea.focus();
+        }
+
+        // 외부 클릭 시 picker 닫기
+        $(document).on("click", function (e) {
+            if (!$(e.target).closest(".imoji, .emoji-picker-container").length) {
+                $(".emoji-picker-container").hide();
+            }
+        });
+    });
+</script>
 </body>
 </html>
