@@ -79,4 +79,10 @@ public class V2CommunityController {
         v2CommunityService.createComment(param);
         return "redirect:/sc112/community/detail?COMMUNITY_TP=" + param.get("COMMUNITY_TP") + "&COMMUNITY_ST=" + param.get("COMMUNITY_ST") + "&SEQ=" + param.get("SEQ");
     }
+
+    @PostMapping("delete/comment")
+    public String deleteComment(Model model, @RequestParam HashMap<String, Object> param) {
+        v2CommunityService.deleteComment(param);
+        return "redirect:/sc112/community/detail?COMMUNITY_TP=" + param.get("COMMUNITY_TP") + "&COMMUNITY_ST=" + param.get("COMMUNITY_ST") + "&SEQ=" + param.get("SEQ");
+    }
 }

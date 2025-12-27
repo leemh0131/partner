@@ -13,6 +13,7 @@
                         <script>
                             $(function () {
                                 $(function () {
+                                    debugger;
                                     var current = location.pathname + location.search;
                                     var $target = $("a").filter(function () {
                                         var idValue = $(this).attr("id");

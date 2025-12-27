@@ -16,7 +16,7 @@
 </head>
 <header id="header">
     <div class="wrap">
-        <div class="logo"><a href="/sc112/home"><img src="/jsp/sc112/v2/assets/img/fogo.svg" alt="사채패치"></a></div>
+        <div class="logo"><a href="/sc112/home"><img src="/jsp/sc112/v2/assets/img/logo.svg" alt="사채패치"></a></div>
         <div class="tool">
             <form id="searchForm" action="/sc112/dm/list" method="GET">
             <div class="search">
@@ -52,11 +52,9 @@
                                 <c:choose>
                                     <c:when test="${item.RANK_DIFF == 0}">
                                     </c:when>
-
                                     <c:when test="${item.RANK_DIFF > 0}">
                                         <div class="change up">${item.RANK_DIFF}</div>
                                     </c:when>
-
                                     <c:otherwise>
                                         <div class="change down">${item.RANK_DIFF}</div>
                                     </c:otherwise>
@@ -66,14 +64,14 @@
                     </c:forEach>
                 </ul>
             </div>
-            <div class="more active">
+            <%--<div class="more active">
                 <a href="#"></a>
-            </div>
+            </div>--%>
         </div>
-        <div class="real-time-detail">
+        <div class="real-time-detail active">
             <div class="tabs">
                 <button type="button" class="tab on">실시간 댓글</button>
-                <button type="button" class="tab">불법대부업</button>
+<%--                <button type="button" class="tab">불법대부업</button>--%>
             </div>
             <div class="cont on">
                 <div class="list">
@@ -84,7 +82,6 @@
                                     <div class="title">
                                         <span class="cate cate${item.DM_TYPE}">${item.DM_TYPE_NM}</span>
                                         <span class="subject bold">${item.COMP_NM}</span>
-<%--                                        <span class="icon icon_new"></span>--%>
                                     </div>
                                     <div class="comment">
                                         <span>${item.COMMENT}</span>
@@ -146,7 +143,7 @@
                 });
             });
         
-            $(function () {
+            /*$(function () {
                 $(".real-time .more").on("click", function (e) {
                     e.preventDefault();
                     $(this).toggleClass("active");
@@ -155,7 +152,7 @@
                         .stop(true, true)
                         .slideToggle(300);
                 });
-            });
+            });*/
             $(function () {
                 $(".tabs .tab").on("click", function () {
                     var idx = $(this).index();

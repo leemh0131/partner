@@ -65,18 +65,16 @@ public class V2CommunityService {
     public void detail(Model model, HashMap<String, Object> param) {
         param.put("COMPANY_CD", "1000");
         param.put("TABLE_ID", param.get("SEQ"));
-        model.addAttribute("item", v2CommunityMapper.detail(param));
-        model.addAttribute("links", v2CommunityMapper.detailLinks(param));
-        model.addAttribute("comments", v2CommunityMapper.comments(param));
-        model.addAttribute("files", fileService.simpleSearch(param));
-
-        param.put("DM_CD", param.get("SEQ"));
         param.put("IP", getRemoteAddress());
-//        IP로 조회수 체크 후 업데이트
         int chk = v2CommunityMapper.insertEsCommunityHit(param);
         if(chk > 0){
             v2CommunityMapper.hitPlus(param);
         }
+
+        model.addAttribute("item", v2CommunityMapper.detail(param));
+        model.addAttribute("links", v2CommunityMapper.detailLinks(param));
+        model.addAttribute("comments", v2CommunityMapper.comments(param));
+        model.addAttribute("files", fileService.simpleSearch(param));
     }
 
     public HashMap<String, Object> create(HashMap<String, Object> param, MultipartFile file) throws IOException {
@@ -123,5 +121,9 @@ public class V2CommunityService {
         param.put("WRITE_DATE", nowDate);
         param.put("INSERT_DATE", nowDate);
         v2CommunityMapper.createComment(param);
+    }
+
+    public void deleteComment(HashMap<String, Object> param) {
+        v2CommunityMapper.deleteComment(param);
     }
 }

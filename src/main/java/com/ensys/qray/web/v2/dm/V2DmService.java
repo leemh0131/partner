@@ -69,6 +69,13 @@ public class V2DmService {
     }
 
     public void detail(Model model, HashMap<String, Object> param) {
+        param.put("COMPANY_CD", "1000");
+        param.put("IP", getRemoteAddress());
+        int chk = v2DmMapper.insertEsCommunityHit(param);
+        if(chk > 0){
+            v2DmMapper.hitPlus(param);
+        }
+
         HashMap<String, Object> detail = v2DmMapper.detail(param);
         model.addAttribute("detail", detail);
         model.addAttribute("detailDeposit", v2DmMapper.detailDeposit(param));
@@ -80,15 +87,6 @@ public class V2DmService {
         } else {
             model.addAttribute("relationList", dmMRelation);
         }
-
-
-        /*param.put("DM_CD", param.get("SEQ"));
-        param.put("IP", getRemoteAddress());
-//        IP로 조회수 체크 후 업데이트
-        int chk = v2CommunityMapper.insertEsCommunityHit(param);
-        if(chk > 0){
-            v2CommunityMapper.hitPlus(param);
-        }*/
     }
 
 
@@ -125,5 +123,17 @@ public class V2DmService {
         param.put("WRITE_DATE", nowDate);
         param.put("INSERT_DATE", nowDate);
         v2DmMapper.createComment(param);
+    }
+
+    public void deleteComment(HashMap<String, Object> param) {
+        String dbPassword = v2DmMapper.checkCommentPassword(param);
+
+        String inputPassword = (String) param.get("PASSWORD");
+
+        if (dbPassword == null || !dbPassword.equals(inputPassword)) {
+            throw new RuntimeException("비밀번호가 일치하지 않습니다.");
+        }
+
+        v2DmMapper.deleteComment(param);
     }
 }

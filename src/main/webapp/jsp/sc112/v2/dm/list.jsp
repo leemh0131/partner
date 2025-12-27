@@ -39,8 +39,16 @@
                     </div>
                 </div>
                 <div class="list">
+                    <ul class="item" style="font-weight: bold;/* border-bottom:2px solid #000;*/">
+                        <li class="num" style="font-size: 14px !important;">번호</li>
+                        <li class="title" style="font-size: 14px !important;">내용</li>
+                        <li class="writer" style="font-size: 14px !important;">업체명</li>
+                        <li class="view" style="font-size: 14px !important;">조회수</li>
+                        <li class="date" style="font-size: 14px !important;">작성일자</li>
+                    </ul>
                     <c:forEach var="item" items="${list}">
                         <ul class="item">
+
                             <li class="num">${item.COMM_NUM}</li>
                             <li class="title">
                                 <a class="list-item" href="&DM_CD=${item.DM_CD}">

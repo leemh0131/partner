@@ -28,4 +28,7 @@ public interface V2CommunityMapper extends MyBatisMapper {
     void createComment(HashMap<String, Object> param);
 
     List<HashMap<String, Object>> comments(HashMap<String, Object> param);
+
+    void deleteComment(HashMap<String, Object> param);
+
 }

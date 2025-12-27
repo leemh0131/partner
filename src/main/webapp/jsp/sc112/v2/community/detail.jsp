@@ -9,8 +9,19 @@
     <div class="wrap">
         <section id="contain">
             <div id="bbs_write">
+                <div class="banner mobile">
+                    <a href="#">
+                        <div class="tit">불법대부업 채무 맞춤 솔루션</div>
+                        <div class="txt">불법대부업 채무조정 및 종결협의</div>
+                    </a>
+                </div>
                 <div class="header">
                     <div class="title">${item.TITLE}</div>
+                    <div class="info">
+                        <p>${item.NAME}</p>
+                        <p>${item.INSERT_DTS}</p>
+                        <p>${item.HIT}회</p>
+                    </div>
                 </div>
                 <div class="form">
                     <dl>
@@ -19,9 +30,6 @@
                                 <div class="text">${item.CONTENTS}</div>
                             </div>
                         </dd>
-                    </dl>
-                    <dl>
-                        <dt>닉네임 : ${item.NAME} 작성날짜 : ${item.INSERT_DTS}</dt>
                     </dl>
                     <dl>
                         <dt>링크</dt>

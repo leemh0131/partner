@@ -19,7 +19,7 @@
                 , SUBSTRING(TITLE, 1, 50)             AS "TITLE"
                 , ROW_NUMBER() OVER (ORDER BY INSERT_DTS) AS "COMM_NUM"
                 , F_ES_CODE_DETAIL(COMPANY_CD, 'ES_Q0138', COMMUNITY_TP) AS "COMMUNITY_TP"
-                , SUBSTRING(NAME, 1, 1) || 'OO' AS "NAME"
+                , F_NVL_TEXT(SUBSTRING(NAME, 1, 3), '무명') AS "NAME"
                 , TO_CHAR(SUBSTRING(INSERT_DTS, 1, 8)::DATE, 'YYYY-MM-DD HH:DD') AS "DTS"
                 , (SELECT COUNT(*) FROM PL_DM_COMM WHERE DM_CD = SEQ) AS "COMM_CUT"
                 , CASE WHEN HIT BETWEEN 0 AND 999 THEN HIT::VARCHAR ELSE '999↑' END AS "HIT"
@@ -42,7 +42,7 @@
                 , CONTENTS  AS "CONTENTS"
                 , NAME AS "NAME"
                 , TO_CHAR(TO_TIMESTAMP(INSERT_DTS, 'YYYYMMDDHH24MISS'), 'YYYY-MM-DD') AS "INSERT_DTS"
---                 , TO_CHAR(TO_TIMESTAMP(INSERT_DTS, 'YYYYMMDDHH24MISS'), 'YYYY-MM-DD HH24:MI:SS')
+                , CASE WHEN COALESCE(HIT, 0) BETWEEN 0 AND 999 THEN COALESCE(HIT, 0)::VARCHAR ELSE '999↑' END AS "HIT"
         FROM ES_COMMUNITY
         WHERE COMPANY_CD = #{COMPANY_CD}
         AND SEQ = #{SEQ}
@@ -132,10 +132,10 @@
         UPDATE ES_COMMUNITY
         SET   HIT = (SELECT COALESCE(HIT, 0) + 1 FROM ES_COMMUNITY WHERE COMPANY_CD = #{COMPANY_CD} AND SEQ = #{SEQ})
         WHERE  COMPANY_CD    = #{COMPANY_CD}
-          AND    SEQ = #{SEQ}
+        AND    SEQ = #{SEQ}
     </update>
 
-	<insert id="createComment" parameterType="hashmap" statementType="CALLABLE">
+	<insert id="createComment" parameterType="hashmap">
 		/*V2CommunityMapper.createComment*/
 		INSERT INTO PL_DM_COMM (
 			  DM_CD
@@ -164,6 +164,12 @@
 		)
 	</insert>
 
+    <!--<delete id="deleteComment" parameterType="hashmap">
+        /*V2CommunityMapper.deleteComment*/
+        DELETE FROM PL_DM_COMM
+        WHERE DM_CD = #{SEQ}
+        AND COMM_CD = #{COMM_CD}
+    </delete>-->
 
     <select id="comments" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
         /*V2CommunityMapper.comments*/

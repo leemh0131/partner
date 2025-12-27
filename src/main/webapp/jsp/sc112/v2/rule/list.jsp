@@ -24,7 +24,6 @@
                         <div class="info">
                             <p>변호사 최성중</p>
                             <p>2025-12-04 18:15</p>
-                            <%--<p>1,524,000회</p>--%>
                         </div>
                     </div>
                     <div class="content">

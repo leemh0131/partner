@@ -28,5 +28,13 @@ public interface V2DmMapper extends MyBatisMapper {
     void createComment(HashMap<String, Object> param);
 
     List<HashMap<String, Object>> comments(HashMap<String, Object> param);
-}
 
+    int insertEsCommunityHit(HashMap<String, Object> param);
+
+    int hitPlus(HashMap<String, Object> param);
+
+    String checkCommentPassword(HashMap<String, Object> param);
+
+    void deleteComment(HashMap<String, Object> param);
+
+}

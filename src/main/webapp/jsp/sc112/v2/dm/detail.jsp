@@ -19,9 +19,8 @@
                     <div class="title">${detail.COMP_NM}</div>
                     <div class="info">
                         <p>${detail.DM_TYPE}</p>
-<%--                        <p>키륵키륵</p>--%>
                         <p>${detail.WRITE_DATE}</p>
-<%--                        <p>${detail.HIT}회</p>--%>
+                        <p>${detail.HIT}회</p>
                     </div>
                 </div>
                 <div class="content">
@@ -161,21 +160,26 @@
                                 <c:if test="${empty comment.PARENT_CD}">
                                     <li>
                                         <div class="cmmt">
-                                            <div class="top">
-                                                <div class="ico">
-                                                    <img src="/jsp/sc112/v2/assets/img/profile.svg">
+                                            <c:if test="${comment.DELETE_YN eq 'N'}">
+                                                <div class="top">
+                                                    <div class="ico">
+                                                        <img src="/jsp/sc112/v2/assets/img/profile.svg">
+                                                    </div>
+                                                    <div class="con">
+                                                        <div class="name">${comment.NICK_NM}</div>
+                                                        <div class="date">${comment.WRITE_DATE}</div>
+                                                        <c:if test="${comment.NEW_VALUE eq 'Y'}">
+                                                            <span class="icon icon_new"></span>
+                                                        </c:if>
+                                                    </div>
                                                 </div>
-                                                <div class="con">
-                                                    <div class="name">${comment.NICK_NM}</div>
-                                                    <div class="date">${comment.WRITE_DATE}</div>
-                                                    <c:if test="${comment.NEW_VALUE eq 'Y'}">
-                                                        <span class="icon icon_new"></span>
-                                                    </c:if>
-                                                </div>
-                                            </div>
+                                            </c:if>
                                             <div class="text">${comment.CONTENTS}</div>
                                             <div class="tool">
                                                 <a href="#" class="reply-btn" data-dm-cd="${comment.DM_CD}" data-comment-cd="${comment.COMM_CD}">답글</a>
+                                                <c:if test="${comment.DELETE_YN eq 'N'}">
+                                                    <a href="#" class="delete-btn" data-dm-cd="${comment.DM_CD}" data-comment-cd="${comment.COMM_CD}">삭제</a>
+                                                </c:if>
                                             </div>
                                         </div>
                                         <c:forEach var="child" items="${comments}">
@@ -216,7 +220,7 @@
 <script src="https://unpkg.com/emoji-mart@latest/dist/browser.js"></script>
 <script>
     $(function () {
-        $(document).on("submit", ".createCommonForm", function (e) {
+        $(document).on("submit", ".createCommonForm .bttn", function (e) {
             e.preventDefault(); // ★ 무조건 막고 시작
 
             var $form = $(this);
@@ -303,6 +307,41 @@
 
             $li.after(formHtml);
             $li.next().find("textarea").focus();
+        });
+
+        $(document).on("click", ".delete-btn", function (e) {
+            e.preventDefault();
+
+            const $btn = $(this);
+            const dmCd = $btn.data("dm-cd");
+            const commentCd = $btn.data("comment-cd");
+            const $li = $(this).closest("li");
+            const $existingForm = $(".reply-form-wrap");
+
+            if ($li.next().hasClass("reply-form-wrap")) {
+                $li.next().remove();
+                return;
+            }
+
+            if ($existingForm.length) {
+                $existingForm.remove();
+            }
+
+            var formHtml = ''
+                + '<li class="reply-form-wrap">'
+                + '  <form class="form createCommonForm" action="/sc112/dm/delete/comment" method="POST">'
+                + '    <input type="hidden" name="DM_CD" value="' + dmCd + '">'
+                + '    <input type="hidden" name="COMM_CD" value="' + commentCd + '">'
+
+                + '    <div class="input">'
+                + '      <div class="inp"><input name="PASSWORD" type="password" placeholder="비밀번호"></div>'
+                + '          <button class="delete-bttn">삭제</button>'
+                + '    </div>'
+                + '    </div>'
+                + '  </form>'
+                + '</li>';
+
+            $li.after(formHtml);
         });
     });
 

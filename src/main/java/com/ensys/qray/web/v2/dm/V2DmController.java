@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.HashMap;
 
 @Controller
@@ -43,10 +45,23 @@ public class V2DmController {
         return "redirect:/sc112/dm/detail?DM_CD=" + param.get("DM_CD");
     }
 
-
     @PostMapping("create/comment")
     public String createComment(Model model, @RequestParam HashMap<String, Object> param) {
         v2DmService.createComment(param);
         return "redirect:/sc112/dm/detail?DM_CD=" + param.get("DM_CD");
+    }
+
+    @PostMapping("delete/comment")
+    public void deleteComment(Model model, HttpServletResponse response, @RequestParam HashMap<String, Object> param) throws IOException {
+        response.setContentType("text/html; charset=UTF-8");
+        PrintWriter out = response.getWriter();
+
+        try {
+            v2DmService.deleteComment(param);
+            out.println("<script>alert('삭제되었습니다.'); location.href='/sc112/dm/detail?DM_CD=" +param .get("DM_CD") + "';</script>");
+        } catch (Exception e) {
+            out.println("<script>alert('" + e.getMessage() + "'); history.back();</script>");
+        }
+        out.flush();
     }
 }

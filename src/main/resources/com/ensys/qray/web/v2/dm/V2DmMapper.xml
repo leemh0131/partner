@@ -30,7 +30,7 @@
         SELECT    DM_CD AS "DM_CD"
                 , F_NVL_TEXT(SUBSTRING(DM_CONTENTS, 1, 50), COMP_NM) AS "TITLE"
                 , ROW_NUMBER() OVER (ORDER BY INSERT_DATE) AS "COMM_NUM"
-                , SUBSTRING(COMP_NM, 1, 1) || 'OO' AS "NAME"
+                , F_NVL_TEXT(SUBSTRING(COMP_NM, 1, 3), '무명') AS "NAME"
                 , TO_CHAR(SUBSTRING(INSERT_DATE, 1, 8)::DATE, 'YYYY-MM-DD HH:DD') AS "DTS"
                 , (SELECT COUNT(*) FROM PL_DM_COMM WHERE DM_CD = A.DM_CD) AS "COMM_CUT"
                 , CASE WHEN coalesce(HIT, 0) BETWEEN 0 AND 999 THEN coalesce(HIT, 0)::VARCHAR ELSE '999↑' END AS "HIT"
@@ -155,7 +155,7 @@
         WHERE DM_CD = #{DM_CD}
     </select>
 
-    <select id="relationList" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+    <select id="relationList" resultType="hashmap" parameterType="hashmap">
         /*V2DmMapper.relationList*/
         SELECT    A.DM_CD                              AS "DM_CD"
                 , A.COMP_NM                            AS "COMP_NM"
@@ -180,7 +180,7 @@
         LIMIT 3
     </select>
 
-    <select id="randomList" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+    <select id="randomList" resultType="hashmap" parameterType="hashmap">
         /*V2DmMapper.randomList*/
         SELECT    A.DM_CD                              AS "DM_CD"
                 , A.COMP_NM                            AS "COMP_NM"
@@ -197,15 +197,15 @@
         LIMIT 3
     </select>
 
-    <select id="comments" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
+    <select id="comments" resultType="hashmap" parameterType="hashmap">
         /*V2DmMapper.comments*/
         SELECT    A.DM_CD          AS "DM_CD"
                 , A.COMM_CD        AS "COMM_CD"
                 , A.PARENT_CD      AS "PARENT_CD"
-                , A.NICK_NM        AS "NICK_NM"
-                , A.CONTENTS       AS "CONTENTS"
+                , CASE WHEN DELETE_YN = 'Y' THEN '' ELSE A.NICK_NM END AS "NICK_NM"
+                , CASE WHEN DELETE_YN = 'Y' THEN A.DELETE_REMARK ELSE A.CONTENTS END AS "CONTENTS"
                 , A.USE_YN         AS "USE_YN"
-                , A.REPORT_YN      AS "REPORT_YN"
+                , F_NVL_TEXT(A.DELETE_YN, 'N')		AS "DELETE_YN"
                 , TO_CHAR(SUBSTRING(A.WRITE_DATE, 1, 8)::DATE, 'YYYY-MM-DD HH:DD')     AS "WRITE_DATE"
                 , CASE WHEN
                     CURRENT_DATE - TO_DATE(SUBSTRING(REPLACE(A.WRITE_DATE, '-', ''), 1, 8), 'YYYYMMDD') > F_NVL_NUM(B.SYSDEF_CD::INTEGER, 7) THEN 'N'
@@ -217,7 +217,7 @@
         WHERE DM_CD = #{DM_CD}
     </select>
 
-	<insert id="createComment" parameterType="hashmap" statementType="CALLABLE">
+	<insert id="createComment" parameterType="hashmap">
 		/*V2DmMapper.createComment*/
 		INSERT INTO PL_DM_COMM (
 			  DM_CD
@@ -246,4 +246,35 @@
 		)
 	</insert>
 
+    <insert id="insertEsCommunityHit" parameterType="hashmap">
+        /*V2DmMapper.insertEsCommunityHit*/
+        INSERT INTO ES_COMMUNITY_HIT
+        (COMPANY_CD, SEQ, IP)
+        VALUES
+        (#{COMPANY_CD}, #{DM_CD}, #{IP})
+        ON CONFLICT (COMPANY_CD, SEQ, IP) DO NOTHING
+    </insert>
+
+    <update id="hitPlus" parameterType="hashmap">
+        /*V2DmMapper.hitPlus*/
+        UPDATE PL_DM_M
+        SET   HIT = (SELECT COALESCE(HIT, 0) + 1 FROM PL_DM_M WHERE DM_CD = #{DM_CD})
+        WHERE  DM_CD = #{DM_CD}
+    </update>
+
+    <select id="checkCommentPassword" resultType="string">
+        SELECT PASSWORD
+        FROM PL_DM_COMM
+        WHERE DM_CD = #{DM_CD}
+        AND COMM_CD = #{COMM_CD}
+    </select>
+
+    <update id="deleteComment" parameterType="hashmap">
+        /*V2DmMapper.deleteComment*/
+        UPDATE  PL_DM_COMM
+        SET   DELETE_YN = 'Y'
+            , DELETE_REMARK = '작성자가 글을 삭제하였습니다.'
+        WHERE DM_CD = #{DM_CD}
+        AND COMM_CD = #{COMM_CD}
+    </update>
 </mapper>

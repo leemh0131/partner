@@ -29,9 +29,10 @@
                                             <span class="name">${dm.NAME}</span>
                                             <span class="subject">${dm.TITLE}</span>
                                             <span class="reply">(${dm.COMM_CUT})</span>
-                                            <c:if test="${item.NEW_VALUE eq 'Y'}">
+                                            <c:if test="${dm.NEW_VALUE eq 'Y'}">
                                                 <span class="icon icon_new"></span>
                                             </c:if>
+                                            <span class="date">${dm.DTS}</span>
                                         </div>
                                     </a>
                                 </li>
@@ -52,10 +53,11 @@
                                 <li>
                                     <a href="/sc112/board/list?BOARD_TYPE=04" class="inner">
                                         <div class="title">
-                                            <span class="subject">${board.DTS} ${board.TITLE}</span>
-                                            <c:if test="${item.NEW_VALUE eq 'Y'}">
+                                            <span class="subject">${board.TITLE}</span>
+                                            <c:if test="${board.NEW_VALUE eq 'Y'}">
                                                 <span class="icon icon_new"></span>
                                             </c:if>
+                                            <span class="date">${board.DTS}</span>
                                         </div>
                                     </a>
                                 </li>
@@ -82,6 +84,7 @@
                                             <c:if test="${cm.NEW_VALUE eq 'Y'}">
                                                 <span class="icon icon_new"></span>
                                             </c:if>
+                                            <span class="date">${cm.DTS}</span>
                                         </div>
                                     </a>
                                 </li>
@@ -109,6 +112,7 @@
                                             <c:if test="${cm.NEW_VALUE eq 'Y'}">
                                                 <span class="icon icon_new"></span>
                                             </c:if>
+                                            <span class="date">${cm.DTS}</span>
                                         </div>
                                     </a>
                                 </li>

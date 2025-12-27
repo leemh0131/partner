@@ -6,7 +6,7 @@
 	<select id="liveComments" resultType="hashmap" parameterType="hashmap">
 		/*AsideMapper.liveComments*/
 		SELECT    A.DM_CD AS "DM_CD"
-			 , COALESCE(SUBSTRING(B.DM_CONTENTS, 1, 12), B.COMP_NM) AS "COMP_NM" -- 피해내용 OR 사채쉑
+			 , SUBSTRING(F_NVL_TEXT(B.COMP_NM, F_NVL_TEXT(B.DM_CONTENTS, '내용없음')), 1, 12) AS "COMP_NM"
 			 , SUBSTRING(A.CONTENTS, 1, 12) AS "COMMENT"
 			 , B.DM_TYPE AS "DM_TYPE"
 			 , SUBSTRING(F_ES_CODE_DETAIL(#{COMPANY_CD}, 'ES_Q0139', B.DM_TYPE), 1, 2) AS "DM_TYPE_NM"
@@ -19,11 +19,11 @@
 
 	<select id="liveRanks" resultType="hashmap" parameterType="hashmap">
 		/*AsideMapper.liveRanks*/
-		WITH TODAY_DATA AS ( --오늘 기준 최근 7일간 가장 인기많은 쉑
+		WITH TODAY_DATA AS ( -- 오늘 ~ 7 일 전 가장 인기많은 쉑
 		SELECT
 			  COUNT(A.DM_CD) AS DM_COUNT
 			, B.DM_CD
-			, COALESCE(SUBSTRING(B.COMP_NM, 1, 12), B.DM_CONTENTS) AS COMP_NM
+			, SUBSTRING(F_NVL_TEXT(B.COMP_NM, F_NVL_TEXT(B.DM_CONTENTS, '내용없음')), 1, 12) AS COMP_NM
 			, B.DM_TYPE
 			, B.WRITE_DATE
 			, RANK() OVER (ORDER BY COUNT(A.DM_CD) DESC) AS TODAY_RANK
@@ -40,8 +40,8 @@
 		WHERE CURRENT_DATE - TO_DATE(SUBSTRING(REPLACE(B.WRITE_DATE, '-', ''), 1, 8), 'YYYYMMDD')<![CDATA[ < ]]> COALESCE(D.SYSDEF_CD::INTEGER, 7)
 			GROUP BY B.DM_CD, B.COMP_NM, B.DM_CONTENTS, B.DM_TYPE, B.WRITE_DATE
 		),
-		YESTERDAY_DATA AS ( -- 어제 기준 최근 7일간 가장 인기많은 쉑
-		SELECT
+	 	YESTERDAY_DATA AS ( -- 일주일 전 ~ 14 일 전 가장 인기많은 쉑
+	 	SELECT
 			  COUNT(A.DM_CD) AS DM_COUNT
 			, B.DM_CD
 			, RANK() OVER (ORDER BY COUNT(A.DM_CD) DESC) AS YESTERDAY_RANK
@@ -55,7 +55,7 @@
 		  AND FLAG1_CD = 'Y'
 			LIMIT 1
 		) D ON 1 = 1
-		WHERE (CURRENT_DATE - 1) - TO_DATE(SUBSTRING(REPLACE(B.WRITE_DATE, '-', ''), 1, 8), 'YYYYMMDD')<![CDATA[ < ]]> COALESCE(D.SYSDEF_CD::INTEGER, 7)
+		WHERE (CURRENT_DATE - 7) - TO_DATE(SUBSTRING(REPLACE(B.WRITE_DATE, '-', ''), 1, 8), 'YYYYMMDD')<![CDATA[ < ]]> COALESCE(D.SYSDEF_CD::INTEGER + 7, 14)
 			GROUP BY B.DM_CD
 		)
 		SELECT

@@ -1,7 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <footer id="footer">
     <div class="wrap">
-        <div class="logo"><img src="/jsp/sc112/v2/assets/img/fogo.svg"></div>
+        <div class="logo"><img src="/jsp/sc112/v2/assets/img/logo.svg"></div>
         <div class="info">
             <p>상호 : 프라이빗 솔루션</p>
             <p>대표 : 박윤선</p>
