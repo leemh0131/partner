@@ -8,11 +8,9 @@
     <div class="wrap">
         <section id="main">
             <div class="solution order2">
-                <a href="#" class="inner">
-                    <div class="tit">불법대부업 채무 맞춤 솔루션 <br>법률사무소 안이 도와드립니다.</div>
-                    <div class="txt">불법대부업 채무조정 및 종결협의 <br>회생파산면책 / 형사 / 민사 / 민간조사 /가사</div>
-                    <div class="tel">010-2571-3457</div>
-                </a>
+                <c:forEach var="item" items="${commonLink}" varStatus="status">
+                    <a href="${item.LINK}" target="_blank"><img class="inner ${item.TABLE_ID}" src="${item.IMG_URL}" alt="설명"></a>
+                </c:forEach>
             </div>
             <div class="latest order4">
                 <div class="head">

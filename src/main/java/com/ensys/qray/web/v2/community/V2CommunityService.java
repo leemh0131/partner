@@ -123,7 +123,30 @@ public class V2CommunityService {
         v2CommunityMapper.createComment(param);
     }
 
+    public void updateComment(HashMap<String, Object> param) {
+        String dbPassword = v2CommunityMapper.checkCommentPassword(param);
+
+        String inputPassword = (String) param.get("PASSWORD");
+
+        if (dbPassword == null || !dbPassword.equals(inputPassword)) {
+            throw new RuntimeException("비밀번호가 일치하지 않습니다.");
+        }
+
+        String nowDate = nowDate("yyyyMMddHHmmss");
+        param.put("UPDATE_IP", getRemoteAddress());
+        param.put("UPDATE_DATE", nowDate);
+        v2CommunityMapper.updateComment(param);
+    }
+
     public void deleteComment(HashMap<String, Object> param) {
+        String dbPassword = v2CommunityMapper.checkCommentPassword(param);
+
+        String inputPassword = (String) param.get("PASSWORD");
+
+        if (dbPassword == null || !dbPassword.equals(inputPassword)) {
+            throw new RuntimeException("비밀번호가 일치하지 않습니다.");
+        }
+
         v2CommunityMapper.deleteComment(param);
     }
 }

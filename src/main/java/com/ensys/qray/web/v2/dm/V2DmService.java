@@ -125,6 +125,21 @@ public class V2DmService {
         v2DmMapper.createComment(param);
     }
 
+    public void updateComment(HashMap<String, Object> param) {
+        String dbPassword = v2DmMapper.checkCommentPassword(param);
+
+        String inputPassword = (String) param.get("PASSWORD");
+
+        if (dbPassword == null || !dbPassword.equals(inputPassword)) {
+            throw new RuntimeException("비밀번호가 일치하지 않습니다.");
+        }
+
+        String nowDate = nowDate("yyyyMMddHHmmss");
+        param.put("UPDATE_IP", getRemoteAddress());
+        param.put("UPDATE_DATE", nowDate);
+        v2DmMapper.updateComment(param);
+    }
+
     public void deleteComment(HashMap<String, Object> param) {
         String dbPassword = v2DmMapper.checkCommentPassword(param);
 

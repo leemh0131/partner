@@ -178,23 +178,32 @@
                                             <div class="tool">
                                                 <a href="#" class="reply-btn" data-dm-cd="${comment.DM_CD}" data-comment-cd="${comment.COMM_CD}">답글</a>
                                                 <c:if test="${comment.DELETE_YN eq 'N'}">
-                                                    <a href="#" class="delete-btn" data-dm-cd="${comment.DM_CD}" data-comment-cd="${comment.COMM_CD}">삭제</a>
+                                                    <a href="#" class="update-btn" data-dm-cd="${comment.DM_CD}" data-comment-cd="${comment.COMM_CD}" data-nick-nm="${comment.NICK_NM}" data-contents="${comment.CONTENTS}">수정</a>
+                                                    <a href="#" class="delete-btn" data-dm-cd="${comment.DM_CD}" data-comment-cd="${comment.COMM_CD}" data-nick-nm="${comment.NICK_NM}">삭제</a>
                                                 </c:if>
                                             </div>
                                         </div>
                                         <c:forEach var="child" items="${comments}">
                                             <c:if test="${child.PARENT_CD eq comment.COMM_CD}">
                                                 <div class="cmmt rep">
-                                                    <div class="top">
-                                                        <div class="con">
-                                                            <div class="name">${child.NICK_NM}</div>
-                                                            <div class="date">${child.WRITE_DATE}</div>
-                                                            <c:if test="${child.NEW_VALUE eq 'Y'}">
-                                                                <span class="icon icon_new"></span>
-                                                            </c:if>
+                                                    <c:if test="${child.DELETE_YN eq 'N'}">
+                                                        <div class="top">
+                                                            <div class="con">
+                                                                <div class="name">${child.NICK_NM}</div>
+                                                                <div class="date">${child.WRITE_DATE}</div>
+                                                                <c:if test="${child.NEW_VALUE eq 'Y'}">
+                                                                    <span class="icon icon_new"></span>
+                                                                </c:if>
+                                                            </div>
                                                         </div>
-                                                    </div>
+                                                    </c:if>
                                                     <div class="text">${child.CONTENTS}</div>
+                                                    <div class="tool">
+                                                        <c:if test="${child.DELETE_YN eq 'N'}">
+                                                            <a href="#" class="update-btn" data-dm-cd="${comment.DM_CD}" data-comment-cd="${child.COMM_CD}" data-nick-nm="${child.NICK_NM}" data-contents="${child.CONTENTS}">수정</a>
+                                                            <a href="#" class="delete-btn" data-dm-cd="${comment.DM_CD}" data-comment-cd="${child.COMM_CD}" data-nick-nm="${child.NICK_NM}">삭제</a>
+                                                        </c:if>
+                                                    </div>
                                                 </div>
                                             </c:if>
                                         </c:forEach>
@@ -220,10 +229,10 @@
 <script src="https://unpkg.com/emoji-mart@latest/dist/browser.js"></script>
 <script>
     $(function () {
-        $(document).on("submit", ".createCommonForm .bttn", function (e) {
-            e.preventDefault(); // ★ 무조건 막고 시작
+        $(document).on("click", ".bttn button[type='submit']", function(e) {
+            e.preventDefault();
 
-            var $form = $(this);
+            var $form = $(this).closest("form");
 
             var nick = $.trim($form.find("input[name='NICK_NM']").val());
             var pw = $.trim($form.find("input[name='PASSWORD']").val());
@@ -247,9 +256,8 @@
                 return;
             }
 
-            this.submit();
+            $form.submit();
         });
-
     });
 
     $(function () {
@@ -262,7 +270,7 @@
             const $li = $(this).closest("li");
             const $existingForm = $(".reply-form-wrap");
 
-            if ($li.next().hasClass("reply-form-wrap")) {
+            if ($li.next(".reply-form-wrap").find(".reply-btn").length) {
                 $li.next().remove();
                 return;
             }
@@ -314,11 +322,12 @@
 
             const $btn = $(this);
             const dmCd = $btn.data("dm-cd");
+            const nickNm = $btn.data("nick-nm");
             const commentCd = $btn.data("comment-cd");
             const $li = $(this).closest("li");
             const $existingForm = $(".reply-form-wrap");
 
-            if ($li.next().hasClass("reply-form-wrap")) {
+            if ($li.next(".reply-form-wrap").find(".delete-btn").length) {
                 $li.next().remove();
                 return;
             }
@@ -334,10 +343,67 @@
                 + '    <input type="hidden" name="COMM_CD" value="' + commentCd + '">'
 
                 + '    <div class="input">'
+                +  '     <div class="inp"><input name="NICK_NM" type="text" value="' + nickNm +'" readonly disabled></div>'
                 + '      <div class="inp"><input name="PASSWORD" type="password" placeholder="비밀번호"></div>'
                 + '          <button class="delete-bttn">삭제</button>'
                 + '    </div>'
+                + '  </form>'
+                + '</li>';
+
+            $li.after(formHtml);
+        });
+
+        $(document).on("click", ".update-btn", function (e) {
+            e.preventDefault();
+
+            const $btn = $(this);
+            const dmCd = $btn.data("dm-cd");
+            const nickNm = $btn.data("nick-nm");
+            const contents = $btn.data("contents");
+            const commentCd = $btn.data("comment-cd");
+            const $li = $(this).closest("li");
+            const $existingForm = $(".reply-form-wrap");
+
+            if ($li.next(".reply-form-wrap").find(".update-btn").length) {
+                $li.next().remove();
+                return;
+            }
+
+            if ($existingForm.length) {
+                $existingForm.remove();
+            }
+
+            var formHtml = ''
+                + '<li class="reply-form-wrap">'
+                + '  <form class="form createCommonForm" action="/sc112/dm/update/comment" method="POST">'
+                + '    <input type="hidden" name="DM_CD" value="' + dmCd + '">'
+                + '    <input type="hidden" name="COMM_CD" value="' + commentCd + '">'
+
+                + '    <div class="input">'
+                +  '     <div class="inp"><input name="NICK_NM" type="text" value="' + nickNm +'" readonly disabled></div>'
+                + '      <div class="inp"><input name="PASSWORD" type="password" placeholder="비밀번호"></div>'
                 + '    </div>'
+
+                + '    <div class="textarea">'
+                + '      <div class="text">'
+                + '        <textarea name="CONTENTS" class="commentArea"'
+                + '          placeholder="타인의 권리를 침해하거나 명예를 훼손하는 댓글은 관련 법률에 의해 제재를 받을 수 있습니다.">' + contents + '</textarea>'
+                + '      </div>'
+
+                + '      <div class="tool">'
+                + '        <div class="util">'
+                + '          <button class="imoji" type="button">'
+                + '            <i class="icon icon_imoji"></i>'
+                + '          </button>'
+                + '        </div>'
+                + '        <div class="bttn">'
+                + '          <button type="submit">수정</button>'
+                + '        </div>'
+                + '      </div>'
+                + '    </div>'
+
+                + '    <div class="emoji-picker-container"'
+                + '         style="display:none; position:absolute; z-index:9999;"></div>'
                 + '  </form>'
                 + '</li>';
 
@@ -377,7 +443,6 @@
             }).toggle();
         });
 
-        // textarea 커서 위치 삽입
         function insertAtCursor(textarea, text) {
             const start = textarea.selectionStart;
             const end = textarea.selectionEnd;
@@ -391,7 +456,6 @@
             textarea.focus();
         }
 
-        // 외부 클릭 시 picker 닫기
         $(document).on("click", function (e) {
             if (!$(e.target).closest(".imoji, .emoji-picker-container").length) {
                 $(".emoji-picker-container").hide();

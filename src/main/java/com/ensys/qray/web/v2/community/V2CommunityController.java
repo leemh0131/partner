@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriUtils;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
@@ -80,9 +82,34 @@ public class V2CommunityController {
         return "redirect:/sc112/community/detail?COMMUNITY_TP=" + param.get("COMMUNITY_TP") + "&COMMUNITY_ST=" + param.get("COMMUNITY_ST") + "&SEQ=" + param.get("SEQ");
     }
 
+
+    @PostMapping("update/comment")
+    public void updateComment(Model model, HttpServletResponse response, @RequestParam HashMap<String, Object> param) throws IOException {
+        response.setContentType("text/html; charset=UTF-8");
+        PrintWriter out = response.getWriter();
+
+        try {
+            v2CommunityService.updateComment(param);
+            out.println("<script>alert('댓글이 수정되었습니다.'); location.href='/sc112/community/detail?COMMUNITY_TP=" +
+                    param.get("COMMUNITY_TP") + "&COMMUNITY_ST=" + param.get("COMMUNITY_ST") + "&SEQ=" + param.get("SEQ") + "';</script>");
+        } catch (Exception e) {
+            out.println("<script>alert('" + e.getMessage() + "'); history.back();</script>");
+        }
+        out.flush();
+    }
+
     @PostMapping("delete/comment")
-    public String deleteComment(Model model, @RequestParam HashMap<String, Object> param) {
-        v2CommunityService.deleteComment(param);
-        return "redirect:/sc112/community/detail?COMMUNITY_TP=" + param.get("COMMUNITY_TP") + "&COMMUNITY_ST=" + param.get("COMMUNITY_ST") + "&SEQ=" + param.get("SEQ");
+    public void deleteComment(Model model, HttpServletResponse response, @RequestParam HashMap<String, Object> param) throws IOException {
+        response.setContentType("text/html; charset=UTF-8");
+        PrintWriter out = response.getWriter();
+
+        try {
+            v2CommunityService.deleteComment(param);
+            out.println("<script>alert('삭제되었습니다.'); location.href='/sc112/community/detail?COMMUNITY_TP=" +
+                    param.get("COMMUNITY_TP") + "&COMMUNITY_ST=" + param.get("COMMUNITY_ST") + "&SEQ=" + param.get("SEQ") + "';</script>");
+        } catch (Exception e) {
+            out.println("<script>alert('" + e.getMessage() + "'); history.back();</script>");
+        }
+        out.flush();
     }
 }

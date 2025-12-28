@@ -35,4 +35,11 @@ public class AsideService {
         return asideMapper.commonHeader(param);
     }
 
+    public List<HashMap<String, Object>> commonLink() {
+        HashMap<String, Object> param = new HashMap<>();
+        param.put("COMPANY_CD", "1000");
+
+        return asideMapper.commonLink(param);
+    }
+
 }

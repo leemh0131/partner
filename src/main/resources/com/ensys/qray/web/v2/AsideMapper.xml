@@ -95,4 +95,14 @@
         ORDER BY A.FLAG4_CD
     </select>
 
+	<select id="commonLink" resultType="hashmap" parameterType="hashmap">
+		/*AsideMapper.commonLink*/
+		SELECT  CONCAT('http://117.52.84.88:8080', FILE_PATH, FILE_NAME, '.', FILE_EXT) AS "IMG_URL"
+			 , TABLE_ID AS "TABLE_ID"
+			 , LINK AS "LINK"
+		FROM ES_FILE
+		WHERE   COMPANY_CD =  #{COMPANY_CD}
+		AND TABLE_ID IN ('PATH_BANNER_PC', 'PATH_BANNER_MO')
+	</select>
+
 </mapper>

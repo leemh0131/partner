@@ -158,28 +158,40 @@
 			, #{CONTENTS}
 			, 'Y'
 			, #{REPORT_YN}
-			, #{WRITE_DATE}
+			, '2022-11-22 22:34'<!--#{WRITE_DATE} -->
 			, #{WRITE_IP}
-			, #{INSERT_DATE}
+			, '20231129'<!--#{INSERT_DATE} -->
 		)
 	</insert>
 
-    <!--<delete id="deleteComment" parameterType="hashmap">
-        /*V2CommunityMapper.deleteComment*/
-        DELETE FROM PL_DM_COMM
+    <update id="updateComment">
+        /*V2CommunityMapper.updateComment*/
+        UPDATE PL_DM_COMM
+        SET CONTENTS   = #{CONTENTS}
+          , UPDATE_DATE = #{UPDATE_DATE}
+          , UPDATE_IP = #{UPDATE_IP}
         WHERE DM_CD = #{SEQ}
         AND COMM_CD = #{COMM_CD}
-    </delete>-->
+    </update>
+
+    <update id="deleteComment" parameterType="hashmap">
+        /*V2CommunityMapper.deleteComment*/
+        UPDATE  PL_DM_COMM
+        SET   DELETE_YN = 'Y'
+            , DELETE_REMARK = '작성자가 글을 삭제하였습니다.'
+        WHERE DM_CD = #{SEQ}
+        AND COMM_CD = #{COMM_CD}
+    </update>
 
     <select id="comments" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
         /*V2CommunityMapper.comments*/
-        SELECT    A.DM_CD          AS "DM_CD"
+        SELECT    A.DM_CD          AS "SEQ"
                 , A.COMM_CD        AS "COMM_CD"
                 , A.PARENT_CD      AS "PARENT_CD"
-                , A.NICK_NM        AS "NICK_NM"
-                , A.CONTENTS       AS "CONTENTS"
+                , CASE WHEN DELETE_YN = 'Y' THEN '' ELSE A.NICK_NM END AS "NICK_NM"
+                , CASE WHEN DELETE_YN = 'Y' THEN A.DELETE_REMARK ELSE A.CONTENTS END AS "CONTENTS"
                 , A.USE_YN         AS "USE_YN"
-                , A.REPORT_YN      AS "REPORT_YN"
+                , F_NVL_TEXT(A.DELETE_YN, 'N')		AS "DELETE_YN"
                 , A.WRITE_DATE     AS "WRITE_DATE"
                 , CASE WHEN
                     CURRENT_DATE - TO_DATE(SUBSTRING(REPLACE(A.WRITE_DATE, '-', ''), 1, 8), 'YYYYMMDD') > F_NVL_NUM(B.SYSDEF_CD::INTEGER, 7) THEN 'N'
@@ -189,5 +201,13 @@
         LEFT JOIN (SELECT SYSDEF_CD FROM ES_CODEDTL WHERE FIELD_CD = 'ES_Q0141' AND FLAG1_CD = 'Y' LIMIT 1) B
             ON 1 = 1
         WHERE DM_CD = #{SEQ}
+    </select>
+
+    <select id="checkCommentPassword" resultType="string">
+        /*V2CommunityMapper.checkCommentPassword*/
+        SELECT PASSWORD
+        FROM PL_DM_COMM
+        WHERE DM_CD = #{SEQ}
+        AND COMM_CD = #{COMM_CD}
     </select>
 </mapper>
