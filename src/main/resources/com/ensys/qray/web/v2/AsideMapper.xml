@@ -10,11 +10,12 @@
 			 , SUBSTRING(A.CONTENTS, 1, 12) AS "COMMENT"
 			 , B.DM_TYPE AS "DM_TYPE"
 			 , SUBSTRING(F_ES_CODE_DETAIL(#{COMPANY_CD}, 'ES_Q0139', B.DM_TYPE), 1, 2) AS "DM_TYPE_NM"
+			 , TO_CHAR(SUBSTRING(a.INSERT_DATE, 1, 8)::DATE, 'YYYY-MM-DD') AS "DTS"
 		FROM PL_DM_COMM A
 		INNER JOIN PL_DM_M B
 			ON A.DM_CD = B.DM_CD
 		ORDER BY A.WRITE_DATE DESC
-		LIMIT 5
+		LIMIT 10
 	</select>
 
 	<select id="liveRanks" resultType="hashmap" parameterType="hashmap">

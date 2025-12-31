@@ -2,7 +2,7 @@
 <section id="aside">
     <div class="latest">
         <div class="head gray">
-            <div class="title"><img src="/jsp/sc112/v2/assets/img/ic_main_title5.svg"> 실시간 댓글</div>
+            <div class="title"><%--<img src="/jsp/sc112/v2/assets/img/ic_main_title5.svg">--%> 실시간 댓글</div>
             <div class="more"><a href="/sc112/dm/list?DM_TYPE=001">더보기</a></div>
         </div>
         <div class="content">
@@ -18,6 +18,7 @@
                                 <div class="comment">
                                     <span>${item.COMMENT}</span>
                                 </div>
+                                <span class="date">${item.DTS}</span>
                             </a>
                         </li>
                     </c:forEach>
@@ -27,7 +28,7 @@
     </div>
     <div class="latest">
         <div class="head gray">
-            <div class="title"><img src="/jsp/sc112/v2/assets/img/ic_main_title6.svg"> 불법대부업</div>
+            <div class="title"><%--<img src="/jsp/sc112/v2/assets/img/ic_main_title6.svg">--%> 불법대부업</div>
             <div class="more"><a href="/sc112/dm/list?DM_TYPE=001">더보기</a></div>
         </div>
         <div class="content">

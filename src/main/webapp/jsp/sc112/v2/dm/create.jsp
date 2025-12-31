@@ -19,7 +19,7 @@
                                         return current.startsWith(idValue);
                                     });
                                     if ($target.length) {
-                                        $(".title").text($target.text());
+                                        $("#menuTitle").text($target.text());
                                     }
                                 });
                             });

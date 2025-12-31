@@ -137,7 +137,7 @@
              , TO_CHAR(SUBSTRING(A.WRITE_DATE, 1, 8)::DATE, 'YYYY-MM-DD HH:DD') AS "WRITE_DATE"
              , CASE WHEN coalesce(HIT, 0) BETWEEN 0 AND 999 THEN coalesce(HIT, 0)::VARCHAR ELSE '999↑' END AS "HIT"
              , A.BORW_SITE              AS "BORW_SITE"
-             , A.DEBTOR_TEL             AS "DEBTOR_TEL"
+             , F_NVL_TEXT(RPAD(LEFT(A.DEBTOR_TEL, GREATEST(LENGTH(A.DEBTOR_TEL) - 5, 0)), LENGTH(A.DEBTOR_TEL), '*'), '모름')             AS "DEBTOR_TEL"
              , A.DEBTOR_KAKAO           AS "DEBTOR_KAKAO"
              , A.DEBTOR_TELE            AS "DEBTOR_TELE"
              , A.DEBTOR_SNS             AS "DEBTOR_SNS"
@@ -150,7 +150,7 @@
 
     <select id="detailDeposit" resultType="hashmap" parameterType="hashmap">
         /*V2DmMapper.detailDeposit*/
-        SELECT F_ES_CODE_DETAIL('1000', 'ES_Q0009', BANK_CD) || ' ' || NO_DEPOSIT || ' (' || NM_DEPOSITOR || ')' AS "DEPOSIT"
+        SELECT F_ES_CODE_DETAIL('1000', 'ES_Q0009', BANK_CD) || ' ' || RPAD(LEFT(NO_DEPOSIT, GREATEST(LENGTH(NO_DEPOSIT) - 5, 0)), LENGTH(NO_DEPOSIT), '*') || ' (' || NM_DEPOSITOR || ')' AS "DEPOSIT"
         FROM PL_DM_DEPOSIT
         WHERE DM_CD = #{DM_CD}
     </select>
@@ -159,7 +159,7 @@
         /*V2DmMapper.relationList*/
         SELECT    A.DM_CD                              AS "DM_CD"
                 , A.COMP_NM                            AS "COMP_NM"
-                , F_NVL_TEXT(A.DEBTOR_TEL, '모름')      AS "DEBTOR_TEL"
+                , F_NVL_TEXT(RPAD(LEFT(DEBTOR_TEL, GREATEST(LENGTH(DEBTOR_TEL) - 5, 0)), LENGTH(DEBTOR_TEL), '*'), '모름')      AS "DEBTOR_TEL"
                 , F_NVL_TEXT(A.DEBTOR_KAKAO, '모름')    AS "DEBTOR_KAKAO"
                 , F_NVL_TEXT(A.DEBTOR_TELE, '모름')     AS "DEBTOR_TELE"
                 , F_NVL_TEXT(A.DEBTOR_SNS, '모름')      AS "DEBTOR_SNS"

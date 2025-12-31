@@ -36,7 +36,7 @@
                 <a id="${item.SYSDEF_CD}"
                    href="${item.SYSDEF_CD}"
                    style="${item.FLAG2_CD == 'false' ? 'display:none;' : ''}">
-                    <img src="${item.FLAG1_CD}" alt="${item.SYSDEF_NM}"/>${item.SYSDEF_NM}
+                    <%--<img src="${item.FLAG1_CD}" alt="${item.SYSDEF_NM}"/>--%>${item.SYSDEF_NM}
                 </a>
             </c:forEach>
         </div>
@@ -86,6 +86,7 @@
                                     <div class="comment">
                                         <span>${item.COMMENT}</span>
                                     </div>
+                                    <span class="date">${item.DTS}</span>
                                 </a>
                             </li>
                         </c:forEach>
@@ -134,7 +135,7 @@
                 observer: true,
                 observeParents: true,
             });
-         
+
             $(function () {
                 $("#header .menu").on("click", function () {
                     $("#gnb").toggleClass("active");

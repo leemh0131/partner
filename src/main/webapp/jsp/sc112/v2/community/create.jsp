@@ -13,14 +13,13 @@
                         <script>
                             $(function () {
                                 $(function () {
-                                    debugger;
                                     var current = location.pathname + location.search;
                                     var $target = $("a").filter(function () {
                                         var idValue = $(this).attr("id");
                                         return current.startsWith(idValue);
                                     });
                                     if ($target.length) {
-                                        $(".title").text($target.text());
+                                        $("#menuTitle").text($target.text());
                                     }
                                 });
                             });

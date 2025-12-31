@@ -8,13 +8,12 @@
 <main id="container">
     <div class="wrap">
         <section id="contain">
+            <div class="solution order2 mobile">
+                <c:forEach var="item" items="${commonLink}" varStatus="status">
+                    <a href="${item.LINK}" target="_blank"><img class="inner ${item.TABLE_ID}" src="${item.IMG_URL}" alt="설명"></a>
+                </c:forEach>
+            </div>
             <div id="bbs_write">
-                <div class="banner mobile">
-                    <a href="#">
-                        <div class="tit">불법대부업 채무 맞춤 솔루션</div>
-                        <div class="txt">불법대부업 채무조정 및 종결협의</div>
-                    </a>
-                </div>
                 <div class="header">
                     <div class="title">${item.TITLE}</div>
                     <div class="info">
