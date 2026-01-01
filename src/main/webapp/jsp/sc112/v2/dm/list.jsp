@@ -105,8 +105,13 @@
                             <a href="&CURRENT_PAGE=${TOTAL_PAGE}" class="end"></a>
                         </c:if>
                     </div>
+                    <script>
+                        $(function () {
+                            $("#createBtn").attr("href", location.pathname.replaceAll('list', 'create') + location.search/*.replace(/&DM_CD=[^&]*!/g, "")*/);
+                        });
+                    </script>
                     <div class="button">
-                        <a href="" class="btn btn_01 list-create">글쓰기</a>
+                        <a id="createBtn" href="" class="btn btn_01 list-create">글쓰기</a>
                     </div>
                 </div>
             </div>

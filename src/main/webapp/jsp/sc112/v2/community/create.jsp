@@ -94,8 +94,13 @@
                         </dd>
                     </dl>
                 </form>
+                <script>
+                    $(function () {
+                        $("#listBtn").attr("href", location.pathname.replaceAll('create', 'list') + location.search.replace(/&SEQ=[^&]*/g, ""));
+                    });
+                </script>
                 <div class="button">
-                    <a href="javascript:history.back();" class="btn btn_02">취소</a>
+                    <a id="listBtn" href="" class="btn btn_02">취소</a>
                     <a href="#" class="btn btn_01" onclick="submitCreateForm();">등록</a>
                 </div>
                 <script>

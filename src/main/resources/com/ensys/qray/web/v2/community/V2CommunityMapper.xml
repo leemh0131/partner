@@ -40,6 +40,8 @@
         SELECT    SEQ       AS "SEQ"
                 , TITLE     AS "TITLE"
                 , CONTENTS  AS "CONTENTS"
+                , COMMUNITY_TP  AS "COMMUNITY_TP"
+                , COMMUNITY_ST  AS "COMMUNITY_ST"
                 , NAME AS "NAME"
                 , TO_CHAR(TO_TIMESTAMP(INSERT_DTS, 'YYYYMMDDHH24MISS'), 'YYYY-MM-DD') AS "INSERT_DTS"
                 , CASE WHEN COALESCE(HIT, 0) BETWEEN 0 AND 999 THEN COALESCE(HIT, 0)::VARCHAR ELSE '999↑' END AS "HIT"
@@ -78,6 +80,11 @@
             , #{PW} --param
        )
     </insert>
+
+    <delete id="delete" parameterType="hashmap">
+        DELETE FROM ES_COMMUNITY
+        WHERE SEQ = #{SEQ}
+    </delete>
 
     <select id="detailLinks" resultType="hashmap" parameterType="hashmap">
         /*V2CommunityMapper.detailLinks*/
@@ -178,11 +185,18 @@
         /*V2CommunityMapper.deleteComment*/
         UPDATE  PL_DM_COMM
         SET   DELETE_YN = 'Y'
-            , DELETE_REMARK = '작성자가 글을 삭제하였습니다.'
+            , DELETE_REMARK = #{DELETE_REMARK}
         WHERE DM_CD = #{SEQ}
         AND COMM_CD = #{COMM_CD}
     </update>
 
+    <update id="deleteCommentAll" parameterType="hashmap">
+        /*V2CommunityMapper.deleteCommentAll*/
+        UPDATE  PL_DM_COMM
+        SET   DELETE_YN = 'Y'
+            , DELETE_REMARK = #{DELETE_REMARK}
+        WHERE DM_CD = #{SEQ}
+    </update>
     <select id="comments" resultType="hashmap" parameterType="hashmap" statementType="CALLABLE">
         /*V2CommunityMapper.comments*/
         SELECT    A.DM_CD          AS "SEQ"

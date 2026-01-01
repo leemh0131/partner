@@ -1,5 +1,6 @@
 package com.ensys.qray.web.v2;
 
+import com.ensys.qray.user.SessionUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -33,4 +34,8 @@ public class AsideAdvice {
         return asideService.commonLink();
     }
 
+    @ModelAttribute("loginInfo")
+    public SessionUser loginInfo() {
+        return asideService.loginInfo();
+    }
 }

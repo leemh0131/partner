@@ -45,6 +45,12 @@ public class V2DmController {
         return "redirect:/sc112/dm/detail?DM_CD=" + param.get("DM_CD");
     }
 
+    @GetMapping("delete")
+    public String deleteAction(Model model, @RequestParam HashMap<String, Object> param) {
+        v2DmService.delete(param);
+        return "redirect:/sc112/dm/list?DM_TYPE=" + param.get("DM_TYPE");
+    }
+
     @PostMapping("create/comment")
     public String createComment(Model model, @RequestParam HashMap<String, Object> param) {
         v2DmService.createComment(param);

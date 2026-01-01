@@ -2,6 +2,7 @@ package com.ensys.qray.web.v2.dm;
 
 import com.ensys.qray.common.commonMapper;
 import com.ensys.qray.sys.information08.SysInformation08Mapper;
+import com.ensys.qray.utils.SessionUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +14,7 @@ import java.util.List;
 
 import static com.chequer.axboot.core.utils.HttpUtils.getRemoteAddress;
 import static com.ensys.qray.utils.HammerUtility.nowDate;
+import static com.ensys.qray.utils.SessionUtils.*;
 import static java.lang.Integer.parseInt;
 import static org.apache.commons.collections.CollectionUtils.isEmpty;
 
@@ -89,7 +91,6 @@ public class V2DmService {
         }
     }
 
-
     public void create(HashMap<String, Object> param) {
         String strDate = nowDate("yyyyMMddHHmmss");
         param.put("COMPANY_CD", "1000");
@@ -106,6 +107,14 @@ public class V2DmService {
 
         v2DmMapper.create(param);
         v2DmMapper.createDeposit(param);
+    }
+
+    public void delete(HashMap<String, Object> param) {
+        if (getCurrentUser() != null) {
+            param.put("DELETE_REMARK", "관리자가 글을 삭제하였습니다.");
+            v2DmMapper.delete(param);
+            v2DmMapper.deleteCommentAll(param);
+        }
     }
 
     public void createComment(HashMap<String, Object> param) {
@@ -141,6 +150,12 @@ public class V2DmService {
     }
 
     public void deleteComment(HashMap<String, Object> param) {
+        if (getCurrentUser() != null) {
+            param.put("DELETE_REMARK", "관리자가 글을 삭제하였습니다.");
+            v2DmMapper.deleteComment(param);
+            return;
+        }
+
         String dbPassword = v2DmMapper.checkCommentPassword(param);
 
         String inputPassword = (String) param.get("PASSWORD");
@@ -149,6 +164,7 @@ public class V2DmService {
             throw new RuntimeException("비밀번호가 일치하지 않습니다.");
         }
 
+        param.put("DELETE_REMARK", "작성자가 글을 삭제하였습니다.");
         v2DmMapper.deleteComment(param);
     }
 }

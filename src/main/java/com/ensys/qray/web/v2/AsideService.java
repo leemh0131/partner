@@ -1,5 +1,8 @@
 package com.ensys.qray.web.v2;
 
+import com.ensys.qray.setting.base.BaseService;
+import com.ensys.qray.user.SessionUser;
+import com.ensys.qray.utils.SessionUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,7 +13,7 @@ import java.util.List;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class AsideService {
+public class AsideService extends BaseService {
 
     private final AsideMapper asideMapper;
 
@@ -40,6 +43,10 @@ public class AsideService {
         param.put("COMPANY_CD", "1000");
 
         return asideMapper.commonLink(param);
+    }
+
+    public SessionUser loginInfo() {
+        return SessionUtils.getCurrentUser();
     }
 
 }

@@ -2,6 +2,7 @@ package com.ensys.qray.web.v2.community;
 
 import com.ensys.qray.file.FileService;
 import com.ensys.qray.sys.information08.SysInformation08Mapper;
+import com.ensys.qray.utils.SessionUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +15,7 @@ import java.util.List;
 
 import static com.chequer.axboot.core.utils.HttpUtils.getRemoteAddress;
 import static com.ensys.qray.utils.HammerUtility.nowDate;
+import static com.ensys.qray.utils.SessionUtils.getCurrentUser;
 import static java.lang.Integer.*;
 
 @Service
@@ -101,6 +103,14 @@ public class V2CommunityService {
         return param;
     }
 
+    public void delete(HashMap<String, Object> param) {
+        if (getCurrentUser() != null) {
+            param.put("DELETE_REMARK", "관리자가 글을 삭제하였습니다.");
+            v2CommunityMapper.delete(param);
+            v2CommunityMapper.deleteCommentAll(param);
+        }
+    }
+
     public List<HashMap<String, Object>> getFile(HashMap<String, Object> param) {
         param.put("COMPANY_CD", "1000");
         return fileService.simpleSearch(param);
@@ -139,6 +149,11 @@ public class V2CommunityService {
     }
 
     public void deleteComment(HashMap<String, Object> param) {
+        if (SessionUtils.getCurrentUser() != null) {
+            param.put("DELETE_REMARK", "관리자가 글을 삭제하였습니다.");
+            v2CommunityMapper.deleteComment(param);
+            return;
+        }
         String dbPassword = v2CommunityMapper.checkCommentPassword(param);
 
         String inputPassword = (String) param.get("PASSWORD");
@@ -147,6 +162,7 @@ public class V2CommunityService {
             throw new RuntimeException("비밀번호가 일치하지 않습니다.");
         }
 
+        param.put("DELETE_REMARK", "작성자가 글을 삭제하였습니다.");
         v2CommunityMapper.deleteComment(param);
     }
 }

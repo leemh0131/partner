@@ -367,7 +367,7 @@
 #bbs_detail .comment .more a:after{content:'';width:16px;height:16px;background:url("../img/ic_more_arrow.svg") no-repeat center / contain;}
 #bbs_detail .comment .button{margin-top:40px;display:flex;align-items:center;justify-content:flex-end;gap:8px;}
 #bbs_detail .comment .button .btn{display:flex;align-items:center;justify-content:center;padding:0 32px;height:48px;border-radius:8px;border:1px solid #d8dadd;font-size:14px;font-weight:700;color:#333333;}
-#bbs_detail .comment .button .btn_01{background:#3F9A41;color:#ffffff;border-color:#3F9A41;}
+#bbs_detail .comment .button .btn_01{background:#182775;color:#ffffff;border-color:#182775;}
 .icon{flex:0 0 auto;display:block;}
 .icon_new{width:10px;height:10px;background:url("../img/ic_new.svg") no-repeat center / contain;}
 

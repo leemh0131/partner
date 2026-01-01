@@ -19,6 +19,8 @@ public interface V2DmMapper extends MyBatisMapper {
 
     int create(HashMap<String, Object> param);
 
+    int delete(HashMap<String, Object> param);
+
     int createDeposit(HashMap<String, Object> param);
 
     List<HashMap<String, Object>> relationList(HashMap<String, Object> param);
@@ -30,6 +32,8 @@ public interface V2DmMapper extends MyBatisMapper {
     void updateComment(HashMap<String, Object> param);
 
     void deleteComment(HashMap<String, Object> param);
+
+    void deleteCommentAll(HashMap<String, Object> param);
 
     List<HashMap<String, Object>> comments(HashMap<String, Object> param);
 

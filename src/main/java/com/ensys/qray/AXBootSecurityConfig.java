@@ -60,10 +60,10 @@ public class AXBootSecurityConfig extends WebSecurityConfigurerAdapter {
             "/login/**",
             "/logout/**",
             "/sso/*",
-            "/api/oAuth2/**",
+            "/api/oAuth2/**"
 
-            "/jsp/sc112/**",
-            "/sc112/**"
+//            "/jsp/sc112/**",
+//            "/sc112/**"
     };
 
     @Inject
@@ -86,7 +86,11 @@ public class AXBootSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
+                .authorizeRequests()
+                .antMatchers("/jsp/sc112/**", "/sc112/**").permitAll() // 필터는 타지만 로그인은 안 해도 됨
+                .anyRequest().authenticated().and()
                 .anonymous()
+
                 .and()
 
                 .authorizeRequests().anyRequest().hasRole(ROLE)

@@ -99,7 +99,7 @@
                                             <p>고소한경찰서 : ${relation.WITHDR_LOCA}</p>
                                         </div>
                                         <div class="more">
-                                            <a href="/sc112/dm/detail?DM_TYPE=001&DM_CD=${relation.DM_CD}">자세히 보기</a>
+                                            <a href="/sc112/dm/detail?DM_TYPE=${detail.DM_TYPE_CD}&DM_CD=${relation.DM_CD}">자세히 보기</a>
                                         </div>
                                     </li>
                                 </c:forEach>
@@ -211,12 +211,17 @@
                             </c:forEach>
                         </ul>
                     </div>
-                    <%--<div class="more">
-                        <a href="#">더보기</a>
-                    </div>--%>
-                    <%--<div class="button">
-                        <a href="javascript:history.back();" class="btn btn_01">목록</a>
-                    </div>--%>
+                    <script>
+                        $(function () {
+                            $("#listBtn").attr("href", location.pathname.replaceAll('detail', 'list') + location.search.replace(/&DM_CD=[^&]*/g, ""));
+                        });
+                    </script>
+                    <div class="button">
+                        <c:if test="${!empty loginInfo}">
+                            <a href="/sc112/dm/delete?DM_TYPE=${detail.DM_TYPE_CD}&DM_CD=${detail.DM_CD}" class="btn btn_01">삭제</a>
+                        </c:if>
+                        <a id="listBtn" href="" class="btn btn_01">목록</a>
+                    </div>
                 </div>
                 <div id="emoji-picker-container" style="display:none; position:absolute; z-index:999;"></div>
             </div>

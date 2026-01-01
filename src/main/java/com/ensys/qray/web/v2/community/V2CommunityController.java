@@ -51,6 +51,13 @@ public class V2CommunityController {
         return "redirect:/sc112/community/detail?COMMUNITY_TP=" + param.get("COMMUNITY_TP") + "&COMMUNITY_ST=" + param.get("COMMUNITY_ST") + "&SEQ=" + param.get("SEQ");
     }
 
+    @GetMapping("delete")
+    public String deleteAction(Model model, @RequestParam HashMap<String, Object> param) {
+        v2CommunityService.delete(param);
+        return "redirect:/sc112/community/list?COMMUNITY_TP=" + param.get("COMMUNITY_TP") + "&COMMUNITY_ST=" + param.get("COMMUNITY_ST");
+    }
+
+
     @GetMapping("/download/{seq}/{fileName}")
 	public ResponseEntity<Resource> download(@PathVariable String seq, @PathVariable String fileName) throws IOException {
         HashMap<String, Object> param = new HashMap<>();

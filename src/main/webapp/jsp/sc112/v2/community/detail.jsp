@@ -180,12 +180,17 @@
                             </c:forEach>
                         </ul>
                     </div>
-                    <%--<div class="more">
-                        <a href="#">더보기</a>
-                    </div>--%>
-                    <%--<div class="button">
-                        <a href="javascript:history.back();" class="btn btn_01">목록</a>
-                    </div>--%>
+                    <script>
+                        $(function () {
+                            $("#listBtn").attr("href", location.pathname.replaceAll('detail', 'list') + location.search.replace(/&SEQ=[^&]*/g, ""));
+                        });
+                    </script>
+                    <div class="button">
+                        <c:if test="${!empty loginInfo}">
+                            <a href="/sc112/community/delete?COMMUNITY_TP=${item.COMMUNITY_TP}&COMMUNITY_ST=${item.COMMUNITY_ST}&SEQ=${item.SEQ}" class="btn btn_01">삭제</a>
+                        </c:if>
+                        <a id="listBtn" href="" class="btn btn_01">목록</a>
+                    </div>
                 </div>
                 <div id="emoji-picker-container" style="display:none; position:absolute; z-index:999;"></div>
             </div>

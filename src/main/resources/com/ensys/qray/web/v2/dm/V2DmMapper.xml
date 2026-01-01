@@ -101,6 +101,12 @@
         )
     </insert>
 
+    <delete id="delete" parameterType="hashmap">
+        /*V2DmMapper.delete*/
+        DELETE FROM PL_DM_M
+        WHERE DM_CD = #{DM_CD}
+    </delete>
+
     <insert id="createDeposit" parameterType="hashmap">
         /*V2DmMapper.createDeposit*/
         <if test="BANK_CD_ARR != null and BANK_CD_ARR != ''">
@@ -133,6 +139,7 @@
         SELECT A.DM_CD AS "DM_CD"
              , A.COMP_NM AS "COMP_NM"
              , F_ES_CODE_DETAIL('1000', 'ES_Q0139', A.DM_TYPE)              AS "DM_TYPE"
+             , A.DM_TYPE              AS "DM_TYPE_CD"
              , CASE WHEN A.DM_TYPE = '001' THEN NULL ELSE F_ES_CODE_DETAIL('1000', 'ES_Q0140', A.DM_KIND) END "DM_KIND"
              , TO_CHAR(SUBSTRING(A.WRITE_DATE, 1, 8)::DATE, 'YYYY-MM-DD HH:DD') AS "WRITE_DATE"
              , CASE WHEN coalesce(HIT, 0) BETWEEN 0 AND 999 THEN coalesce(HIT, 0)::VARCHAR ELSE '999↑' END AS "HIT"
@@ -260,9 +267,17 @@
         /*V2DmMapper.deleteComment*/
         UPDATE  PL_DM_COMM
         SET   DELETE_YN = 'Y'
-            , DELETE_REMARK = '작성자가 글을 삭제하였습니다.'
+            , DELETE_REMARK = #{DELETE_REMARK}
         WHERE DM_CD = #{DM_CD}
         AND COMM_CD = #{COMM_CD}
+    </update>
+
+    <update id="deleteCommentAll" parameterType="hashmap">
+        /*V2DmMapper.deleteCommentAll*/
+        UPDATE  PL_DM_COMM
+        SET   DELETE_YN = 'Y'
+            , DELETE_REMARK = #{DELETE_REMARK}
+        WHERE DM_CD = #{DM_CD}
     </update>
 
     <insert id="insertEsCommunityHit" parameterType="hashmap">
