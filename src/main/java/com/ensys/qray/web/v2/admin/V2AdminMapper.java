@@ -9,6 +9,11 @@ import java.util.List;
 @Repository
 public interface V2AdminMapper extends MyBatisMapper {
 
-    List<HashMap<String, Object>> list(HashMap<String, Object> param);
+    List<HashMap<String, Object>> boardList(HashMap<String, Object> param);
 
+    HashMap<String, Object> boardDetail(HashMap<String, Object> param);
+
+    int boardInsertUpdate(HashMap<String, Object> param);
+
+    HashMap<String, Object> bannerDetail(HashMap<String, Object> param);
 }

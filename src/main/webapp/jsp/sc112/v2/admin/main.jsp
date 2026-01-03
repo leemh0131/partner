@@ -1,4 +1,5 @@
-<%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="utf-8"%>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -22,54 +23,89 @@
         tr:hover { background: #f9f9f9; }
         .date { color: #999; font-size: 13px; text-align: right; }
         .badge { background: #ff4757; color: white; padding: 2px 6px; border-radius: 4px; font-size: 11px; margin-right: 5px; }
+        .btn { padding: 6px 12px; border-radius: 5px; cursor: pointer; border: none; font-size: 13px; }
+        .btn-go { background: green; color: white; }
+        .btn-add { background: #007bff; color: white; }
+        .btn-edit { background: #f1f3f5; color: #333; border: 1px solid #ccc; padding: 4px 8px; font-size: 12px; cursor: pointer; }
+        .btn-cancel { background: #eee; color: #333; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-right: 5px; }
+        .form-group label { font-weight: bold; display: block; margin-top: 15px; color: #555; }
+        .btn-move {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #343a40;
+            color: #fff;
+            text-decoration: none; /* 밑줄 제거 */
+            border-radius: 5px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .btn-move:hover {
+            background-color: #000;
+        }
     </style>
 </head>
 <body>
-
 <div class="container">
     <div class="card">
-        <h3>광고 이미지 업로드</h3>
-        <div class="upload-area">
-            <p style="color: #666; font-size: 14px;">업로드할 광고 파일을 선택하거나 여기로 드래그하세요.</p>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h3>광고 이미지 관리</h3>
         </div>
+        <table>
+            <thead>
+            <tr>
+                <th style="width: 60px;">번호</th>
+                <th>배너명</th>
+                <th style="width: 100px; text-align: center;">관리</th>
+            </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>2</td>
+                    <td>사채패치 모바일</td>
+                    <td style="text-align: center;">
+                        <a class="btn-edit" href="/sc112/admin/banner/detail?TABLE_ID=PATH_BANNER_MO">수정</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>사채패치 PC</td>
+                    <td style="text-align: center;">
+                        <a class="btn-edit" href="/sc112/admin/banner/detail?TABLE_ID=PATH_BANNER_PC">수정</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 
     <div class="card">
-        <h3>공지사항 관리</h3>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h3>공지사항 관리</h3>
+            <a class="btn btn-add" href="/sc112/admin/board/detail">신규 공지 추가</a>
+        </div>
         <table>
             <thead>
             <tr>
                 <th style="width: 60px;">번호</th>
                 <th>제목</th>
                 <th style="width: 100px; text-align: right;">작성일</th>
+                <th style="width: 100px; text-align: center;">관리</th>
             </tr>
             </thead>
             <tbody>
-            <tr>
-                <td>5</td>
-                <td><span class="badge">N</span> 2026년 상반기 신제품 라인업 공개</td>
-                <td class="date">2025.12.31</td>
-            </tr>
-            <tr>
-                <td>4</td>
-                <td>서버 안정화를 위한 정기 점검 안내 (01/05)</td>
-                <td class="date">2025.12.28</td>
-            </tr>
-            <tr>
-                <td>3</td>
-                <td>[당첨자 발표] 크리스마스 이벤트 결과 안내</td>
-                <td class="date">2025.12.26</td>
-            </tr>
-            <tr>
-                <td>2</td>
-                <td>개인정보 처리방침 변경에 따른 사전 고지</td>
-                <td class="date">2025.12.20</td>
-            </tr>
+                <c:forEach var="item" items="${boardList}">
+                    <tr>
+                        <td>${item.SEQ}</td>
+                        <td>${item.TITLE}</td>
+                        <td class="date">${item.INSERT_DTS}</td>
+                        <td style="text-align: center;">
+                            <a class="btn-edit" href="/sc112/admin/board/detail?SEQ=${item.SEQ}">수정</a>
+                        </td>
+                    </tr>
+                </c:forEach>
             </tbody>
         </table>
     </div>
-    <button class="upload-btn">광고 및 공지사항 수정</button>
+    <a href="/sc112/home" class="btn-move">사채패치 이동</a>
 </div>
-
 </body>
 </html>

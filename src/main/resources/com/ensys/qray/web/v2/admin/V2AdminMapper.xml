@@ -3,7 +3,98 @@
 
 <mapper namespace="com.ensys.qray.web.v2.admin.V2AdminMapper">
 
-    <select id="list" resultType="hashmap" parameterType="hashmap">
-        /*V2AdminMapper.list*/
+    <select id="boardList" resultType="hashmap" parameterType="hashmap">
+        /*V2AdminMapper.boardList*/
+        SELECT  COMPANY_CD AS "COMPANY_CD"
+             ,	BOARD_TYPE AS "BOARD_TYPE"
+             ,	SEQ AS "SEQ"
+             ,	TITLE AS "TITLE"
+             ,	BOARD_ST AS "BOARD_ST"
+             ,	CONTENTS AS "CONTENTS"
+             ,	MAIN_YN AS "MAIN_YN"
+             , TO_CHAR(TO_TIMESTAMP(INSERT_DTS, 'YYYYMMDDHH24MISS'), 'YYYY-MM-DD') AS "INSERT_DTS"
+        FROM ES_BOARD
+        WHERE COMPANY_CD = '1000'
+          AND   BOARD_TYPE  = '04'
+        ORDER BY SEQ DESC
     </select>
+
+    <select id="boardDetail" resultType="hashmap" parameterType="hashmap">
+        /*V2AdminMapper.boardDetail*/
+        SELECT  COMPANY_CD AS "COMPANY_CD"
+             ,	BOARD_TYPE AS "BOARD_TYPE"
+             ,	SEQ AS "SEQ"
+             ,	TITLE AS "TITLE"
+             ,	BOARD_ST AS "BOARD_ST"
+             ,	CONTENTS AS "CONTENTS"
+             ,	MAIN_YN AS "MAIN_YN"
+             , TO_CHAR(TO_TIMESTAMP(INSERT_DTS, 'YYYYMMDDHH24MISS'), 'YYYY-MM-DD') AS "INSERT_DTS"
+        FROM ES_BOARD
+        WHERE COMPANY_CD = '1000'
+        AND   BOARD_TYPE  = '04'
+        AND   SEQ  = NULLIF(#{SEQ}, '')::NUMERIC
+    </select>
+
+    <insert id="boardInsertUpdate" parameterType="hashmap">
+        /*V2AdminMapper.boardInsertUpdate*/
+        INSERT INTO ES_BOARD
+        (
+            COMPANY_CD
+          , BOARD_TYPE
+          , SEQ
+          , TITLE
+          , CONTENTS
+          , HIT
+          , MAIN_YN
+          , BOARD_ST
+          , INSERT_ID
+          , INSERT_DTS
+          , UPDATE_ID
+          , UPDATE_DTS
+        )
+        VALUES
+        (
+            '1000'
+          , '04'
+          , COALESCE(
+                    NULLIF(#{SEQ}, '')::NUMERIC,
+                    (SELECT COALESCE(MAX(SEQ), 0) + 1 FROM ES_BOARD WHERE COMPANY_CD = '1000' AND BOARD_TYPE = '04')
+            )
+          , #{TITLE}
+          , #{CONTENTS}
+          , 0
+          , 'Y'
+          , '01'
+          , #{INSERT_ID}
+          , #{INSERT_DTS}
+          , #{UPDATE_ID}
+          , #{UPDATE_DTS}
+        )
+        ON CONFLICT (COMPANY_CD, BOARD_TYPE, SEQ)
+        DO UPDATE SET
+            TITLE      = EXCLUDED.TITLE
+          , CONTENTS   = EXCLUDED.CONTENTS
+          , MAIN_YN    = EXCLUDED.MAIN_YN
+          , BOARD_ST   = EXCLUDED.BOARD_ST
+          , UPDATE_ID  = EXCLUDED.UPDATE_ID
+          , UPDATE_DTS = EXCLUDED.UPDATE_DTS
+    </insert>
+
+	<select id="bannerDetail" resultType="hashmap" parameterType="hashmap">
+		/*V2AdminMapper.bannerDetail*/
+		SELECT
+			  TABLE_ID	 AS "TABLE_ID"
+			, TABLE_KEY	 AS "TABLE_KEY"
+            , FILE_SEQ	 AS "FILE_SEQ"
+            , FILE_NAME	 AS "FILE_NAME"
+            , ORGN_FILE_NAME	 AS "ORGN_FILE_NAME"
+            , FILE_PATH	 AS "FILE_PATH"
+            , FILE_EXT	 AS "FILE_EXT"
+            , LINK	 AS "LINK"
+            , REMARK	 AS "REMARK"
+            , CONCAT(FILE_PATH, '/', FILE_NAME, '.', FILE_EXT) AS "IMG_URL"
+		FROM ES_FILE
+		WHERE COMPANY_CD = '1000'
+        AND TABLE_ID = #{TABLE_ID}
+	</select>
 </mapper>
