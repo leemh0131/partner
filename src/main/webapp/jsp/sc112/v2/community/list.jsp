@@ -52,7 +52,7 @@
                         <ul class="item">
                             <li class="num">${item.COMM_NUM}</li>
                             <li class="title">
-                                <a class="list-item" href="&SEQ=${item.SEQ}">
+                                <a class="list-item" href="&SEQ=${item.SEQ}" onclick="checkPassword(event, this, ${item.COMMUNITY_ST_CD}, ${item.COMMUNITY_TP_CD})">
                                     <span class="subject"><c:out value="${item.TITLE}"/></span>
                                     <span class="reply">(${item.COMM_CUT})</span>
                                     <!-- NEW 표시 조건 -->
@@ -123,6 +123,19 @@
         <%@ include file="/jsp/sc112/v2/aside.jsp" %>
     </div>
 </main>
+<script>
+function checkPassword(event, element, st, tp) {
+    event.preventDefault();
+    const targetUrl = element.getAttribute('href');
+    if(!(String(st) === "15" && String(tp) === "4")) {
+        location.href = targetUrl;
+        return;
+    }
+
+    const userInput = prompt("비밀번호를 입력하세요.");
+    location.href = targetUrl + "&PW="+ userInput;
+}
+</script>
 <%@ include file="/jsp/sc112/v2/footer.jsp" %>
 </body>
 

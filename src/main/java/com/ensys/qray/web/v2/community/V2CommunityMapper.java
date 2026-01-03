@@ -38,4 +38,6 @@ public interface V2CommunityMapper extends MyBatisMapper {
     List<HashMap<String, Object>> comments(HashMap<String, Object> param);
 
     String checkCommentPassword(HashMap<String, Object> param);
+
+    int checkPwdCount(HashMap<String, Object> param);
 }

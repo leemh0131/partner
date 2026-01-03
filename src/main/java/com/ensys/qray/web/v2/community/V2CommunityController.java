@@ -35,7 +35,16 @@ public class V2CommunityController {
     }
 
     @GetMapping("detail")
-    public String detail(Model model, @RequestParam HashMap<String, Object> param) {
+    public String detail(HttpServletResponse response, Model model, @RequestParam HashMap<String, Object> param) throws IOException {
+        int chk = v2CommunityService.checkPwdDetail(param);
+        if (chk == 0) {
+            response.setContentType("text/html; charset=UTF-8");
+            PrintWriter out = response.getWriter();
+            out.println("<script>alert('비밀번호가 틀렸습니다.'); location.href='/sc112/community/list?COMMUNITY_TP=" +
+                    param.get("COMMUNITY_TP") + "&COMMUNITY_ST=" + param.get("COMMUNITY_ST") + "';</script>");
+            out.flush();
+        }
+
         v2CommunityService.detail(model, param);
         return "/sc112/v2/community/detail";
     }

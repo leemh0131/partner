@@ -64,6 +64,16 @@ public class V2CommunityService {
         model.addAttribute("TOTAL_PAGE", totalPage);
     }
 
+    public int checkPwdDetail(HashMap<String, Object> param) {
+        if (getCurrentUser() != null) {
+            return 1;
+        }
+        if ("15".equals(param.get("COMMUNITY_ST")) && "04".equals(param.get("COMMUNITY_TP"))) {
+            return v2CommunityMapper.checkPwdCount(param);
+        }
+        return 1;
+    }
+
     public void detail(Model model, HashMap<String, Object> param) {
         param.put("COMPANY_CD", "1000");
         param.put("TABLE_ID", param.get("SEQ"));

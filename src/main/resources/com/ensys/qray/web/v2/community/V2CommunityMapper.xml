@@ -18,6 +18,8 @@
         SELECT    SEQ               AS "SEQ"
                 , SUBSTRING(TITLE, 1, 50)             AS "TITLE"
                 , ROW_NUMBER() OVER (ORDER BY INSERT_DTS) AS "COMM_NUM"
+                , COMMUNITY_ST AS "COMMUNITY_ST_CD"
+                , COMMUNITY_TP AS "COMMUNITY_TP_CD"
                 , F_ES_CODE_DETAIL(COMPANY_CD, 'ES_Q0138', COMMUNITY_TP) AS "COMMUNITY_TP"
                 , F_NVL_TEXT(SUBSTRING(NAME, 1, 3), '무명') AS "NAME"
                 , TO_CHAR(SUBSTRING(INSERT_DTS, 1, 8)::DATE, 'YYYY-MM-DD HH:DD') AS "DTS"
@@ -223,5 +225,13 @@
         FROM PL_DM_COMM
         WHERE DM_CD = #{SEQ}
         AND COMM_CD = #{COMM_CD}
+    </select>
+
+    <select id="checkPwdCount" resultType="int" parameterType="hashmap">
+        /*V2CommunityMapper.checkPwdCount*/
+        SELECT    COUNT(*)
+        FROM ES_COMMUNITY
+        WHERE SEQ = #{SEQ}
+        AND PW = #{PW}
     </select>
 </mapper>
