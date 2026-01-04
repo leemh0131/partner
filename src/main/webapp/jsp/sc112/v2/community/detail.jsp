@@ -182,7 +182,7 @@
                     </div>
                     <script>
                         $(function () {
-                            $("#listBtn").attr("href", location.pathname.replaceAll('detail', 'list') + location.search.replace(/&SEQ=[^&]*/g, ""));
+                            $("#listBtn").attr("href", location.pathname.replaceAll('detail', 'list') + location.search.replace(/&SEQ=[^&]*/g, "").replace(/&PW=[^&]*/g, ""));
                         });
                     </script>
                     <div class="button">
