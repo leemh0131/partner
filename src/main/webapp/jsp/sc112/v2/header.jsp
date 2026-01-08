@@ -68,7 +68,16 @@
                 <a href="#"></a>
             </div>--%>
         </div>
-        <div class="real-time-detail active">
+        <script>
+            $(function () {
+                if (window.location.pathname === '/sc112/home') {
+                    $('#mobile_real_time').show();
+                } else {
+                    $('#mobile_real_time').hide();
+                }
+            });
+        </script>
+        <div id="mobile_real_time" class="real-time-detail active">
             <div class="tabs">
                 <button type="button" class="tab on">실시간 댓글</button>
 <%--                <button type="button" class="tab">불법대부업</button>--%>

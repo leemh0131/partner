@@ -1,5 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <include resource="logback-common.xml"/>
-    <include resource="logback-local.xml"/>
+
+    <!-- 로그 출력 포맷 설정 -->
+    <property name="server.name" value="localhost"/>
+
+    <!-- STDOUT 콘솔 출력 설정 -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="com.ensys.qray.setting.logging.SqlNotLogFilter" />
+        <encoder>
+            <Pattern>%d{yyyy-MM-dd HH:mm:ss} [%t] %-5level %c:%M:%L %m%n</Pattern>
+        </encoder>
+    </appender>
+
+    <!-- 파일 로그 패턴 설정 -->
+    <property name="FILE_LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %5level %logger - %msg%n" />
+
+    <!-- 파일 로그 설정 (RollingFileAppender) -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder>
+            <pattern>${FILE_LOG_PATTERN}</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- 일자별 파일 생성-->
+            <fileNamePattern>${catalina.home}/qrayLog/%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <!-- 로그 레벨 및 appender 설정 -->
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
+    </root>
+
 </configuration>

@@ -21,14 +21,6 @@ public class AppContextManager implements ApplicationContextAware {
 		applicationContext = _applicationContext;
 	}
 
-	public static ApplicationContext getAppContext() {
-		return applicationContext;
-	}
-
-	public static Object getBean(String beanName) {
-		return applicationContext.getBean(beanName);
-	}
-
 	public static <T> T getBean(Class<T> requiredType) {
 		return applicationContext.getBean(requiredType);
 	}
@@ -36,29 +28,4 @@ public class AppContextManager implements ApplicationContextAware {
 	public static <T> T getBean(String beanName, Class<T> requiredType) {
 		return applicationContext.getBean(beanName, requiredType);
 	}
-
-	public static Object getServiceBean(String targetClassName) {
-		String serviceBeanName = Character.toLowerCase(targetClassName.charAt(0)) + targetClassName.substring(1) + "Service";
-		return getBean(serviceBeanName);
-	}
-
-	@Value("${project.name}")
-	private String jsesssionId;
-
-	@Bean
-	public ServletContextInitializer servletContextInitializer() {
-		return new ServletContextInitializer() {
-			@Override
-			public void onStartup(ServletContext servletContext) throws ServletException {
-				System.out.println("jsesssionId = " + jsesssionId);
-				if (jsesssionId == null || jsesssionId.equals("")) {
-					jsesssionId = UUID.randomUUID().toString();
-				}
-				servletContext.getSessionCookieConfig().setName(jsesssionId+"_JSESSIONID");
-
-			}
-		};
-
-	}
-
 }

@@ -15,7 +15,7 @@
             </div>
             <div id="bbs_consult">
                 <div class="header">
-                    <div class="title">법률상담문의</div>
+                    <div class="title">불법사채해결상담문의</div>
                 </div>
                 <div class="consult">
                     <div class="subject">
@@ -32,18 +32,18 @@
                         <p>로드뷰나 지도를 손쉽게 사용하실 수 있고,</p>
                         <br>
                         <p>여러 의뢰인들이 남긴 후기 댓글도 보실 수 있습니다.</p>
-                        <p>[출처] <a href="https://pf.kakao.com/_QFJzb" target="_blank">https://pf.kakao.com/_QFJzb</a> (변호사 최성중 법률사무소 카카오 채널 링크 안내)</p>
+                        <p>[출처] <a href="https://pf.kakao.com/_ksxmVb/chat" target="_blank">https://pf.kakao.com/_ksxmVb/chat</a> (변호사 최성중 법률사무소 카카오 채널 링크 안내)</p>
                     </div>
                 </div>
                 <div class="inquiry">
-                    <div class="title">불법대부업 법률상담문의</div>
+                    <div class="title">불법사채해결상담문의</div>
                     <div class="list">
                         <ul>
                         <c:forEach var="item" items="${list}" varStatus="status">
                             <li>
                                 <div class="head">
                                     <div class="num">${fn:length(list) - status.index}</div>
-                                    <div class="type">법률상담문의</div>
+                                    <div class="type">불법사채상담문의</div>
                                     <div class="name">
                                         <span class="subject">${item.TITLE}</span>
                                         <span class="icon icon_lock"></span>
