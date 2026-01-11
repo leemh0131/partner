@@ -9,7 +9,7 @@
     <style>
         body { font-family: sans-serif; background-color: #f8f9fa; margin: 0; padding: 20px; }
         .container { max-width: 800px; margin: 0 auto; }
-        .card { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .card { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin: 10px 10px; }
         h3 { margin-top: 0; color: #333; border-left: 4px solid #007bff; padding-left: 10px; }
 
         /* 광고 업로드 스타일 */
@@ -46,6 +46,7 @@
 </head>
 <body>
 <div class="container">
+    <a href="/sc112/home" class="btn-move">사채패치 이동</a>
     <div class="card">
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <h3>광고 이미지 관리</h3>
@@ -76,11 +77,10 @@
             </tbody>
         </table>
     </div>
-
-    <div class="card">
+    <div class="card" style="margin-bottom: 20px;">
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <h3>공지사항 관리</h3>
-            <a class="btn btn-add" href="/sc112/admin/board/detail">신규 공지 추가</a>
+            <a class="btn btn-add" href="/sc112/admin/board/detail?BOARD_TYPE=04">신규 게시글 추가</a>
         </div>
         <table>
             <thead>
@@ -92,20 +92,51 @@
             </tr>
             </thead>
             <tbody>
-                <c:forEach var="item" items="${boardList}">
+            <c:forEach var="item" items="${boardList}">
+                <c:if test="${item.BOARD_TYPE eq '04'}">
                     <tr>
                         <td>${item.SEQ}</td>
                         <td>${item.TITLE}</td>
                         <td class="date">${item.INSERT_DTS}</td>
                         <td style="text-align: center;">
-                            <a class="btn-edit" href="/sc112/admin/board/detail?SEQ=${item.SEQ}">수정</a>
+                            <a class="btn-edit" href="/sc112/admin/board/detail?BOARD_TYPE=04&SEQ=${item.SEQ}">수정</a>
                         </td>
                     </tr>
-                </c:forEach>
+                </c:if>
+            </c:forEach>
             </tbody>
         </table>
     </div>
-    <a href="/sc112/home" class="btn-move">사채패치 이동</a>
-</div>
+
+    <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h3>불법사채해결상담문의 관리</h3>
+            <a class="btn btn-add" href="/sc112/admin/board/detail?BOARD_TYPE=05">신규 게시글 추가</a>
+        </div>
+        <table>
+            <thead>
+            <tr>
+                <th style="width: 60px;">번호</th>
+                <th>제목</th>
+                <th style="width: 100px; text-align: right;">작성일</th>
+                <th style="width: 100px; text-align: center;">관리</th>
+            </tr>
+            </thead>
+            <tbody>
+            <c:forEach var="item" items="${boardList}">
+                <c:if test="${item.BOARD_TYPE eq '05'}">
+                    <tr>
+                        <td>${item.SEQ}</td>
+                        <td>${item.TITLE}</td>
+                        <td class="date">${item.INSERT_DTS}</td>
+                        <td style="text-align: center;">
+                            <a class="btn-edit" href="/sc112/admin/board/detail?BOARD_TYPE=05&SEQ=${item.SEQ}">수정</a>
+                        </td>
+                    </tr>
+                </c:if>
+            </c:forEach>
+            </tbody>
+        </table>
+    </div></div>
 </body>
 </html>

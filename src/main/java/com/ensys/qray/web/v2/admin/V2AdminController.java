@@ -1,6 +1,5 @@
 package com.ensys.qray.web.v2.admin;
 
-import com.ensys.qray.file.FileSupport;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,7 +12,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.UUID;
 
 import static com.ensys.qray.file.FileSupport.*;
 import static com.ensys.qray.utils.SessionUtils.getCurrentUser;

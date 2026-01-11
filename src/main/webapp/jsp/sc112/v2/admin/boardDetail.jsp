@@ -38,13 +38,13 @@
 
 <div class="container">
     <div class="card">
-        <h3>공지사항 등록/수정</h3>
+        <h3>게시글 등록/수정</h3>
         <form id="writeForm" action="/sc112/admin/board/save" method="POST">
             <input type="text" name="SEQ" value="${boardDetail.SEQ}" hidden="hidden">
+            <input type="text" id="BOARD_TYPE" name="BOARD_TYPE" value="${param.BOARD_TYPE}" hidden="hidden">
             <div class="form-group">
                 <label>제목</label>
-                <input type="text" id="TITLE" name="TITLE" class="form-control"
-                       value="${boardDetail.TITLE}" placeholder="제목을 입력하세요">
+                <input type="text" id="TITLE" name="TITLE" class="form-control" value="${boardDetail.TITLE}" placeholder="제목을 입력하세요">
             </div>
 
             <div class="form-group">
@@ -85,7 +85,7 @@
             return;
         }
 
-        if(confirm("공지사항을 저장하시겠습니까?")) {
+        if(confirm("게시글을 저장하시겠습니까?")) {
             $("#CONTENTS").val(contentHtml);
 
             $("#writeForm").submit();

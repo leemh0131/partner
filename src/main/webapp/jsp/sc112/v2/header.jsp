@@ -70,11 +70,25 @@
         </div>
         <script>
             $(function () {
-                if (window.location.pathname === '/sc112/home') {
-                    $('#mobile_real_time').show();
-                } else {
-                    $('#mobile_real_time').hide();
+                // 함수로 분리하여 초기 로드와 리사이즈 시 모두 대응할 수 있게 합니다.
+                function checkDisplay() {
+                    var isHomePage = window.location.pathname === '/sc112/home';
+                    var isMobileWidth = $(window).width() < 1024; // CSS의 min-width와 맞춤
+
+                    if (isHomePage && isMobileWidth) {
+                        $('#mobile_real_time').show();
+                    } else {
+                        $('#mobile_real_time').hide();
+                    }
                 }
+
+                // 페이지 로드 시 실행
+                checkDisplay();
+
+                // 사용자가 브라우저 창 크기를 조절할 때도 대응하려면 추가 (선택 사항)
+                $(window).resize(function() {
+                    checkDisplay();
+                });
             });
         </script>
         <div id="mobile_real_time" class="real-time-detail active">

@@ -15,8 +15,8 @@
              , TO_CHAR(TO_TIMESTAMP(INSERT_DTS, 'YYYYMMDDHH24MISS'), 'YYYY-MM-DD') AS "INSERT_DTS"
         FROM ES_BOARD
         WHERE COMPANY_CD = '1000'
-          AND   BOARD_TYPE  = '04'
-        ORDER BY SEQ DESC
+        AND   BOARD_TYPE IN ('04', '05')
+        ORDER BY CASE WHEN MAIN_YN = 'Y' THEN 1 ELSE 2 END, INSERT_DTS DESC, SEQ DESC
     </select>
 
     <select id="boardDetail" resultType="hashmap" parameterType="hashmap">
@@ -31,7 +31,7 @@
              , TO_CHAR(TO_TIMESTAMP(INSERT_DTS, 'YYYYMMDDHH24MISS'), 'YYYY-MM-DD') AS "INSERT_DTS"
         FROM ES_BOARD
         WHERE COMPANY_CD = '1000'
-        AND   BOARD_TYPE  = '04'
+        AND BOARD_TYPE = #{BOARD_TYPE}
         AND   SEQ  = NULLIF(#{SEQ}, '')::NUMERIC
     </select>
 
@@ -55,10 +55,10 @@
         VALUES
         (
             '1000'
-          , '04'
+          , #{BOARD_TYPE}
           , COALESCE(
                     NULLIF(#{SEQ}, '')::NUMERIC,
-                    (SELECT COALESCE(MAX(SEQ), 0) + 1 FROM ES_BOARD WHERE COMPANY_CD = '1000' AND BOARD_TYPE = '04')
+                    (SELECT COALESCE(MAX(SEQ), 0) + 1 FROM ES_BOARD WHERE COMPANY_CD = '1000' AND BOARD_TYPE = #{BOARD_TYPE})
             )
           , #{TITLE}
           , #{CONTENTS}
