@@ -13,6 +13,8 @@ public interface FileMapper extends MyBatisMapper {
 
 	int insert(HashMap<String, Object> param);
 
+	int upsert(HashMap<String, Object> param);
+
 	int delete(HashMap<String, Object> param);
 
 	int deleteAll(HashMap<String, Object> param);

@@ -81,6 +81,73 @@
 		)
     </insert>
 
+	<insert id="upsert" parameterType="hashmap">
+		/*FileMapper.upsert (UPSERT)*/
+		INSERT INTO ES_FILE
+		(
+		  COMPANY_CD
+		, TABLE_ID
+		, TABLE_KEY
+		, FILE_SEQ
+		, FILE_NAME
+		, ORGN_FILE_NAME
+		, FILE_PATH
+		, FILE_EXT
+		, FILE_BYTE
+		, FILE_SIZE
+		, FILE_DIVISION
+		, MAIN_YN
+		, INSERT_ID
+		, INSERT_DTS
+		, UPDATE_ID
+		, UPDATE_DTS
+		, LINK
+		, REMARK
+		)
+		VALUES
+		(
+		  #{COMPANY_CD}
+		, #{TABLE_ID}
+		, #{TABLE_KEY}
+		, COALESCE(
+			NULLIF(#{FILE_SEQ}, '')::NUMERIC,
+			(SELECT COALESCE(MAX(FILE_SEQ::INTEGER), 0) + 1
+			 FROM ES_FILE
+			 WHERE COMPANY_CD = #{COMPANY_CD}
+			   AND TABLE_ID = #{TABLE_ID}
+			   AND TABLE_KEY = #{TABLE_KEY})
+		  )
+		, #{FILE_NAME}
+		, #{ORGN_FILE_NAME}
+		, #{FILE_PATH}
+		, #{FILE_EXT}
+		, #{FILE_BYTE}
+		, #{FILE_SIZE}
+		, #{FILE_DIVISION}
+		, #{MAIN_YN}
+		, #{INSERT_ID}
+		, #{INSERT_DTS}
+		, #{UPDATE_ID}
+		, #{UPDATE_DTS}
+		, #{LINK}
+		, #{REMARK}
+		)
+		ON CONFLICT (COMPANY_CD, TABLE_ID, TABLE_KEY, FILE_SEQ)
+		DO UPDATE SET
+		  FILE_NAME      = EXCLUDED.FILE_NAME
+		, ORGN_FILE_NAME = EXCLUDED.ORGN_FILE_NAME
+		, FILE_PATH      = EXCLUDED.FILE_PATH
+		, FILE_EXT       = EXCLUDED.FILE_EXT
+		, FILE_BYTE      = EXCLUDED.FILE_BYTE
+		, FILE_SIZE      = EXCLUDED.FILE_SIZE
+		, FILE_DIVISION  = EXCLUDED.FILE_DIVISION
+		, MAIN_YN        = EXCLUDED.MAIN_YN
+		, UPDATE_ID      = EXCLUDED.UPDATE_ID
+		, UPDATE_DTS     = EXCLUDED.UPDATE_DTS
+		, LINK           = EXCLUDED.LINK
+		, REMARK         = EXCLUDED.REMARK
+		</insert>
+
     <delete id="delete" parameterType="hashmap" statementType="CALLABLE">
 		/*FileMapper.delete*/
 		DELETE FROM ES_FILE

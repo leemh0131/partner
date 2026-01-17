@@ -3,6 +3,11 @@
 
 <mapper namespace="com.ensys.qray.web.v2.admin.V2AdminMapper">
 
+    <select id="boardInfo" resultType="hashmap" parameterType="hashmap">
+        /*V2AdminMapper.boardInfo*/
+        SELECT F_ES_CODE_DETAIL('1000', 'ES_Q0136', #{BOARD_TYPE}) AS "BOARD_NAME"
+    </select>
+
     <select id="boardList" resultType="hashmap" parameterType="hashmap">
         /*V2AdminMapper.boardList*/
         SELECT  COMPANY_CD AS "COMPANY_CD"
@@ -15,7 +20,7 @@
              , TO_CHAR(TO_TIMESTAMP(INSERT_DTS, 'YYYYMMDDHH24MISS'), 'YYYY-MM-DD') AS "INSERT_DTS"
         FROM ES_BOARD
         WHERE COMPANY_CD = '1000'
-        AND   BOARD_TYPE IN ('04', '05')
+        AND   BOARD_TYPE = #{BOARD_TYPE}
         ORDER BY CASE WHEN MAIN_YN = 'Y' THEN 1 ELSE 2 END, INSERT_DTS DESC, SEQ DESC
     </select>
 
@@ -80,6 +85,25 @@
           , UPDATE_DTS = EXCLUDED.UPDATE_DTS
     </insert>
 
+    <select id="bannerList" resultType="hashmap" parameterType="hashmap">
+        /*V2AdminMapper.bannerList*/
+		SELECT
+			  TABLE_ID	 AS "TABLE_ID"
+			, TABLE_KEY	 AS "TABLE_KEY"
+            , FILE_SEQ	 AS "FILE_SEQ"
+            , FILE_NAME	 AS "FILE_NAME"
+            , ORGN_FILE_NAME	 AS "ORGN_FILE_NAME"
+            , FILE_PATH	 AS "FILE_PATH"
+            , FILE_EXT	 AS "FILE_EXT"
+            , LINK	 AS "LINK"
+            , REMARK	 AS "REMARK"
+            , TO_CHAR(TO_TIMESTAMP(INSERT_DTS, 'YYYYMMDDHH24MISS'), 'YYYY-MM-DD') AS "INSERT_DTS"
+            , CONCAT(FILE_PATH, '/', FILE_NAME, '.', FILE_EXT) AS "IMG_URL"
+		FROM ES_FILE
+		WHERE COMPANY_CD = '1000'
+        AND TABLE_ID = #{TABLE_ID}
+    </select>
+
 	<select id="bannerDetail" resultType="hashmap" parameterType="hashmap">
 		/*V2AdminMapper.bannerDetail*/
 		SELECT
@@ -92,9 +116,11 @@
             , FILE_EXT	 AS "FILE_EXT"
             , LINK	 AS "LINK"
             , REMARK	 AS "REMARK"
+            , TO_CHAR(TO_TIMESTAMP(INSERT_DTS, 'YYYYMMDDHH24MISS'), 'YYYY-MM-DD') AS "INSERT_DTS"
             , CONCAT(FILE_PATH, '/', FILE_NAME, '.', FILE_EXT) AS "IMG_URL"
 		FROM ES_FILE
 		WHERE COMPANY_CD = '1000'
         AND TABLE_ID = #{TABLE_ID}
+		AND FILE_SEQ = #{FILE_SEQ}::VARCHAR
 	</select>
 </mapper>

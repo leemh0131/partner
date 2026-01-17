@@ -40,16 +40,15 @@
 
 <div class="container">
     <div class="card">
-        <h3>공지사항 등록/수정</h3>
+        <h3>광고 이미지 등록/수정</h3>
         <form id="writeForm" action="/sc112/admin/banner/save" method="post" enctype="multipart/form-data">
-            <input type="text" id="TABLE_ID" name="TABLE_ID" class="form-control" value="${bannerDetail.TABLE_ID}" hidden="hidden">
-            <input type="text" id="TABLE_KEY" name="TABLE_KEY" class="form-control" value="${bannerDetail.TABLE_KEY}" hidden="hidden">
+            <input type="text" id="TABLE_ID" name="TABLE_ID" class="form-control" value="${param.TABLE_ID}" hidden="hidden">
+            <input type="text" id="TABLE_KEY" name="TABLE_KEY" class="form-control" value="${param.TABLE_ID}" hidden="hidden">
             <input type="text" id="FILE_SEQ" name="FILE_SEQ" class="form-control" value="${bannerDetail.FILE_SEQ}" hidden="hidden">
-            <input type="text" id="FILE_NAME" name="FILE_NAME" class="form-control" value="${bannerDetail.FILE_NAME}" hidden="hidden">
 
             <div class="form-group">
                 <label>제목</label>
-                <input type="text" id="REMARK" name="REMARK" class="form-control" value="${bannerDetail.REMARK}" readonly disabled>
+                <input type="text" id="REMARK" name="REMARK" class="form-control" value="${bannerDetail.REMARK}">
             </div>
 
             <div class="form-group">

@@ -16,6 +16,7 @@ import java.util.HashMap;
 import static com.ensys.qray.file.FileSupport.*;
 import static com.ensys.qray.utils.SessionUtils.getCurrentUser;
 import static java.io.File.*;
+import static java.util.UUID.randomUUID;
 
 @Controller
 @RequestMapping("/sc112/admin")
@@ -31,8 +32,13 @@ public class V2AdminController {
 
     @GetMapping("main")
     public String goMain(Model model, @RequestParam HashMap<String, Object> param) {
-        v2AdminService.boardList(model, param);
         return authView("/sc112/v2/admin/main");
+    }
+
+    @GetMapping("board/list")
+    public String boardList(Model model, @RequestParam HashMap<String, Object> param) {
+        v2AdminService.boardList(model, param);
+        return authView("/sc112/v2/admin/boardList");
     }
 
     @GetMapping("board/detail")
@@ -47,6 +53,12 @@ public class V2AdminController {
         return authView("redirect:/sc112/admin/main");
     }
 
+    @GetMapping("banner/list")
+    public String bannerList(Model model, @RequestParam HashMap<String, Object> param) {
+        v2AdminService.bannerList(model, param);
+        return authView("/sc112/v2/admin/bannerList");
+    }
+
     @GetMapping("banner/detail")
     public String bannerDetail(Model model, @RequestParam HashMap<String, Object> param) {
         v2AdminService.bannerDetail(model, param);
@@ -58,7 +70,7 @@ public class V2AdminController {
         String orgnFileName = file.getOriginalFilename();
         String fileExt = orgnFileName.substring(orgnFileName.lastIndexOf(".") + 1);
         String filePath = getGlobalFilePath();
-
+        param.put("FILE_NAME", randomUUID().toString());
         if (filePath != null) {
             File dir = new File(filePath);
 

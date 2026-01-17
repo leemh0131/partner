@@ -23,6 +23,7 @@ public class V2AdminService {
     private final FileMapper fileMapper;
 
     public void boardList(Model model, HashMap<String, Object> param) {
+        model.addAttribute("boardInfo", v2AdminMapper.boardInfo(param));
         model.addAttribute("boardList", v2AdminMapper.boardList(param));
     }
 
@@ -41,6 +42,10 @@ public class V2AdminService {
         v2AdminMapper.boardInsertUpdate(param);
     }
 
+    public void bannerList(Model model, HashMap<String, Object> param) {
+        model.addAttribute("bannerList", v2AdminMapper.bannerList(param));
+    }
+
     public void bannerDetail(Model model, HashMap<String, Object> param) {
         model.addAttribute("bannerDetail", v2AdminMapper.bannerDetail(param));
     }
@@ -55,7 +60,6 @@ public class V2AdminService {
         param.put("INSERT_DTS", strDate);
         param.put("UPDATE_ID", user.getUserId());
         param.put("UPDATE_DTS", strDate);
-        fileMapper.delete(param);
-        fileMapper.insert(param);
+        fileMapper.upsert(param);
     }
 }

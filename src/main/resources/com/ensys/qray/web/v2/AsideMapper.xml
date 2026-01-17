@@ -85,6 +85,7 @@
 		FROM ES_FILE
 		WHERE   COMPANY_CD =  #{COMPANY_CD}
 		AND TABLE_ID IN ('PATH_BANNER_PC', 'PATH_BANNER_MO')
+		AND FILE_SEQ = '1'
 	</select>
 
 </mapper>
