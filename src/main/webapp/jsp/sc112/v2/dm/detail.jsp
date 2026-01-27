@@ -9,7 +9,7 @@
     <div class="wrap">
         <section id="contain">
             <div class="solution order2 mobile">
-                <c:forEach var="item" items="${commonLink}" varStatus="status">
+                <c:forEach var="item" items="${commonLink1}" varStatus="status">
                     <a href="${item.LINK}" target="_blank"><img class="inner ${item.TABLE_ID}" src="${item.IMG_URL}" alt="설명"></a>
                 </c:forEach>
             </div>
@@ -130,6 +130,11 @@
                             });
                         </script>
                     </div>
+                </div>
+                <div class="solution2 order2">
+                    <c:forEach var="item" items="${commonLink2}" varStatus="status">
+                        <a href="${item.LINK}" target="_blank"><img class="inner ${item.TABLE_ID}" src="${item.IMG_URL}" alt="설명"></a>
+                    </c:forEach>
                 </div>
                 <div class="comment">
                     <div class="title">댓글 (${fn:length(comments)})</div>

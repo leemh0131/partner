@@ -33,7 +33,7 @@ public class AXBootSecurityConfig extends WebSecurityConfigurerAdapter {
 
     public static final String LOGIN_API = "/api/login";
     public static final String LOGOUT_API = "/api/logout";
-    public static final String LOGIN_PAGE = "/jsp/login.jsp";
+    public static final String LOGIN_PAGE = "/sc112/home";
     public static final String ACCESS_DENIED_PAGE = "/jsp/common/not-authorized.jsp?errorCode=401";
 
     public static final String ROLE = "ASP_ACCESS";

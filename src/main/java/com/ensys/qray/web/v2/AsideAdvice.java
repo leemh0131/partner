@@ -29,9 +29,19 @@ public class AsideAdvice {
         return asideService.commonHeader();
     }
 
-    @ModelAttribute("commonLink")
-    public List<HashMap<String, Object>> commonLink() {
-        return asideService.commonLink();
+    @ModelAttribute("commonLink1")
+    public List<HashMap<String, Object>> commonLink1() {
+        return asideService.commonLink1();
+    }
+
+    @ModelAttribute("commonLink2")
+    public List<HashMap<String, Object>> commonLink2() {
+        return asideService.commonLink2();
+    }
+
+    @ModelAttribute("commonLink3")
+    public List<HashMap<String, Object>> commonLink3() {
+        return asideService.commonLink3();
     }
 
     @ModelAttribute("loginInfo")

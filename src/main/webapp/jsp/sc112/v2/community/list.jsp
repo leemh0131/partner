@@ -13,7 +13,7 @@
     <div class="wrap">
         <section id="contain">
             <div class="solution order2 mobile">
-                <c:forEach var="item" items="${commonLink}" varStatus="status">
+                <c:forEach var="item" items="${commonLink1}" varStatus="status">
                     <a href="${item.LINK}" target="_blank"><img class="inner ${item.TABLE_ID}" src="${item.IMG_URL}" alt="설명"></a>
                 </c:forEach>
             </div>

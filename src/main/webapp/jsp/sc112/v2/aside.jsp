@@ -56,6 +56,11 @@
             </div>
         </div>
     </div>
+    <div class="solution2 order2">
+        <c:forEach var="item" items="${commonLink3}" varStatus="status">
+            <a href="${item.LINK}" target="_blank"><img class="inner ${item.TABLE_ID}" src="${item.IMG_URL}" alt="설명"></a>
+        </c:forEach>
+    </div>
     <div class="adarea">
         <div class="head">
             <div class="title">광고영역</div>

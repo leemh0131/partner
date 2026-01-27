@@ -15,6 +15,10 @@ public interface AsideMapper extends MyBatisMapper {
 
     List<HashMap<String, Object>> commonHeader(HashMap<String, Object> param);
 
-    List<HashMap<String, Object>> commonLink(HashMap<String, Object> param);
+    List<HashMap<String, Object>> commonLink1(HashMap<String, Object> param);
+
+    List<HashMap<String, Object>> commonLink2(HashMap<String, Object> param);
+
+    List<HashMap<String, Object>> commonLink3(HashMap<String, Object> param);
 
 }

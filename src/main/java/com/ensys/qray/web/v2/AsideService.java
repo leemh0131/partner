@@ -38,11 +38,25 @@ public class AsideService extends BaseService {
         return asideMapper.commonHeader(param);
     }
 
-    public List<HashMap<String, Object>> commonLink() {
+    public List<HashMap<String, Object>> commonLink1() {
         HashMap<String, Object> param = new HashMap<>();
         param.put("COMPANY_CD", "1000");
 
-        return asideMapper.commonLink(param);
+        return asideMapper.commonLink1(param);
+    }
+
+    public List<HashMap<String, Object>> commonLink2() {
+        HashMap<String, Object> param = new HashMap<>();
+        param.put("COMPANY_CD", "1000");
+
+        return asideMapper.commonLink2(param);
+    }
+
+    public List<HashMap<String, Object>> commonLink3() {
+        HashMap<String, Object> param = new HashMap<>();
+        param.put("COMPANY_CD", "1000");
+
+        return asideMapper.commonLink3(param);
     }
 
     public SessionUser loginInfo() {
